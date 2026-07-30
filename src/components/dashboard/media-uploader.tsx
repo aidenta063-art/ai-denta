@@ -96,6 +96,14 @@ export function MediaUploader() {
       }
 
       router.refresh();
+    } catch (err) {
+      // A thrown error (network failure, CORS rejection, etc.) would
+      // otherwise leave the "Uploading…" state just vanishing with no
+      // explanation — always surface something to the admin.
+      console.error(err);
+      setError(
+        "Upload failed — check your connection and try again. If this keeps happening, the storage bucket's CORS settings may need updating.",
+      );
     } finally {
       setIsUploading(false);
       if (inputRef.current) inputRef.current.value = "";
