@@ -4,72 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
-async function uploadViaPresignedUrl(file: File): Promise<string | null> {
-  const presignRes = await fetch("/api/dashboard/media/presign", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      filename: file.name,
-      contentType: file.type,
-      sizeBytes: file.size,
-    }),
-  });
-
-  if (!presignRes.ok) {
-    const body = await presignRes.json().catch(() => null);
-    return body?.error ?? "Upload failed";
-  }
-
-  const presigned = await presignRes.json();
-  if (presigned.fallback) {
-    // No cloud storage configured (local dev) — caller falls back to
-    // the server-proxied upload route.
-    return "FALLBACK";
-  }
-
-  const putRes = await fetch(presigned.uploadUrl, {
-    method: "PUT",
-    headers: { "Content-Type": file.type },
-    body: file,
-  });
-  if (!putRes.ok) {
-    return "Upload to storage failed";
-  }
-
-  const confirmRes = await fetch("/api/dashboard/media/confirm", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      key: presigned.key,
-      publicUrl: presigned.publicUrl,
-      contentType: file.type,
-      sizeBytes: file.size,
-    }),
-  });
-  if (!confirmRes.ok) {
-    const body = await confirmRes.json().catch(() => null);
-    return body?.error ?? "Upload failed";
-  }
-
-  return null;
-}
-
-async function uploadViaServerProxy(file: File): Promise<string | null> {
-  const formData = new FormData();
-  formData.append("file", file);
-  const res = await fetch("/api/dashboard/media/upload", {
-    method: "POST",
-    body: formData,
-  });
-
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    return body?.error ?? "Upload failed";
-  }
-
-  return null;
-}
+import { uploadMediaFromBrowser } from "@/lib/media-upload";
 
 export function MediaUploader() {
   const router = useRouter();
@@ -85,13 +20,10 @@ export function MediaUploader() {
     setError(null);
 
     try {
-      let result = await uploadViaPresignedUrl(file);
-      if (result === "FALLBACK") {
-        result = await uploadViaServerProxy(file);
-      }
+      const result = await uploadMediaFromBrowser(file);
 
-      if (result) {
-        setError(result);
+      if ("error" in result) {
+        setError(result.error);
         return;
       }
 

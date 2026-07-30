@@ -22,6 +22,7 @@ export function Hero({
   subtitle,
   ctaFree,
   ctaPaid,
+  videoUrl,
 }: {
   locale: Locale;
   eyebrow: string;
@@ -29,6 +30,7 @@ export function Hero({
   subtitle: string;
   ctaFree: string;
   ctaPaid: string;
+  videoUrl?: string | null;
 }) {
   return (
     <section className="relative overflow-hidden bg-[#251037]">
@@ -45,7 +47,7 @@ export function Hero({
         variants={container}
         initial="hidden"
         animate="show"
-        className="relative mx-auto flex max-w-5xl flex-col items-start gap-6 px-6 py-28 sm:py-36"
+        className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 py-20 text-center sm:py-28"
       >
         <motion.span
           variants={item}
@@ -53,6 +55,24 @@ export function Hero({
         >
           {eyebrow}
         </motion.span>
+
+        {videoUrl && (
+          <motion.div variants={item} className="w-full">
+            <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-2xl shadow-black/50">
+              <div
+                className="h-1.5 w-full bg-gradient-to-r from-[#7E00C9] via-[#9a4fd6] to-[#B98AE8]"
+                aria-hidden
+              />
+              <video
+                src={videoUrl}
+                controls
+                playsInline
+                preload="metadata"
+                className="aspect-video w-full"
+              />
+            </div>
+          </motion.div>
+        )}
 
         <motion.h1
           variants={item}
@@ -68,7 +88,7 @@ export function Hero({
           {subtitle}
         </motion.p>
 
-        <motion.div variants={item} className="flex flex-wrap gap-4 pt-4">
+        <motion.div variants={item} className="flex flex-wrap justify-center gap-4 pt-4">
           <Button
             size="lg"
             className="bg-white text-[#251037] hover:bg-white/90"

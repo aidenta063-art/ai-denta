@@ -34,6 +34,44 @@ export async function saveHeroContent(input: HeroFormInput, updatedById: string)
   });
 }
 
+export async function getHeroVideo() {
+  const section = await prisma.cmsSection.findUnique({
+    where: { slug: HERO_SLUG },
+    include: {
+      media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+    },
+  });
+  return section?.media[0]?.media ?? null;
+}
+
+async function ensureHeroSection(updatedById: string) {
+  return prisma.cmsSection.upsert({
+    where: { slug: HERO_SLUG },
+    update: {},
+    create: {
+      slug: HERO_SLUG,
+      type: CmsSectionType.HERO,
+      contentEn: {},
+      contentAr: {},
+      updatedById,
+    },
+  });
+}
+
+export async function setHeroVideo(mediaId: string, updatedById: string) {
+  const section = await ensureHeroSection(updatedById);
+  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+  await prisma.cmsSectionMedia.create({
+    data: { cmsSectionId: section.id, mediaId, sortOrder: 0 },
+  });
+}
+
+export async function clearHeroVideo() {
+  const section = await prisma.cmsSection.findUnique({ where: { slug: HERO_SLUG } });
+  if (!section) return;
+  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+}
+
 export async function listConsultationTypes() {
   return prisma.consultationType.findMany({ orderBy: { kind: "asc" } });
 }

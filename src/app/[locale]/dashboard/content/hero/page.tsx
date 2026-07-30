@@ -4,8 +4,13 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { getHeroContent } from "@/services/content/cms.service";
+import { getHeroContent, getHeroVideo } from "@/services/content/cms.service";
 import { HeroContentForm } from "@/components/dashboard/hero-content-form";
+import { HeroVideoUploader } from "@/components/dashboard/hero-video-uploader";
+import {
+  setHeroVideoAction,
+  clearHeroVideoAction,
+} from "@/actions/dashboard/content/hero-video";
 import { heroContentSchema } from "@/lib/validation/cms.schema";
 
 export default async function HeroContentPage({
@@ -16,11 +21,15 @@ export default async function HeroContentPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
-  const [section, tEn, tAr] = await Promise.all([
+  const [section, heroVideo, tEn, tAr] = await Promise.all([
     getHeroContent(),
+    getHeroVideo(),
     getTranslations({ locale: "en", namespace: "HomePage" }),
     getTranslations({ locale: "ar", namespace: "HomePage" }),
   ]);
+
+  const setVideoAction = setHeroVideoAction.bind(null, locale);
+  const clearVideoAction = clearHeroVideoAction.bind(null, locale);
 
   const enParsed = section
     ? heroContentSchema.safeParse(section.contentEn)
@@ -55,6 +64,21 @@ export default async function HeroContentPage({
 
       <div className="max-w-3xl rounded-xl border border-border bg-card p-6 shadow-sm">
         <HeroContentForm locale={locale} defaults={defaults} />
+      </div>
+
+      <div className="flex max-w-3xl flex-col gap-3 rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div>
+          <h2 className="text-sm font-medium text-foreground">Intro video</h2>
+          <p className="text-sm text-muted-foreground">
+            Shown at the top of the homepage, above the headline. Upload a new
+            video to replace the current one.
+          </p>
+        </div>
+        <HeroVideoUploader
+          currentVideoUrl={heroVideo?.url ?? null}
+          setAction={setVideoAction}
+          clearAction={clearVideoAction}
+        />
       </div>
     </div>
   );

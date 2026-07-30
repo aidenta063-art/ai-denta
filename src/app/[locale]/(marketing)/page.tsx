@@ -7,7 +7,7 @@ import { Hero } from "@/components/marketing/hero";
 import { ServicesSection } from "@/components/marketing/services-section";
 import { VideoShowcase } from "@/components/marketing/video-showcase";
 import { ConsultationCta } from "@/components/marketing/consultation-cta";
-import { getHeroContent } from "@/services/content/cms.service";
+import { getHeroContent, getHeroVideo } from "@/services/content/cms.service";
 import { heroContentSchema } from "@/lib/validation/cms.schema";
 import { localized } from "@/lib/i18n-content";
 
@@ -47,7 +47,10 @@ export default async function HomePage({
   setRequestLocale(locale);
 
   const t = await getTranslations("HomePage");
-  const heroSection = await getHeroContent();
+  const [heroSection, heroVideo] = await Promise.all([
+    getHeroContent(),
+    getHeroVideo(),
+  ]);
 
   const heroFromCms = heroSection
     ? heroContentSchema.safeParse(
@@ -68,6 +71,7 @@ export default async function HomePage({
         subtitle={hero.subtitle}
         ctaFree={t("ctaFree")}
         ctaPaid={t("ctaPaid")}
+        videoUrl={heroVideo?.url}
       />
       <ServicesSection locale={locale} />
       <VideoShowcase />
