@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { AuthCard } from "@/components/auth/auth-card";
+import { BrandedCard } from "@/components/marketing/branded-card";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 import { routing } from "@/i18n/routing";
 
@@ -27,8 +27,8 @@ export default async function ForgotPasswordPage({
   const t = await getTranslations("Auth.forgotPassword");
 
   return (
-    <AuthCard title={t("title")}>
+    <BrandedCard title={t("title")}>
       <ForgotPasswordForm locale={locale} />
-    </AuthCard>
+    </BrandedCard>
   );
 }

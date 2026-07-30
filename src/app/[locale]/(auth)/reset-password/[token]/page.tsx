@@ -1,7 +1,7 @@
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { AuthCard } from "@/components/auth/auth-card";
+import { BrandedCard } from "@/components/marketing/branded-card";
 import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 import { routing } from "@/i18n/routing";
 
@@ -16,8 +16,8 @@ export default async function ResetPasswordPage({
   const t = await getTranslations("Auth.resetPassword");
 
   return (
-    <AuthCard title={t("title")}>
+    <BrandedCard title={t("title")}>
       <ResetPasswordForm locale={locale} token={token} />
-    </AuthCard>
+    </BrandedCard>
   );
 }

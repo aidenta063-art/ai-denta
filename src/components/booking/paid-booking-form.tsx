@@ -36,20 +36,42 @@ export function PaidBookingForm({
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="name">{t("name")}</Label>
-        <Input id="name" name="name" required autoFocus />
+        <Input
+          id="name"
+          name="name"
+          required
+          autoFocus
+          className="h-11 px-3.5 text-base"
+        />
       </div>
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="email">{t("email")}</Label>
-        <Input id="email" name="email" type="email" required />
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          required
+          className="h-11 px-3.5 text-base"
+        />
       </div>
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="phone">{t("phone")}</Label>
-        <Input id="phone" name="phone" type="tel" required />
+        <Input
+          id="phone"
+          name="phone"
+          type="tel"
+          required
+          className="h-11 px-3.5 text-base"
+        />
       </div>
 
-      <Button type="submit" disabled={isPending} className="mt-2">
+      <Button
+        type="submit"
+        disabled={isPending}
+        className="mt-2 h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+      >
         {t("submit")}
       </Button>
     </form>

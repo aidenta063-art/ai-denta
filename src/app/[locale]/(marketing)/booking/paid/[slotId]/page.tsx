@@ -4,13 +4,8 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
+import { BrandedCard } from "@/components/marketing/branded-card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { prisma } from "@/lib/prisma";
 import { SlotStatus } from "@/generated/prisma/enums";
@@ -36,27 +31,27 @@ export default async function ConfirmPaidSlotPage({
     : null;
 
   return (
-    <section className="mx-auto max-w-md px-6 py-16">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("confirmTitle")}</CardTitle>
-          {formattedDate && <CardDescription>{formattedDate}</CardDescription>}
-        </CardHeader>
-        <CardContent>
-          {!slot || slot.status !== SlotStatus.OPEN ? (
-            <div className="flex flex-col gap-4">
-              <Alert variant="destructive">
-                <AlertDescription>{t("slotNoLongerAvailable")}</AlertDescription>
-              </Alert>
-              <Button render={<Link href="/booking/paid" locale={locale} />}>
-                {t("pickAnother")}
-              </Button>
-            </div>
-          ) : (
-            <PaidBookingForm locale={locale} slotId={slotId} />
-          )}
-        </CardContent>
-      </Card>
-    </section>
+    <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
+      <BrandedCard
+        title={t("confirmTitle")}
+        description={formattedDate ?? undefined}
+      >
+        {!slot || slot.status !== SlotStatus.OPEN ? (
+          <div className="flex flex-col gap-4">
+            <Alert variant="destructive">
+              <AlertDescription>{t("slotNoLongerAvailable")}</AlertDescription>
+            </Alert>
+            <Button
+              className="h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+              render={<Link href="/booking/paid" locale={locale} />}
+            >
+              {t("pickAnother")}
+            </Button>
+          </div>
+        ) : (
+          <PaidBookingForm locale={locale} slotId={slotId} />
+        )}
+      </BrandedCard>
+    </PurpleGlowSection>
   );
 }

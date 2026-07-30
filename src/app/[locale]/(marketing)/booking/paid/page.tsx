@@ -2,16 +2,12 @@ import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { Clock } from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
+import { BrandedCard } from "@/components/marketing/branded-card";
 import {
   findAvailableDates,
   findEarliestAvailableDate,
@@ -55,13 +51,13 @@ export default async function PaidBookingPage({
   );
 
   return (
-    <section className="mx-auto max-w-2xl px-6 py-16">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-6">
+    <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
+      <BrandedCard
+        title={t("title")}
+        description={t("description")}
+        className="max-w-2xl"
+      >
+        <div className="flex flex-col gap-6">
           {availableDates.size === 0 ? (
             <p className="text-sm text-muted-foreground">{t("noSlots")}</p>
           ) : (
@@ -79,22 +75,32 @@ export default async function PaidBookingPage({
           )}
 
           {slots.length > 0 && (
-            <div className="grid grid-cols-3 gap-2">
-              {slots.map((slot) => (
-                <Button
-                  key={slot.id}
-                  variant="outline"
-                  render={
-                    <Link href={`/booking/paid/${slot.id}`} locale={locale} />
-                  }
-                >
-                  {timeFormatter.format(slot.startAt)}
-                </Button>
-              ))}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                <Clock className="size-3.5" />
+                {t("dateLabel")}
+              </div>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                {slots.map((slot) => (
+                  <Button
+                    key={slot.id}
+                    variant="outline"
+                    className="h-10 border-border/80"
+                    render={
+                      <Link
+                        href={`/booking/paid/${slot.id}`}
+                        locale={locale}
+                      />
+                    }
+                  >
+                    {timeFormatter.format(slot.startAt)}
+                  </Button>
+                ))}
+              </div>
             </div>
           )}
-        </CardContent>
-      </Card>
-    </section>
+        </div>
+      </BrandedCard>
+    </PurpleGlowSection>
   );
 }

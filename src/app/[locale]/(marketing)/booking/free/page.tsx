@@ -3,7 +3,8 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
+import { BrandedCard } from "@/components/marketing/branded-card";
 import { FreeBookingForm } from "@/components/booking/free-booking-form";
 
 export async function generateMetadata({
@@ -28,16 +29,10 @@ export default async function FreeBookingPage({
   const t = await getTranslations("Booking.free");
 
   return (
-    <section className="mx-auto max-w-md px-6 py-16">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FreeBookingForm locale={locale} />
-        </CardContent>
-      </Card>
-    </section>
+    <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
+      <BrandedCard title={t("title")} description={t("description")}>
+        <FreeBookingForm locale={locale} />
+      </BrandedCard>
+    </PurpleGlowSection>
   );
 }

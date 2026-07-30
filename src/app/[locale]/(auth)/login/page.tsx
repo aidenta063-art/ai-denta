@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { AuthCard } from "@/components/auth/auth-card";
+import { BrandedCard } from "@/components/marketing/branded-card";
 import { LoginForm } from "@/components/auth/login-form";
 import { routing } from "@/i18n/routing";
 
@@ -30,8 +30,8 @@ export default async function LoginPage({
   );
 
   return (
-    <AuthCard title={t("title")}>
+    <BrandedCard title={t("title")}>
       <LoginForm locale={locale} googleEnabled={googleEnabled} />
-    </AuthCard>
+    </BrandedCard>
   );
 }

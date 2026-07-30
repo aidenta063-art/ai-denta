@@ -2,22 +2,25 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-export function AuthCard({
+export function BrandedCard({
   title,
   description,
   children,
+  className,
 }: {
   title: string;
   description?: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative w-full max-w-md"
+      className={cn("relative w-full max-w-md", className)}
     >
       <div
         className="absolute inset-x-10 -top-4 h-8 rounded-full bg-[#7E00C9]/50 blur-2xl"
@@ -29,13 +32,18 @@ export function AuthCard({
           aria-hidden
         />
         <div className="flex flex-col items-center gap-1 px-8 pt-8 pb-2 text-center">
-          <Image
-            src="/logo.png"
-            alt="Ai Denta"
-            width={160}
-            height={72}
-            className="h-10 w-auto"
-          />
+          <div className="flex items-center gap-2">
+            <Image
+              src="/logo-mark.png"
+              alt=""
+              width={32}
+              height={32}
+              className="size-8"
+            />
+            <span className="text-lg font-bold tracking-tight text-[#251037]">
+              Ai denta
+            </span>
+          </div>
           <h1 className="mt-3 text-2xl font-bold tracking-tight text-[#251037]">
             {title}
           </h1>
