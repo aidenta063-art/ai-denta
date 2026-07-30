@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+
+# locally-stored uploads (dev-only fallback until Cloudflare R2 is configured)
+/public/uploads

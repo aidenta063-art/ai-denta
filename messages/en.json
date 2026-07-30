@@ -1,0 +1,150 @@
+{
+  "Nav": {
+    "home": "Home",
+    "services": "Services",
+    "booking": "Book a Consultation",
+    "account": "Login / Register",
+    "dashboard": "Dashboard",
+    "logout": "Logout"
+  },
+  "HomePage": {
+    "eyebrow": "Dental Marketing Agency",
+    "title": "Grow your dental clinic with a system, not guesswork",
+    "subtitle": "Content, paid ads, and a real booking pipeline — built for dental clinics that want predictable growth.",
+    "ctaFree": "Book a Free Consultation",
+    "ctaPaid": "Book a Paid Consultation",
+    "services": {
+      "title": "What we do",
+      "subtitle": "Everything your clinic needs to turn attention into booked appointments.",
+      "items": [
+        {
+          "title": "Content Creation",
+          "description": "High-quality video and photo content that builds trust with prospective patients."
+        },
+        {
+          "title": "Paid Advertising",
+          "description": "Targeted campaigns designed to reach high-value patients ready to book."
+        },
+        {
+          "title": "Growth Strategy",
+          "description": "A clear, data-driven plan for your clinic's digital growth — not guesswork."
+        }
+      ]
+    },
+    "videos": {
+      "title": "See the work",
+      "subtitle": "A look at the content we produce for clinics like yours.",
+      "items": ["Content Creation", "Clinic Spotlight", "Patient Journey"]
+    },
+    "cta": {
+      "title": "Ready to grow your clinic?",
+      "subtitle": "Book a free or paid consultation and let's talk about your growth plan.",
+      "ctaFree": "Book Free Consultation",
+      "ctaPaid": "Book Paid Consultation"
+    }
+  },
+  "Footer": {
+    "tagline": "Marketing systems built for dental clinics that want predictable growth.",
+    "rights": "All rights reserved."
+  },
+  "Auth": {
+    "login": {
+      "title": "Log in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log in",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Create one"
+    },
+    "register": {
+      "title": "Create an account",
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "success": "Account created. You can now log in."
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "description": "Enter your email and we'll send you a reset link.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "success": "If an account exists for that email, a reset link has been sent."
+    },
+    "resetPassword": {
+      "title": "Choose a new password",
+      "password": "New password",
+      "submit": "Reset password",
+      "success": "Your password has been reset. You can now log in.",
+      "loginLink": "Go to login"
+    },
+    "errors": {
+      "invalidInput": "Please check your input and try again.",
+      "invalidCredentials": "Invalid email or password.",
+      "emailTaken": "An account with this email already exists.",
+      "invalidOrExpiredToken": "This reset link is invalid or has expired.",
+      "rateLimited": "Too many attempts. Please wait a bit and try again."
+    }
+  },
+  "Booking": {
+    "choice": {
+      "title": "Book your consultation",
+      "description": "Choose the option that works for you.",
+      "freeTitle": "Free Consultation",
+      "freeDescription": "We'll assign you the next available slot automatically.",
+      "freeCta": "Continue for free",
+      "paidTitle": "Paid Consultation",
+      "paidDescription": "Pick your own date and time for an in-depth strategy session.",
+      "paidCta": "Choose a time",
+      "paidComingSoon": "Coming soon"
+    },
+    "free": {
+      "title": "Free Consultation",
+      "description": "Enter your details and we'll assign you the next available slot.",
+      "name": "Full name",
+      "email": "Email",
+      "phone": "Phone number",
+      "submit": "Confirm booking",
+      "errors": {
+        "invalidInput": "Please check your input and try again.",
+        "noSlotsAvailable": "No slots are available right now. Please try again later.",
+        "rateLimited": "Too many attempts. Please wait a bit and try again."
+      }
+    },
+    "confirmation": {
+      "title": "You're booked!",
+      "description": "We've assigned you the following appointment:",
+      "consultationLabel": "Consultation",
+      "dateLabel": "Date & time",
+      "backHome": "Back to homepage"
+    },
+    "paid": {
+      "title": "Paid Consultation",
+      "description": "Pick an available date and time.",
+      "dateLabel": "Date",
+      "viewDate": "View",
+      "noSlots": "No upcoming slots are available right now.",
+      "noSlotsForDate": "No available times on this date. Try another date.",
+      "confirmTitle": "Confirm your appointment",
+      "slotNoLongerAvailable": "This time was just taken. Please pick another.",
+      "pickAnother": "Pick another time",
+      "name": "Full name",
+      "email": "Email",
+      "phone": "Phone number",
+      "submit": "Continue",
+      "errors": {
+        "invalidInput": "Please check your input and try again.",
+        "slotNoLongerAvailable": "This time was just taken. Please pick another.",
+        "rateLimited": "Too many attempts. Please wait a bit and try again."
+      },
+      "pendingTitle": "Almost done",
+      "pendingDescription": "Your slot is reserved. Our team will confirm your payment and finalize your appointment shortly.",
+      "consultationLabel": "Consultation",
+      "priceLabel": "Price",
+      "backHome": "Back to homepage"
+    }
+  }
+}

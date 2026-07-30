@@ -1,0 +1,304 @@
+// Prisma schema for Ai Denta
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Enums ----------
+
+enum Role {
+  ADMIN
+  STAFF
+  CLIENT
+}
+
+enum ConsultationKind {
+  FREE
+  PAID
+}
+
+enum SlotStatus {
+  OPEN
+  HELD
+  BOOKED
+  BLOCKED
+}
+
+enum BookingStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  MANUALLY_MARKED_PAID
+}
+
+enum PaymentProviderName {
+  MANUAL
+  KASHIER
+}
+
+enum CmsSectionType {
+  HERO
+  SERVICES
+  PRICING
+  TESTIMONIALS
+  GALLERY
+  FOOTER
+  CUSTOM
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+// ---------- Identity / Auth ----------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  role          Role      @default(CLIENT)
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts               Account[]
+  sessions               Session[]
+  bookings               Booking[]
+  resetTokens            PasswordResetToken[]
+  manuallyMarkedPayments Payment[]            @relation("PaymentManuallyMarkedBy")
+  uploadedMedia          Media[]              @relation("MediaUploadedBy")
+  updatedCmsSections     CmsSection[]         @relation("CmsSectionUpdatedBy")
+
+  @@index([role])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ---------- Consultation / Booking ----------
+
+model ConsultationType {
+  id              String           @id @default(cuid())
+  kind            ConsultationKind @unique
+  nameEn          String
+  nameAr          String
+  descriptionEn   String?          @db.Text
+  descriptionAr   String?          @db.Text
+  priceCents      Int?
+  currency        String           @default("EGP")
+  durationMinutes Int              @default(30)
+  isActive        Boolean          @default(true)
+
+  bookings Booking[]
+}
+
+model WorkingHoursRule {
+  id                String   @id @default(cuid())
+  weekday           Int
+  startTime         String
+  endTime           String
+  slotLengthMinutes Int      @default(30)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  @@index([weekday])
+}
+
+model Holiday {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@unique([date])
+}
+
+model Slot {
+  id            String     @id @default(cuid())
+  startAt       DateTime
+  endAt         DateTime
+  status        SlotStatus @default(OPEN)
+  holdExpiresAt DateTime?
+  sourceRuleId  String?
+  createdAt     DateTime   @default(now())
+
+  booking Booking?
+
+  @@unique([startAt, endAt])
+  @@index([status, startAt])
+}
+
+model Booking {
+  id                 String           @id @default(cuid())
+  consultationTypeId String
+  consultationType   ConsultationType @relation(fields: [consultationTypeId], references: [id])
+
+  slotId String @unique
+  slot   Slot   @relation(fields: [slotId], references: [id])
+
+  userId     String?
+  user       User?   @relation(fields: [userId], references: [id])
+  guestName  String?
+  guestEmail String?
+  guestPhone String?
+
+  status BookingStatus @default(CONFIRMED)
+  notes  String?       @db.Text
+
+  payment Payment?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ---------- Payments ----------
+
+model Payment {
+  id        String  @id @default(cuid())
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  amountCents Int
+  currency    String              @default("EGP")
+  status      PaymentStatus       @default(PENDING)
+  provider    PaymentProviderName @default(MANUAL)
+
+  providerRefId          String?
+  providerPayload        Json?
+  manuallyMarkedByUserId String?
+  manuallyMarkedBy       User?   @relation("PaymentManuallyMarkedBy", fields: [manuallyMarkedByUserId], references: [id])
+
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status])
+  @@index([provider, providerRefId])
+}
+
+// ---------- CMS / Site Content ----------
+
+model CmsSection {
+  id        String         @id @default(cuid())
+  type      CmsSectionType
+  slug      String         @unique
+  isActive  Boolean        @default(true)
+  sortOrder Int            @default(0)
+  contentEn Json
+  contentAr Json
+
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+  updatedBy   User?    @relation("CmsSectionUpdatedBy", fields: [updatedById], references: [id])
+
+  media CmsSectionMedia[]
+}
+
+model Media {
+  id           String    @id @default(cuid())
+  key          String    @unique
+  url          String
+  type         MediaType
+  altTextEn    String?
+  altTextAr    String?
+  sizeBytes    Int?
+  width        Int?
+  height       Int?
+  uploadedById String?
+  uploadedBy   User?     @relation("MediaUploadedBy", fields: [uploadedById], references: [id])
+  createdAt    DateTime  @default(now())
+
+  cmsSections CmsSectionMedia[]
+  services    Service[]
+}
+
+model CmsSectionMedia {
+  cmsSectionId String
+  mediaId      String
+  sortOrder    Int    @default(0)
+
+  cmsSection CmsSection @relation(fields: [cmsSectionId], references: [id], onDelete: Cascade)
+  media      Media      @relation(fields: [mediaId], references: [id])
+
+  @@id([cmsSectionId, mediaId])
+}
+
+model Service {
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  nameEn        String
+  nameAr        String
+  descriptionEn String? @db.Text
+  descriptionAr String? @db.Text
+  priceCents    Int?
+  currency      String  @default("EGP")
+  isActive      Boolean @default(true)
+  sortOrder     Int     @default(0)
+  iconMediaId   String?
+  iconMedia     Media?  @relation(fields: [iconMediaId], references: [id])
+}

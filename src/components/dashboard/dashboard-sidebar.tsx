@@ -1,0 +1,53 @@
+"use client";
+
+import { LayoutDashboard, CalendarDays, Users, CreditCard, FileText } from "lucide-react";
+import Image from "next/image";
+import { Link, usePathname } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+
+const NAV_ITEMS = [
+  { href: "/dashboard", label: "Overview", Icon: LayoutDashboard },
+  { href: "/dashboard/appointments", label: "Appointments", Icon: CalendarDays },
+  { href: "/dashboard/users", label: "Users", Icon: Users },
+  { href: "/dashboard/payments", label: "Payments", Icon: CreditCard },
+  { href: "/dashboard/content", label: "Content", Icon: FileText },
+] as const;
+
+export function DashboardSidebar({ locale }: { locale: Locale }) {
+  const pathname = usePathname();
+
+  return (
+    <aside className="hidden w-60 shrink-0 flex-col border-e border-sidebar-border bg-sidebar sm:flex">
+      <div className="flex h-16 items-center gap-2 px-6">
+        <Link href="/" locale={locale} className="flex items-center gap-2">
+          <Image src="/logo-mark.png" alt="" width={140} height={140} className="size-7" />
+          <span className="text-lg font-bold text-sidebar-foreground">
+            Ai Denta
+          </span>
+        </Link>
+      </div>
+      <nav className="flex flex-col gap-1 px-3">
+        {NAV_ITEMS.map(({ href, label, Icon }) => {
+          const isActive =
+            href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+
+          return (
+            <Link
+              key={href}
+              href={href}
+              locale={locale}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                isActive
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/20 hover:text-sidebar-foreground"
+              }`}
+            >
+              <Icon className="size-4" />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+    </aside>
+  );
+}
