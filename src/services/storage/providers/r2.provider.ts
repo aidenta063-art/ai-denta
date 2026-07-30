@@ -1,8 +1,10 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type {
   StorageProvider,
   UploadInput,
   UploadResult,
+  PresignedUpload,
 } from "@/services/storage/storage-provider.interface";
 
 export interface R2Config {
@@ -12,6 +14,8 @@ export interface R2Config {
   bucket: string;
   publicBaseUrl: string;
 }
+
+const PRESIGNED_URL_TTL_SECONDS = 5 * 60;
 
 export class R2StorageProvider implements StorageProvider {
   private client: S3Client;
@@ -47,5 +51,25 @@ export class R2StorageProvider implements StorageProvider {
     await this.client.send(
       new DeleteObjectCommand({ Bucket: this.bucket, Key: key }),
     );
+  }
+
+  async getPresignedUploadUrl({
+    key,
+    contentType,
+  }: {
+    key: string;
+    contentType: string;
+  }): Promise<PresignedUpload> {
+    const uploadUrl = await getSignedUrl(
+      this.client,
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        ContentType: contentType,
+      }),
+      { expiresIn: PRESIGNED_URL_TTL_SECONDS },
+    );
+
+    return { uploadUrl, publicUrl: `${this.publicBaseUrl}/${key}` };
   }
 }

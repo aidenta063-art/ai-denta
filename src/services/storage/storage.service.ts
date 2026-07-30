@@ -58,18 +58,18 @@ export function isWithinUploadSizeLimit(sizeBytes: number): boolean {
   return sizeBytes <= MAX_UPLOAD_BYTES;
 }
 
+function generateKey(originalName: string): string {
+  const ext = originalName.includes(".") ? originalName.split(".").pop() : "";
+  return `${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
+}
+
 export async function uploadMediaFile(input: {
   body: Buffer;
   contentType: string;
   originalName: string;
 }): Promise<{ key: string; url: string }> {
-  const ext = input.originalName.includes(".")
-    ? input.originalName.split(".").pop()
-    : "";
-  const key = `${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
-
   return getProvider().upload({
-    key,
+    key: generateKey(input.originalName),
     body: input.body,
     contentType: input.contentType,
   });
@@ -77,4 +77,27 @@ export async function uploadMediaFile(input: {
 
 export async function deleteMediaFile(key: string): Promise<void> {
   await getProvider().delete(key);
+}
+
+/**
+ * Direct-to-storage upload URL for large files (see StorageProvider
+ * docs). Returns null when the active provider doesn't support it
+ * (LocalStorageProvider) — callers should fall back to the
+ * server-proxied uploadMediaFile path in that case.
+ */
+export async function createPresignedMediaUpload(input: {
+  originalName: string;
+  contentType: string;
+}): Promise<{ key: string; uploadUrl: string; publicUrl: string } | null> {
+  const provider = getProvider();
+  if (!provider.getPresignedUploadUrl) {
+    return null;
+  }
+
+  const key = generateKey(input.originalName);
+  const { uploadUrl, publicUrl } = await provider.getPresignedUploadUrl({
+    key,
+    contentType: input.contentType,
+  });
+  return { key, uploadUrl, publicUrl };
 }
