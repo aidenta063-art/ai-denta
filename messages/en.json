@@ -48,6 +48,9 @@
     "rights": "All rights reserved."
   },
   "Auth": {
+    "continueWithGoogle": "Continue with Google",
+    "continueWithGooglePending": "Connecting…",
+    "orDivider": "or",
     "login": {
       "title": "Log in",
       "email": "Email",

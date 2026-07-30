@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuthCard } from "@/components/auth/auth-card";
 import { LoginForm } from "@/components/auth/login-form";
 import { routing } from "@/i18n/routing";
 
@@ -25,15 +25,13 @@ export default async function LoginPage({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const t = await getTranslations("Auth.login");
+  const googleEnabled = Boolean(
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
+  );
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-xl">{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <LoginForm locale={locale} />
-      </CardContent>
-    </Card>
+    <AuthCard title={t("title")}>
+      <LoginForm locale={locale} googleEnabled={googleEnabled} />
+    </AuthCard>
   );
 }

@@ -48,6 +48,9 @@
     "rights": "جميع الحقوق محفوظة."
   },
   "Auth": {
+    "continueWithGoogle": "المتابعة عن طريق جوجل",
+    "continueWithGooglePending": "جاري التحويل...",
+    "orDivider": "أو",
     "login": {
       "title": "تسجيل الدخول",
       "email": "البريد الإلكتروني",
