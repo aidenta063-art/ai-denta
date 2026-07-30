@@ -5,7 +5,10 @@
     "booking": "Book a Consultation",
     "account": "Login / Register",
     "dashboard": "Dashboard",
-    "logout": "Logout"
+    "logout": "Logout",
+    "greeting": "Hi, {name}",
+    "switchAccount": "Switch account",
+    "adminPanel": "Admin panel"
   },
   "HomePage": {
     "eyebrow": "Dental Marketing Agency",

@@ -4,9 +4,9 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
-import { logoutAction } from "@/actions/auth/logout";
 import { Role } from "@/generated/prisma/enums";
 import { HeaderShell } from "@/components/marketing/header-shell";
+import { UserMenu } from "@/components/marketing/user-menu";
 import type { Locale } from "@/i18n/routing";
 
 export async function MarketingHeader({ locale }: { locale: Locale }) {
@@ -52,23 +52,18 @@ export async function MarketingHeader({ locale }: { locale: Locale }) {
             {tNav("booking")}
           </Button>
 
-          {session?.user && !isStaff ? (
-            <form action={logoutAction.bind(null, locale)}>
-              <button
-                type="submit"
-                aria-label={tNav("logout")}
-                title={tNav("logout")}
-                className="flex size-11 items-center justify-center rounded-full border border-white/20 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-              >
-                <User className="size-5" />
-              </button>
-            </form>
+          {session?.user ? (
+            <UserMenu
+              locale={locale}
+              name={session.user.name ?? session.user.email ?? ""}
+              isStaff={isStaff}
+            />
           ) : (
             <Link
-              href={isStaff ? "/dashboard" : "/login"}
+              href="/login"
               locale={locale}
-              aria-label={isStaff ? tNav("dashboard") : tNav("account")}
-              title={isStaff ? tNav("dashboard") : tNav("account")}
+              aria-label={tNav("account")}
+              title={tNav("account")}
               className="flex size-11 items-center justify-center rounded-full border border-white/20 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               <User className="size-5" />

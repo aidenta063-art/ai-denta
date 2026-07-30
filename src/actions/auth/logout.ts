@@ -6,3 +6,7 @@ import type { Locale } from "@/i18n/routing";
 export async function logoutAction(locale: Locale) {
   await signOut({ redirectTo: `/${locale}` });
 }
+
+export async function switchAccountAction(locale: Locale) {
+  await signOut({ redirectTo: `/${locale}/login` });
+}

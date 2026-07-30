@@ -5,7 +5,10 @@
     "booking": "احجز استشارة",
     "account": "تسجيل الدخول / إنشاء حساب",
     "dashboard": "لوحة التحكم",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "greeting": "أهلاً، {name}",
+    "switchAccount": "تبديل الحساب",
+    "adminPanel": "لوحة الإدارة"
   },
   "HomePage": {
     "eyebrow": "وكالة تسويق لعيادات الأسنان",
