@@ -9,6 +9,7 @@ import { logoutAction, switchAccountAction } from "@/actions/auth/logout";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -37,24 +38,26 @@ export function UserMenu({
         <User className="size-5" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>{tNav("greeting", { name })}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {isStaff && (
-          <DropdownMenuItem render={<Link href="/dashboard" locale={locale} />}>
-            <LayoutDashboard /> {tNav("adminPanel")}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>{tNav("greeting", { name })}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {isStaff && (
+            <DropdownMenuItem render={<Link href="/dashboard" locale={locale} />}>
+              <LayoutDashboard /> {tNav("adminPanel")}
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem
+            onClick={() => startTransition(() => switchAccountAction(locale))}
+          >
+            <UserRoundCog /> {tNav("switchAccount")}
           </DropdownMenuItem>
-        )}
-        <DropdownMenuItem
-          onClick={() => startTransition(() => switchAccountAction(locale))}
-        >
-          <UserRoundCog /> {tNav("switchAccount")}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => startTransition(() => logoutAction(locale))}
-        >
-          <LogOut /> {tNav("logout")}
-        </DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => startTransition(() => logoutAction(locale))}
+          >
+            <LogOut /> {tNav("logout")}
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
