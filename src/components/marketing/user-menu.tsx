@@ -33,9 +33,9 @@ export function UserMenu({
       <DropdownMenuTrigger
         aria-label={tNav("account")}
         title={tNav("account")}
-        className="flex size-11 items-center justify-center rounded-full border border-white/20 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:size-11"
       >
-        <User className="size-5" />
+        <User className="size-4 sm:size-5" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>

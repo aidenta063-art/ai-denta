@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 import { FaWhatsapp, FaInstagram, FaFacebookF } from "react-icons/fa";
@@ -28,9 +28,26 @@ const LINKS = [
 
 export function SocialFab() {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function onPointerDown(event: PointerEvent) {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [open]);
 
   return (
-    <div className="fixed bottom-6 end-6 z-30 flex flex-col items-center gap-3">
+    <div
+      ref={containerRef}
+      className="fixed bottom-6 end-6 z-30 flex flex-col items-center gap-3"
+    >
       <AnimatePresence>
         {open &&
           LINKS.map(({ label, href, Icon, className }, i) => (

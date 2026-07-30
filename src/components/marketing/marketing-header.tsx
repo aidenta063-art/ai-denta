@@ -19,17 +19,17 @@ export async function MarketingHeader({ locale }: { locale: Locale }) {
   return (
     <HeaderShell>
       <nav className="mx-auto flex h-24 max-w-6xl items-center justify-between px-6 sm:px-8">
-        <Link href="/" locale={locale} className="flex items-center">
+        <Link href="/" locale={locale} className="flex shrink-0 items-center">
           <Image
             src="/logo.png"
             alt="Ai Denta"
             width={300}
             height={140}
             priority
-            className="h-14 w-auto sm:h-16"
+            className="h-8 w-auto sm:h-14 lg:h-16"
           />
         </Link>
-        <div className="flex items-center gap-3 sm:gap-6">
+        <div className="flex items-center gap-2 sm:gap-6">
           <Link
             href="/"
             locale={locale}
@@ -40,13 +40,13 @@ export async function MarketingHeader({ locale }: { locale: Locale }) {
           <Link
             href="/"
             locale={otherLocale}
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+            className="rounded-full border border-white/20 px-2.5 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:px-4 sm:py-2 sm:text-sm"
           >
             {otherLocale === "ar" ? "العربية" : "English"}
           </Link>
           <Button
             size="lg"
-            className="bg-[#7E00C9] px-6 text-white hover:bg-[#7E00C9]/85"
+            className="bg-[#7E00C9] px-3 text-white hover:bg-[#7E00C9]/85 sm:px-6"
             render={<Link href="/booking" locale={locale} />}
           >
             {tNav("booking")}
@@ -64,9 +64,9 @@ export async function MarketingHeader({ locale }: { locale: Locale }) {
               locale={locale}
               aria-label={tNav("account")}
               title={tNav("account")}
-              className="flex size-11 items-center justify-center rounded-full border border-white/20 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:size-11"
             >
-              <User className="size-5" />
+              <User className="size-4 sm:size-5" />
             </Link>
           )}
         </div>
