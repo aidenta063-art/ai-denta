@@ -15,7 +15,7 @@ export interface R2Config {
   publicBaseUrl: string;
 }
 
-const PRESIGNED_URL_TTL_SECONDS = 5 * 60;
+const PRESIGNED_URL_TTL_SECONDS = 15 * 60; // room for large video uploads on slow connections
 
 export class R2StorageProvider implements StorageProvider {
   private client: S3Client;

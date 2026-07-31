@@ -38,7 +38,7 @@ function getProvider(): StorageProvider {
   return cachedProvider;
 }
 
-const MAX_UPLOAD_BYTES = 100 * 1024 * 1024; // 100MB, generous enough for short clips
+const MAX_UPLOAD_BYTES = 500 * 1024 * 1024; // 500MB, room for full marketing/intro videos
 
 const ALLOWED_CONTENT_TYPES = new Set([
   "image/png",
