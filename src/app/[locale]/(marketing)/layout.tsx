@@ -4,6 +4,7 @@ import { routing } from "@/i18n/routing";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { SocialFab } from "@/components/marketing/social-fab";
+import { FaqChatWidget } from "@/components/marketing/faq-chat-widget";
 import { MotionProvider } from "@/components/marketing/motion-provider";
 
 export default async function MarketingLayout({
@@ -22,6 +23,7 @@ export default async function MarketingLayout({
       <main className="flex-1">{children}</main>
       <MarketingFooter />
       <SocialFab />
+      <FaqChatWidget />
     </MotionProvider>
   );
 }

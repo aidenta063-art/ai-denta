@@ -69,6 +69,29 @@
     "tagline": "Marketing systems built for dental clinics that want predictable growth.",
     "rights": "All rights reserved."
   },
+  "FaqChat": {
+    "bubbleLabel": "Chat with us",
+    "title": "Ai Denta Assistant",
+    "greeting": "Hi! Tap a question below and I'll answer right away.",
+    "questions": [
+      {
+        "q": "How much does it cost?",
+        "a": "It depends on what your clinic needs. Our basic packages start at $300 and $500."
+      },
+      {
+        "q": "Why book a Premium Ticket?",
+        "a": "You get priority booking, 30% extra content in your first month, a customized plan for your clinic, and a free e-book on Patient Experience."
+      },
+      {
+        "q": "When will I see results?",
+        "a": "Real marketing takes time, not magic. With our system, you'll see real new patients in 4 months."
+      },
+      {
+        "q": "Why choose us?",
+        "a": "We're dentists just like you, 100% specialized in dental clinics. So, the real question is: why wouldn't you choose us?"
+      }
+    ]
+  },
   "Auth": {
     "continueWithGoogle": "Continue with Google",
     "continueWithGooglePending": "Connecting…",
