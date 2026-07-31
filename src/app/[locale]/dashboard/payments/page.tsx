@@ -6,6 +6,7 @@ import { listPayments } from "@/services/payments/payments-admin.service";
 import { markAsPaidAction } from "@/actions/dashboard/payments/mark-as-paid";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { PaymentStatus } from "@/generated/prisma/enums";
+import { APP_TIME_ZONE } from "@/lib/timezone";
 
 export default async function PaymentsPage({
   params,
@@ -78,6 +79,7 @@ export default async function PaymentsPage({
                 <td className="px-4 py-2 text-muted-foreground">
                   {new Intl.DateTimeFormat("en-US", {
                     dateStyle: "medium",
+                    timeZone: APP_TIME_ZONE,
                   }).format(payment.createdAt)}
                 </td>
                 <td className="px-4 py-2 text-end">

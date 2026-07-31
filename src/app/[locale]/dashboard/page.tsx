@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import { getDashboardStats } from "@/services/dashboard/stats.service";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+import { APP_TIME_ZONE } from "@/lib/timezone";
 
 export default async function DashboardPage({
   params,
@@ -88,6 +89,7 @@ export default async function DashboardPage({
                   {new Intl.DateTimeFormat("en-US", {
                     dateStyle: "medium",
                     timeStyle: "short",
+                    timeZone: APP_TIME_ZONE,
                   }).format(booking.slot.startAt)}
                 </td>
                 <td className="px-4 py-2">

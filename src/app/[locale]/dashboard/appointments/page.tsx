@@ -19,6 +19,7 @@ import {
 } from "@/actions/dashboard/appointments/holidays";
 import { SlotStatus } from "@/generated/prisma/enums";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+import { APP_TIME_ZONE } from "@/lib/timezone";
 import { AdminCalendar } from "@/components/dashboard/admin-calendar";
 import { AddSlotForm } from "@/components/dashboard/add-slot-form";
 
@@ -165,6 +166,7 @@ async function DayPanel({
                 <td className="px-4 py-2 text-card-foreground">
                   {new Intl.DateTimeFormat("en-US", {
                     timeStyle: "short",
+                    timeZone: APP_TIME_ZONE,
                   }).format(slot.startAt)}
                 </td>
                 <td className="px-4 py-2">

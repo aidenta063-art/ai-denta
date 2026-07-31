@@ -9,6 +9,7 @@ import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
 import { prisma } from "@/lib/prisma";
 import { localized } from "@/lib/i18n-content";
+import { APP_TIME_ZONE } from "@/lib/timezone";
 
 export default async function PaymentPendingPage({
   params,
@@ -30,7 +31,7 @@ export default async function PaymentPendingPage({
 
   const formattedDate = new Intl.DateTimeFormat(
     locale === "ar" ? "ar-EG" : "en-US",
-    { dateStyle: "full", timeStyle: "short" },
+    { dateStyle: "full", timeStyle: "short", timeZone: APP_TIME_ZONE },
   ).format(booking.slot.startAt);
 
   const formattedPrice = booking.payment

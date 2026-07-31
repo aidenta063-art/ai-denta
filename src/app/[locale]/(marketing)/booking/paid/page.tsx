@@ -14,6 +14,7 @@ import {
   findOpenSlotsForDate,
 } from "@/services/booking/availability";
 import { BookingCalendar } from "@/components/booking/booking-calendar";
+import { APP_TIME_ZONE } from "@/lib/timezone";
 
 export async function generateMetadata({
   params,
@@ -47,7 +48,7 @@ export default async function PaidBookingPage({
 
   const timeFormatter = new Intl.DateTimeFormat(
     locale === "ar" ? "ar-EG" : "en-US",
-    { timeStyle: "short" },
+    { timeStyle: "short", timeZone: APP_TIME_ZONE },
   );
 
   return (

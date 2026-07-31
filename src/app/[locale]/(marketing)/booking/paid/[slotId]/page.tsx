@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { prisma } from "@/lib/prisma";
 import { SlotStatus } from "@/generated/prisma/enums";
 import { PaidBookingForm } from "@/components/booking/paid-booking-form";
+import { APP_TIME_ZONE } from "@/lib/timezone";
 
 export default async function ConfirmPaidSlotPage({
   params,
@@ -27,6 +28,7 @@ export default async function ConfirmPaidSlotPage({
     ? new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
         dateStyle: "full",
         timeStyle: "short",
+        timeZone: APP_TIME_ZONE,
       }).format(slot.startAt)
     : null;
 

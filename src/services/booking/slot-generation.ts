@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { zonedTimeToUtc } from "@/lib/timezone";
 
 const GENERATION_HORIZON_DAYS = 56;
 
@@ -66,14 +67,14 @@ export async function generateSlots({
       const start = parseTime(rule.startTime);
       const end = parseTime(rule.endTime);
 
-      let slotStart = new Date(
+      let slotStart = zonedTimeToUtc(
         day.getFullYear(),
         day.getMonth(),
         day.getDate(),
         start.hours,
         start.minutes,
       );
-      const ruleEnd = new Date(
+      const ruleEnd = zonedTimeToUtc(
         day.getFullYear(),
         day.getMonth(),
         day.getDate(),
