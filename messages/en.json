@@ -8,7 +8,24 @@
     "logout": "Logout",
     "greeting": "Hi, {name}",
     "switchAccount": "Switch account",
-    "adminPanel": "Admin panel"
+    "adminPanel": "Admin panel",
+    "myAccount": "My Account"
+  },
+  "Account": {
+    "title": "My Account",
+    "memberSince": "Member since {date}",
+    "noPhone": "Not provided",
+    "bookingsTitle": "My Bookings",
+    "noBookings": "You haven't made any bookings yet.",
+    "waitlist": "Waitlist — we'll contact you",
+    "bookFree": "Book a Free Consultation",
+    "bookPaid": "Book a Paid Consultation",
+    "status": {
+      "CONFIRMED": "Confirmed",
+      "PENDING_PAYMENT": "Pending Payment",
+      "CANCELLED": "Cancelled",
+      "EXPIRED": "Expired"
+    }
   },
   "HomePage": {
     "eyebrow": "Dental Marketing Agency",

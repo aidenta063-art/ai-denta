@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { User, LayoutDashboard, UserRoundCog, LogOut } from "lucide-react";
+import { User, UserRound, LayoutDashboard, UserRoundCog, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
@@ -41,6 +41,9 @@ export function UserMenu({
         <DropdownMenuGroup>
           <DropdownMenuLabel>{tNav("greeting", { name })}</DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem render={<Link href="/account" locale={locale} />}>
+            <UserRound /> {tNav("myAccount")}
+          </DropdownMenuItem>
           {isStaff && (
             <DropdownMenuItem render={<Link href="/dashboard" locale={locale} />}>
               <LayoutDashboard /> {tNav("adminPanel")}

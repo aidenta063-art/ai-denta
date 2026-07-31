@@ -8,7 +8,24 @@
     "logout": "تسجيل الخروج",
     "greeting": "أهلاً، {name}",
     "switchAccount": "تبديل الحساب",
-    "adminPanel": "لوحة الإدارة"
+    "adminPanel": "لوحة الإدارة",
+    "myAccount": "حسابي"
+  },
+  "Account": {
+    "title": "حسابي",
+    "memberSince": "عضو من {date}",
+    "noPhone": "غير متاح",
+    "bookingsTitle": "حجوزاتي",
+    "noBookings": "لسه ماعملتش أي حجز.",
+    "waitlist": "قائمة الانتظار — هنتواصل معاك",
+    "bookFree": "احجز استشارة مجانية",
+    "bookPaid": "احجز استشارة مدفوعة",
+    "status": {
+      "CONFIRMED": "مؤكد",
+      "PENDING_PAYMENT": "في انتظار الدفع",
+      "CANCELLED": "ملغي",
+      "EXPIRED": "منتهي"
+    }
   },
   "HomePage": {
     "eyebrow": "وكالة تسويق لعيادات الأسنان",
