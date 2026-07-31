@@ -156,9 +156,12 @@
       "email": "Email",
       "phone": "Phone number",
       "submit": "Request my free consultation",
+      "alreadyUsed": "You've already used your free consultation. Book a paid consultation to talk with us again.",
+      "viewPaidOption": "Book a Paid Consultation",
       "errors": {
         "invalidInput": "Please check your input and try again.",
-        "rateLimited": "Too many attempts. Please wait a bit and try again."
+        "rateLimited": "Too many attempts. Please wait a bit and try again.",
+        "alreadyUsedFree": "You've already used your free consultation on this account."
       }
     },
     "confirmation": {

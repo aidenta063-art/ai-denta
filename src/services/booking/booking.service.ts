@@ -6,11 +6,22 @@ import type { FreeBookingInput } from "@/lib/validation/booking.schema";
 
 const HOLD_DURATION_MINUTES = 10;
 
-export type CreateFreeBookingResult = { bookingId: string };
+export type CreateFreeBookingResult =
+  | { bookingId: string }
+  | { error: "alreadyUsedFree" };
 
 export type CreatePaidBookingHoldResult =
   | { bookingId: string }
   | { error: "slotNoLongerAvailable" };
+
+/** One free consultation per account, ever. */
+export async function hasUsedFreeConsultation(userId: string): Promise<boolean> {
+  const existing = await prisma.booking.findFirst({
+    where: { userId, consultationType: { kind: ConsultationKind.FREE } },
+    select: { id: true },
+  });
+  return existing !== null;
+}
 
 /**
  * Free consultations are a waitlist, not a scheduled slot: no Slot is
@@ -21,6 +32,10 @@ export type CreatePaidBookingHoldResult =
 export async function createFreeBooking(
   input: FreeBookingInput & { userId?: string },
 ): Promise<CreateFreeBookingResult> {
+  if (input.userId && (await hasUsedFreeConsultation(input.userId))) {
+    return { error: "alreadyUsedFree" };
+  }
+
   const freeType = await prisma.consultationType.findUnique({
     where: { kind: ConsultationKind.FREE },
   });

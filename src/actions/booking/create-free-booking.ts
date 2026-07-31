@@ -8,7 +8,7 @@ import { freeBookingSchema } from "@/lib/validation/booking.schema";
 import { checkActionRateLimit } from "@/lib/rate-limit";
 
 export type FreeBookingState = {
-  error?: "invalidInput" | "rateLimited";
+  error?: "invalidInput" | "rateLimited" | "alreadyUsedFree";
 };
 
 export async function createFreeBookingAction(
@@ -35,13 +35,17 @@ export async function createFreeBookingAction(
   }
 
   const session = await auth();
-  const { bookingId } = await createFreeBooking({
+  const result = await createFreeBooking({
     ...parsed.data,
     userId: session?.user?.id,
   });
 
+  if ("error" in result) {
+    return { error: result.error };
+  }
+
   redirect({
-    href: `/booking/confirmation/${bookingId}`,
+    href: `/booking/confirmation/${result.bookingId}`,
     locale,
   });
 
