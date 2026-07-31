@@ -23,30 +23,36 @@ export async function sweepExpiredHolds() {
     include: { booking: { include: { payment: true } } },
   });
 
-  for (const slot of expired) {
-    await prisma.$transaction([
-      prisma.slot.update({
-        where: { id: slot.id },
-        data: { status: SlotStatus.OPEN, holdExpiresAt: null },
-      }),
-      ...(slot.booking
-        ? [
-            prisma.booking.update({
-              where: { id: slot.booking.id },
-              data: { status: BookingStatus.EXPIRED },
-            }),
-          ]
-        : []),
-      ...(slot.booking?.payment
-        ? [
-            prisma.payment.update({
-              where: { id: slot.booking.payment.id },
-              data: { status: PaymentStatus.FAILED },
-            }),
-          ]
-        : []),
-    ]);
-  }
+  if (expired.length === 0) return;
+
+  const slotIds = expired.map((slot) => slot.id);
+  const bookingIds = expired.flatMap((slot) => (slot.booking ? [slot.booking.id] : []));
+  const paymentIds = expired.flatMap((slot) =>
+    slot.booking?.payment ? [slot.booking.payment.id] : [],
+  );
+
+  await prisma.$transaction([
+    prisma.slot.updateMany({
+      where: { id: { in: slotIds } },
+      data: { status: SlotStatus.OPEN, holdExpiresAt: null },
+    }),
+    ...(bookingIds.length
+      ? [
+          prisma.booking.updateMany({
+            where: { id: { in: bookingIds } },
+            data: { status: BookingStatus.EXPIRED },
+          }),
+        ]
+      : []),
+    ...(paymentIds.length
+      ? [
+          prisma.payment.updateMany({
+            where: { id: { in: paymentIds } },
+            data: { status: PaymentStatus.FAILED },
+          }),
+        ]
+      : []),
+  ]);
 }
 
 /** Parses a "YYYY-MM-DD" string into local start/end-of-day boundaries. */

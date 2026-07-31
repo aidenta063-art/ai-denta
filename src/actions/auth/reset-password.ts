@@ -24,9 +24,10 @@ export async function resetPasswordAction(
 
   const { token, password } = parsed.data;
 
-  const resetToken = await prisma.passwordResetToken.findUnique({
-    where: { token },
-  });
+  const [resetToken, passwordHash] = await Promise.all([
+    prisma.passwordResetToken.findUnique({ where: { token } }),
+    bcrypt.hash(password, 12),
+  ]);
 
   if (
     !resetToken ||
@@ -35,8 +36,6 @@ export async function resetPasswordAction(
   ) {
     return { error: "invalidOrExpiredToken" };
   }
-
-  const passwordHash = await bcrypt.hash(password, 12);
 
   await prisma.$transaction([
     prisma.user.update({

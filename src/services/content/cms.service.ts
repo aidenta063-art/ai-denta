@@ -1,13 +1,16 @@
 import crypto from "node:crypto";
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import { CmsSectionType, ConsultationKind } from "@/generated/prisma/enums";
 import type { HeroFormInput, PricingFormInput, ServiceFormInput } from "@/lib/validation/cms.schema";
 
 const HERO_SLUG = "home-hero";
 
-export async function getHeroContent() {
+// generateMetadata and the page component both need this on every homepage
+// request; cache() dedupes the two calls into a single query per render.
+export const getHeroContent = cache(async () => {
   return prisma.cmsSection.findUnique({ where: { slug: HERO_SLUG } });
-}
+});
 
 export async function saveHeroContent(input: HeroFormInput, updatedById: string) {
   const contentEn = {

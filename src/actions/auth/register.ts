@@ -34,12 +34,13 @@ export async function registerAction(
 
   const { name, email, password } = parsed.data;
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const [existing, passwordHash] = await Promise.all([
+    prisma.user.findUnique({ where: { email } }),
+    bcrypt.hash(password, 12),
+  ]);
   if (existing) {
     return { error: "emailTaken" };
   }
-
-  const passwordHash = await bcrypt.hash(password, 12);
 
   await prisma.user.create({
     data: { name, email, passwordHash },
