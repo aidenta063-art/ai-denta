@@ -17,16 +17,16 @@ export function DashboardSidebar({ locale }: { locale: Locale }) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-60 shrink-0 flex-col border-e border-sidebar-border bg-sidebar sm:flex">
-      <div className="flex h-16 items-center gap-2 px-6">
-        <Link href="/" locale={locale} className="flex items-center gap-2">
+    <aside className="dark hidden w-64 shrink-0 flex-col border-e border-sidebar-border bg-sidebar sm:flex">
+      <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-6">
+        <Link href="/" locale={locale} className="flex items-center gap-2.5">
           <Image src="/logo-mark.png" alt="" width={140} height={140} className="size-7" />
           <span className="text-lg font-bold text-sidebar-foreground">
             Ai Denta
           </span>
         </Link>
       </div>
-      <nav className="flex flex-col gap-1 px-3">
+      <nav className="flex flex-col gap-1 p-3">
         {NAV_ITEMS.map(({ href, label, Icon }) => {
           const isActive =
             href === "/dashboard" ? pathname === href : pathname.startsWith(href);
@@ -36,10 +36,10 @@ export function DashboardSidebar({ locale }: { locale: Locale }) {
               key={href}
               href={href}
               locale={locale}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/20 hover:text-sidebar-foreground"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm shadow-black/20"
+                  : "text-sidebar-foreground/65 hover:bg-sidebar-accent hover:text-sidebar-foreground"
               }`}
             >
               <Icon className="size-4" />

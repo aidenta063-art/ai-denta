@@ -45,7 +45,7 @@ export default async function MediaLibraryPage({
         </Button>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
         <MediaUploader />
       </div>
 
@@ -60,7 +60,7 @@ export default async function MediaLibraryPage({
           return (
             <div
               key={item.id}
-              className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+              className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
             >
               <div className="relative flex aspect-video items-center justify-center bg-secondary">
                 {item.type === MediaType.IMAGE ? (

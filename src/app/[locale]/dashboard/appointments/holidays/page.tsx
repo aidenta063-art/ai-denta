@@ -31,7 +31,7 @@ export default async function HolidaysPage({
         </Button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-secondary text-secondary-foreground">
             <tr>
@@ -69,7 +69,7 @@ export default async function HolidaysPage({
         </table>
       </div>
 
-      <div className="max-w-md rounded-xl border border-border bg-card shadow-sm p-6">
+      <div className="max-w-md rounded-2xl border border-border bg-card shadow-sm p-6">
         <h2 className="mb-4 font-medium text-card-foreground">
           Add a holiday
         </h2>

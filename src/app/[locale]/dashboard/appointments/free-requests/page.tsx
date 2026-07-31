@@ -41,7 +41,7 @@ export default async function FreeRequestsPage({
         No slot is reserved for these — call them in order, oldest first.
       </p>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-secondary text-secondary-foreground">
             <tr>

@@ -47,7 +47,7 @@ export default async function WorkingHoursPage({
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
         <div className="grid grid-cols-[7rem_1fr_1fr_5rem_auto_auto] items-center gap-3 bg-secondary px-4 py-2 text-xs font-medium text-secondary-foreground">
           <span>Day</span>
           <span>Start</span>

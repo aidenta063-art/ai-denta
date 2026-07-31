@@ -51,7 +51,7 @@ export default async function DashboardPage({
         />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div className="border-b border-border px-5 py-3">
           <h2 className="font-medium text-card-foreground">
             Recent Bookings

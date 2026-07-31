@@ -62,11 +62,11 @@ export default async function HeroContentPage({
         </Button>
       </div>
 
-      <div className="max-w-3xl rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div className="max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-sm">
         <HeroContentForm locale={locale} defaults={defaults} />
       </div>
 
-      <div className="flex max-w-3xl flex-col gap-3 rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div className="flex max-w-3xl flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div>
           <h2 className="text-sm font-medium text-foreground">Intro video</h2>
           <p className="text-sm text-muted-foreground">

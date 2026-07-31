@@ -12,8 +12,8 @@ export function StatCard({
   Icon: LucideIcon;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
-      <div className="absolute -top-6 -right-6 size-24 rounded-full bg-primary/10" />
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg">
+      <div className="absolute -top-8 -right-8 size-28 rounded-full bg-primary/10" />
       <div className="relative flex items-start justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{label}</p>
@@ -24,7 +24,7 @@ export function StatCard({
             <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
           )}
         </div>
-        <div className="flex size-10 items-center justify-center rounded-lg bg-secondary text-primary">
+        <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#7E00C9] to-[#B98AE8] text-white shadow-sm shadow-primary/30">
           <Icon className="size-5" />
         </div>
       </div>

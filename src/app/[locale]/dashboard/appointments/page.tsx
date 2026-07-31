@@ -85,7 +85,7 @@ export default async function AppointmentsPage({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
-        <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
           <AdminCalendar
             year={year}
             month={month}
@@ -110,7 +110,7 @@ export default async function AppointmentsPage({
         {selectedDate ? (
           <DayPanel locale={locale} date={selectedDate} summaries={summaries} />
         ) : (
-          <div className="flex items-center justify-center rounded-xl border border-dashed border-border p-12 text-sm text-muted-foreground">
+          <div className="flex items-center justify-center rounded-2xl border border-dashed border-border p-12 text-sm text-muted-foreground">
             Click a day on the calendar to manage its slots.
           </div>
         )}
@@ -148,11 +148,11 @@ async function DayPanel({
         </form>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
         <AddSlotForm locale={locale} date={date} />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-secondary text-secondary-foreground">
             <tr>

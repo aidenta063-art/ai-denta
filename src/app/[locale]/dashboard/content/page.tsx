@@ -46,7 +46,7 @@ export default async function ContentPage({
       <div className="grid gap-4 sm:grid-cols-2">
         {SECTIONS.map((section) => (
           <Link key={section.href} href={section.href} locale={locale}>
-            <Card className="h-full transition-colors hover:bg-muted/40">
+            <Card className="h-full transition-all hover:-translate-y-0.5 hover:shadow-md">
               <CardHeader>
                 <CardTitle className="text-base">{section.title}</CardTitle>
                 <CardDescription>{section.description}</CardDescription>
