@@ -27,7 +27,7 @@ export default async function PaymentPendingPage({
     include: { slot: true, consultationType: true, payment: true },
   });
 
-  if (!booking) notFound();
+  if (!booking || !booking.slot) notFound();
 
   const formattedDate = formatSlotTimeRange(
     booking.slot.startAt,

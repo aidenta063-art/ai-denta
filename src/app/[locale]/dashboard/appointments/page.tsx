@@ -53,6 +53,18 @@ export default async function AppointmentsPage({
             size="sm"
             render={
               <Link
+                href="/dashboard/appointments/free-requests"
+                locale={locale}
+              />
+            }
+          >
+            Free Requests
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            render={
+              <Link
                 href="/dashboard/appointments/working-hours"
                 locale={locale}
               />

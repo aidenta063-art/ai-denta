@@ -25,6 +25,12 @@ export async function markPaymentAsPaid(paymentId: string, adminUserId: string) 
     include: { booking: true },
   });
 
+  // Payments only ever exist for paid (slotted) bookings — free consultations
+  // never create one, so this should be impossible outside data corruption.
+  if (!payment.booking.slotId) {
+    throw new Error(`Payment ${paymentId} has no slotted booking`);
+  }
+
   await prisma.$transaction([
     prisma.payment.update({
       where: { id: paymentId },
@@ -70,7 +76,7 @@ export async function paymentsToCsv() {
     p.booking.consultationType.nameEn,
     p.booking.user?.name ?? p.booking.guestName ?? "",
     p.booking.user?.email ?? p.booking.guestEmail ?? "",
-    p.booking.slot.startAt.toISOString(),
+    p.booking.slot?.startAt.toISOString() ?? "",
     p.createdAt.toISOString(),
   ]);
 

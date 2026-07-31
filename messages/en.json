@@ -44,6 +44,25 @@
       "subtitle": "Book a free or paid consultation and let's talk about your growth plan.",
       "ctaFree": "Book Free Consultation",
       "ctaPaid": "Book Paid Consultation"
+    },
+    "whyUs": {
+      "eyebrow": "What Sets Us Apart",
+      "title": "Marketing built by people who've actually practiced dentistry",
+      "subtitle": "We're not marketers who picked dentistry as a niche — we're licensed dentists who also happen to be growth specialists.",
+      "items": [
+        {
+          "title": "We've Sat in Your Chair",
+          "description": "Every strategy we build is shaped by real clinical experience — we know what makes a patient trust a clinic enough to book."
+        },
+        {
+          "title": "Real Marketing Expertise",
+          "description": "Years of hands-on experience running paid campaigns, content, and booking funnels built specifically for dental clinics."
+        },
+        {
+          "title": "Nothing Gets Lost in Translation",
+          "description": "You won't waste time explaining treatments or clinical terms to us — we understand your practice from day one."
+        }
+      ]
     }
   },
   "Footer": {
@@ -109,22 +128,21 @@
     },
     "free": {
       "title": "Free Consultation",
-      "description": "Enter your details and we'll assign you the next available slot.",
+      "description": "Enter your details and our team will reach out to schedule your consultation.",
       "name": "Full name",
       "email": "Email",
       "phone": "Phone number",
-      "submit": "Confirm booking",
+      "submit": "Request my free consultation",
       "errors": {
         "invalidInput": "Please check your input and try again.",
-        "noSlotsAvailable": "No slots are available right now. Please try again later.",
         "rateLimited": "Too many attempts. Please wait a bit and try again."
       }
     },
     "confirmation": {
-      "title": "You're booked!",
-      "description": "We've assigned you the following appointment:",
+      "title": "Request received!",
+      "description": "Thanks for reaching out — here's what you requested:",
       "consultationLabel": "Consultation",
-      "dateLabel": "Date & time",
+      "waitlistNote": "When your turn comes up, we'll contact you to schedule your appointment.",
       "backHome": "Back to homepage"
     },
     "paid": {

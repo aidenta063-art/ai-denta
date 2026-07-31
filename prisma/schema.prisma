@@ -196,8 +196,8 @@ model Booking {
   consultationTypeId String
   consultationType   ConsultationType @relation(fields: [consultationTypeId], references: [id])
 
-  slotId String @unique
-  slot   Slot   @relation(fields: [slotId], references: [id])
+  slotId String? @unique
+  slot   Slot?   @relation(fields: [slotId], references: [id])
 
   userId     String?
   user       User?   @relation(fields: [userId], references: [id])

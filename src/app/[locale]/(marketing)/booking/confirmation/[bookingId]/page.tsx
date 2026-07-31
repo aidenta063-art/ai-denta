@@ -9,7 +9,6 @@ import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
 import { prisma } from "@/lib/prisma";
 import { localized } from "@/lib/i18n-content";
-import { formatSlotTimeRange } from "@/lib/timezone";
 
 export default async function BookingConfirmationPage({
   params,
@@ -28,13 +27,6 @@ export default async function BookingConfirmationPage({
   });
 
   if (!booking) notFound();
-
-  const formattedDate = formatSlotTimeRange(
-    booking.slot.startAt,
-    booking.slot.endAt,
-    locale,
-    { dateStyle: "full" },
-  );
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
@@ -57,13 +49,11 @@ export default async function BookingConfirmationPage({
                 )}
               </p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">
-                {t("dateLabel")}
-              </p>
-              <p className="font-medium text-foreground">{formattedDate}</p>
-            </div>
           </div>
+
+          <p className="text-center text-sm text-muted-foreground">
+            {t("waitlistNote")}
+          </p>
 
           <Button
             className="h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"

@@ -1,26 +1,22 @@
 import { prisma } from "@/lib/prisma";
 import { SlotStatus, BookingStatus, ConsultationKind } from "@/generated/prisma/enums";
-import { findNextOpenSlot, sweepExpiredHolds } from "@/services/booking/availability";
+import { sweepExpiredHolds } from "@/services/booking/availability";
 import { createPendingPayment } from "@/services/payments/payment.service";
 import type { FreeBookingInput } from "@/lib/validation/booking.schema";
 
-const MAX_BOOKING_ATTEMPTS = 5;
 const HOLD_DURATION_MINUTES = 10;
 
-export type CreateFreeBookingResult =
-  | { bookingId: string }
-  | { error: "noSlotsAvailable" };
+export type CreateFreeBookingResult = { bookingId: string };
 
 export type CreatePaidBookingHoldResult =
   | { bookingId: string }
   | { error: "slotNoLongerAvailable" };
 
 /**
- * Auto-assigns the earliest open slot to a free-consultation booking.
- * Each candidate slot is claimed via a conditional update (status must
- * still be OPEN) inside a transaction; a 0-row update means another
- * request won the race, so we retry against the next candidate. The
- * unique constraint on Booking.slotId is the final backstop.
+ * Free consultations are a waitlist, not a scheduled slot: no Slot is
+ * claimed, so they never compete with the paid calendar's limited daily
+ * slots. Staff work through requests in order (see listFreeBookingRequests)
+ * and contact people directly.
  */
 export async function createFreeBooking(
   input: FreeBookingInput & { userId?: string },
@@ -32,42 +28,18 @@ export async function createFreeBooking(
     throw new Error("FREE consultation type is not seeded");
   }
 
-  const excludeIds: string[] = [];
+  const booking = await prisma.booking.create({
+    data: {
+      consultationTypeId: freeType.id,
+      status: BookingStatus.CONFIRMED,
+      userId: input.userId,
+      guestName: input.name,
+      guestEmail: input.email,
+      guestPhone: input.phone,
+    },
+  });
 
-  for (let attempt = 0; attempt < MAX_BOOKING_ATTEMPTS; attempt++) {
-    const candidate = await findNextOpenSlot(excludeIds);
-    if (!candidate) {
-      return { error: "noSlotsAvailable" };
-    }
-
-    const booking = await prisma.$transaction(async (tx) => {
-      const claimed = await tx.slot.updateMany({
-        where: { id: candidate.id, status: SlotStatus.OPEN },
-        data: { status: SlotStatus.BOOKED },
-      });
-      if (claimed.count === 0) return null;
-
-      return tx.booking.create({
-        data: {
-          slotId: candidate.id,
-          consultationTypeId: freeType.id,
-          status: BookingStatus.CONFIRMED,
-          userId: input.userId,
-          guestName: input.name,
-          guestEmail: input.email,
-          guestPhone: input.phone,
-        },
-      });
-    });
-
-    if (booking) {
-      return { bookingId: booking.id };
-    }
-
-    excludeIds.push(candidate.id);
-  }
-
-  return { error: "noSlotsAvailable" };
+  return { bookingId: booking.id };
 }
 
 /**

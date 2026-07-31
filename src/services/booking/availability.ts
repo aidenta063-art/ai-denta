@@ -1,17 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { SlotStatus, BookingStatus, PaymentStatus } from "@/generated/prisma/enums";
 
-export async function findNextOpenSlot(excludeIds: string[] = []) {
-  return prisma.slot.findFirst({
-    where: {
-      status: SlotStatus.OPEN,
-      startAt: { gt: new Date() },
-      id: { notIn: excludeIds },
-    },
-    orderBy: { startAt: "asc" },
-  });
-}
-
 /**
  * Reverts HELD slots whose hold has expired back to OPEN, and marks their
  * abandoned booking/payment as EXPIRED/FAILED. Called opportunistically

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { SlotStatus } from "@/generated/prisma/enums";
+import { SlotStatus, ConsultationKind } from "@/generated/prisma/enums";
 import { generateSlots } from "@/services/booking/slot-generation";
 import type {
   WorkingHoursRuleInput,
@@ -256,6 +256,16 @@ export async function getMonthSummary(year: number, month: number) {
     ...counts,
     isHoliday: holidayDates.has(date),
   }));
+}
+
+/** Free-consultation requests, oldest first — the order staff should work
+ * through the waitlist, since these have no assigned appointment slot. */
+export async function listFreeBookingRequests() {
+  return prisma.booking.findMany({
+    where: { consultationType: { kind: ConsultationKind.FREE } },
+    orderBy: { createdAt: "asc" },
+    include: { user: true },
+  });
 }
 
 export async function isDateHoliday(dateStr: string) {

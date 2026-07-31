@@ -86,11 +86,15 @@ export default async function DashboardPage({
                   {booking.consultationType.nameEn}
                 </td>
                 <td className="px-4 py-2 text-muted-foreground">
-                  {formatSlotTimeRange(
-                    booking.slot.startAt,
-                    booking.slot.endAt,
-                    "en",
-                    { dateStyle: "medium" },
+                  {booking.slot ? (
+                    formatSlotTimeRange(
+                      booking.slot.startAt,
+                      booking.slot.endAt,
+                      "en",
+                      { dateStyle: "medium" },
+                    )
+                  ) : (
+                    <span className="italic">Waitlist</span>
                   )}
                 </td>
                 <td className="px-4 py-2">
