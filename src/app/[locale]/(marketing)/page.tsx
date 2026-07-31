@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import { Hero } from "@/components/marketing/hero";
 import { ServicesSection } from "@/components/marketing/services-section";
 import { VideoShowcase } from "@/components/marketing/video-showcase";
+import { WhyUsSection } from "@/components/marketing/why-us-section";
 import { ConsultationCta } from "@/components/marketing/consultation-cta";
 import { getHeroContent, getHeroVideo } from "@/services/content/cms.service";
 import { heroContentSchema } from "@/lib/validation/cms.schema";
@@ -75,6 +76,7 @@ export default async function HomePage({
       />
       <ServicesSection locale={locale} />
       <VideoShowcase />
+      <WhyUsSection />
       <ConsultationCta locale={locale} />
     </>
   );
