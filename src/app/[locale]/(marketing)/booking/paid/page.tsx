@@ -14,7 +14,7 @@ import {
   findOpenSlotsForDate,
 } from "@/services/booking/availability";
 import { BookingCalendar } from "@/components/booking/booking-calendar";
-import { APP_TIME_ZONE } from "@/lib/timezone";
+import { formatSlotTimeRange } from "@/lib/timezone";
 
 export async function generateMetadata({
   params,
@@ -46,11 +46,6 @@ export default async function PaidBookingPage({
 
   const slots = date ? await findOpenSlotsForDate(date) : [];
 
-  const timeFormatter = new Intl.DateTimeFormat(
-    locale === "ar" ? "ar-EG" : "en-US",
-    { timeStyle: "short", timeZone: APP_TIME_ZONE },
-  );
-
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
       <BrandedCard
@@ -81,12 +76,12 @@ export default async function PaidBookingPage({
                 <Clock className="size-3.5" />
                 {t("dateLabel")}
               </div>
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {slots.map((slot) => (
                   <Button
                     key={slot.id}
                     variant="outline"
-                    className="h-10 border-border/80"
+                    className="h-10 border-border/80 text-xs sm:text-sm"
                     render={
                       <Link
                         href={`/booking/paid/${slot.id}`}
@@ -94,7 +89,7 @@ export default async function PaidBookingPage({
                       />
                     }
                   >
-                    {timeFormatter.format(slot.startAt)}
+                    {formatSlotTimeRange(slot.startAt, slot.endAt, locale)}
                   </Button>
                 ))}
               </div>

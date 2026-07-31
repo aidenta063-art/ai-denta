@@ -1,5 +1,20 @@
 export const APP_TIME_ZONE = "Africa/Cairo";
 
+/** "2:00 – 2:30 PM" — the slot's full start–end time range, so the
+ * appointment's duration is visible wherever a slot time is shown. */
+export function formatSlotTimeRange(
+  start: Date,
+  end: Date,
+  locale: string,
+  options: Intl.DateTimeFormatOptions = {},
+) {
+  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+    timeZone: APP_TIME_ZONE,
+    timeStyle: "short",
+    ...options,
+  }).formatRange(start, end);
+}
+
 /**
  * Converts a wall-clock date/time in APP_TIME_ZONE to the equivalent UTC
  * Date. Vercel's Node runtime is pinned to UTC and won't let us override

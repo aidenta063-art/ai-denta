@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { prisma } from "@/lib/prisma";
 import { SlotStatus } from "@/generated/prisma/enums";
 import { PaidBookingForm } from "@/components/booking/paid-booking-form";
-import { APP_TIME_ZONE } from "@/lib/timezone";
+import { formatSlotTimeRange } from "@/lib/timezone";
 
 export default async function ConfirmPaidSlotPage({
   params,
@@ -25,11 +25,9 @@ export default async function ConfirmPaidSlotPage({
   const slot = await prisma.slot.findUnique({ where: { id: slotId } });
 
   const formattedDate = slot
-    ? new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+    ? formatSlotTimeRange(slot.startAt, slot.endAt, locale, {
         dateStyle: "full",
-        timeStyle: "short",
-        timeZone: APP_TIME_ZONE,
-      }).format(slot.startAt)
+      })
     : null;
 
   return (

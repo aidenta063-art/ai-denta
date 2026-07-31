@@ -19,7 +19,7 @@ import {
 } from "@/actions/dashboard/appointments/holidays";
 import { SlotStatus } from "@/generated/prisma/enums";
 import { StatusBadge } from "@/components/dashboard/status-badge";
-import { APP_TIME_ZONE } from "@/lib/timezone";
+import { formatSlotTimeRange } from "@/lib/timezone";
 import { AdminCalendar } from "@/components/dashboard/admin-calendar";
 import { AddSlotForm } from "@/components/dashboard/add-slot-form";
 
@@ -164,10 +164,7 @@ async function DayPanel({
                 className="border-t border-border transition-colors hover:bg-muted/40"
               >
                 <td className="px-4 py-2 text-card-foreground">
-                  {new Intl.DateTimeFormat("en-US", {
-                    timeStyle: "short",
-                    timeZone: APP_TIME_ZONE,
-                  }).format(slot.startAt)}
+                  {formatSlotTimeRange(slot.startAt, slot.endAt, "en")}
                 </td>
                 <td className="px-4 py-2">
                   <StatusBadge status={slot.status} />

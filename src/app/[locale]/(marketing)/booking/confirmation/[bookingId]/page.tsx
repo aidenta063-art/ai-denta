@@ -9,7 +9,7 @@ import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
 import { prisma } from "@/lib/prisma";
 import { localized } from "@/lib/i18n-content";
-import { APP_TIME_ZONE } from "@/lib/timezone";
+import { formatSlotTimeRange } from "@/lib/timezone";
 
 export default async function BookingConfirmationPage({
   params,
@@ -29,10 +29,12 @@ export default async function BookingConfirmationPage({
 
   if (!booking) notFound();
 
-  const formattedDate = new Intl.DateTimeFormat(
-    locale === "ar" ? "ar-EG" : "en-US",
-    { dateStyle: "full", timeStyle: "short", timeZone: APP_TIME_ZONE },
-  ).format(booking.slot.startAt);
+  const formattedDate = formatSlotTimeRange(
+    booking.slot.startAt,
+    booking.slot.endAt,
+    locale,
+    { dateStyle: "full" },
+  );
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
