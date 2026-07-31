@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -26,6 +26,12 @@ export async function generateMetadata({
       default: `Ai Denta — ${t("eyebrow")}`,
     },
     description: t("subtitle"),
+    manifest: "/manifest.webmanifest",
+    appleWebApp: {
+      capable: true,
+      title: "Ai Denta",
+      statusBarStyle: "black-translucent",
+    },
     openGraph: {
       siteName: "Ai Denta",
       locale: locale === "ar" ? "ar_EG" : "en_US",
@@ -33,6 +39,10 @@ export async function generateMetadata({
     },
   };
 }
+
+export const viewport: Viewport = {
+  themeColor: "#251037",
+};
 
 export default async function LocaleLayout({
   children,
