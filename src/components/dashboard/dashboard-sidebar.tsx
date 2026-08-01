@@ -1,6 +1,14 @@
 "use client";
 
-import { LayoutDashboard, CalendarDays, Users, CreditCard, FileText } from "lucide-react";
+import {
+  LayoutDashboard,
+  CalendarDays,
+  Users,
+  CreditCard,
+  FileText,
+  BarChart3,
+  Settings,
+} from "lucide-react";
 import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
@@ -8,16 +16,18 @@ import type { Locale } from "@/i18n/routing";
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", Icon: LayoutDashboard },
   { href: "/dashboard/appointments", label: "Appointments", Icon: CalendarDays },
+  { href: "/dashboard/reports", label: "Reports", Icon: BarChart3 },
   { href: "/dashboard/users", label: "Users", Icon: Users },
   { href: "/dashboard/payments", label: "Payments", Icon: CreditCard },
   { href: "/dashboard/content", label: "Content", Icon: FileText },
+  { href: "/dashboard/settings", label: "Settings", Icon: Settings },
 ] as const;
 
 export function DashboardSidebar({ locale }: { locale: Locale }) {
   const pathname = usePathname();
 
   return (
-    <aside className="dark hidden w-64 shrink-0 flex-col border-e border-sidebar-border bg-sidebar sm:flex">
+    <aside className="dark hidden w-64 shrink-0 flex-col border-e border-sidebar-border bg-sidebar sm:flex print:hidden">
       <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-6">
         <Link href="/" locale={locale} className="flex items-center gap-2.5">
           <Image src="/logo-mark.png" alt="" width={140} height={140} className="size-7" />

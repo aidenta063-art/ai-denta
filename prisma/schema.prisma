@@ -303,3 +303,16 @@ model Service {
   iconMediaId   String?
   iconMedia     Media?  @relation(fields: [iconMediaId], references: [id])
 }
+
+/** One row per page load, from an anonymous client-side beacon (see
+ * AnalyticsBeacon) — powers the admin Reports page's traffic charts. */
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  locale    String
+  visitorId String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([visitorId])
+}

@@ -12,7 +12,7 @@ export function DashboardTopbar({
   const logoutWithLocale = logoutAction.bind(null, locale);
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border bg-card/95 px-6 backdrop-blur-sm">
+    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border bg-card/95 px-6 backdrop-blur-sm print:hidden">
       <span className="font-semibold text-card-foreground sm:hidden">
         Ai Denta
       </span>
