@@ -8,6 +8,7 @@ import {
   FileText,
   BarChart3,
   Settings,
+  BookOpen,
 } from "lucide-react";
 import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/reports", label: "Reports", Icon: BarChart3 },
   { href: "/dashboard/users", label: "Users", Icon: Users },
   { href: "/dashboard/payments", label: "Payments", Icon: CreditCard },
+  { href: "/dashboard/ebook-orders", label: "Ebook Orders", Icon: BookOpen },
   { href: "/dashboard/content", label: "Content", Icon: FileText },
   { href: "/dashboard/settings", label: "Settings", Icon: Settings },
 ] as const;

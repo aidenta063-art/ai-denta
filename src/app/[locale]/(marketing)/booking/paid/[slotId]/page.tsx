@@ -36,7 +36,11 @@ export default async function ConfirmPaidSlotPage({
       <BrandedCard
         title={t("confirmTitle")}
         description={formattedDate ?? undefined}
-        className={!slot || slot.status !== SlotStatus.OPEN ? undefined : "max-w-xl"}
+        className={
+          !slot || slot.status !== SlotStatus.OPEN
+            ? undefined
+            : "max-w-xl lg:max-w-2xl"
+        }
       >
         {!slot || slot.status !== SlotStatus.OPEN ? (
           <div className="flex flex-col gap-4">

@@ -44,7 +44,7 @@ export default async function FreeBookingPage({
       <BrandedCard
         title={t("title")}
         description={alreadyUsed ? t("description") : undefined}
-        className={alreadyUsed ? undefined : "max-w-xl"}
+        className={alreadyUsed ? undefined : "max-w-xl lg:max-w-2xl"}
       >
         {alreadyUsed ? (
           <div className="flex flex-col items-center gap-4 text-center">

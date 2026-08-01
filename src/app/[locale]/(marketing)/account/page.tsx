@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { CalendarClock, Mail, Phone, User as UserIcon } from "lucide-react";
+import {
+  CalendarClock,
+  Mail,
+  Phone,
+  User as UserIcon,
+  BookOpen,
+  Download,
+} from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { redirect, Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -11,6 +18,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { localized } from "@/lib/i18n-content";
 import { formatSlotTimeRange } from "@/lib/timezone";
+import { listUserEbookOrders } from "@/services/ebook/ebook.service";
+import { EbookOrderStatus } from "@/generated/prisma/enums";
 
 export async function generateMetadata({
   params,
@@ -39,13 +48,14 @@ export default async function AccountPage({
 
   const t = await getTranslations("Account");
 
-  const [user, bookings] = await Promise.all([
+  const [user, bookings, ebookOrders] = await Promise.all([
     prisma.user.findUniqueOrThrow({ where: { id: session.user.id } }),
     prisma.booking.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       include: { slot: true, consultationType: true },
     }),
+    listUserEbookOrders(session.user.id),
   ]);
 
   const memberSince = new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
@@ -141,6 +151,57 @@ export default async function AccountPage({
             </div>
           )}
         </div>
+
+        {ebookOrders.length > 0 && (
+          <div className="rounded-3xl border border-white/60 bg-white/95 p-6 shadow-2xl shadow-black/30 backdrop-blur sm:p-8">
+            <h2 className="mb-4 text-lg font-bold text-foreground">
+              {t("ebookOrdersTitle")}
+            </h2>
+            <div className="flex flex-col gap-3">
+              {ebookOrders.map((order) => {
+                const isPaid = order.status === EbookOrderStatus.PAID;
+                const formattedPrice = new Intl.NumberFormat(
+                  locale === "ar" ? "ar-EG" : "en-US",
+                  { style: "currency", currency: order.currency },
+                ).format(order.amountCents / 100);
+
+                return (
+                  <div
+                    key={order.id}
+                    className="flex flex-col gap-2 rounded-xl border border-border bg-secondary/30 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <BookOpen className="size-4 shrink-0 text-primary" />
+                      <div>
+                        <p className="font-medium text-foreground">
+                          Patient Flow
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {formattedPrice}
+                        </p>
+                      </div>
+                    </div>
+                    {isPaid ? (
+                      <Button
+                        size="sm"
+                        className="h-9 gap-1.5 bg-[#7E00C9] hover:bg-[#7E00C9]/90"
+                        render={<a href={`/api/ebook/download/${order.id}`} />}
+                      >
+                        <Download className="size-3.5" />
+                        {t("download")}
+                      </Button>
+                    ) : (
+                      <BookingStatusPill
+                        status={order.status}
+                        label={t(`ebookStatus.${order.status}`)}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </PurpleGlowSection>
   );

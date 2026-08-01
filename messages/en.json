@@ -25,6 +25,14 @@
       "PENDING_PAYMENT": "Pending Payment",
       "CANCELLED": "Cancelled",
       "EXPIRED": "Expired"
+    },
+    "ebookOrdersTitle": "My Ebook Orders",
+    "noEbookOrders": "You haven't ordered the ebook yet.",
+    "getEbook": "Get the Patient Flow Ebook",
+    "download": "Download PDF",
+    "ebookStatus": {
+      "PENDING": "Awaiting Payment",
+      "PAID": "Paid"
     }
   },
   "HomePage": {
@@ -80,6 +88,12 @@
           "description": "You won't waste time explaining treatments or clinical terms to us — we understand your practice from day one."
         }
       ]
+    },
+    "ebookTeaser": {
+      "eyebrow": "Patient Flow — The Ebook",
+      "title": "Turn your patients into loyal clients",
+      "subtitle": "A practical guide to the internal system every clinic needs before spending a single pound on ads.",
+      "cta": "Get the Ebook"
     }
   },
   "Footer": {
@@ -328,6 +342,55 @@
           "EXPLORING": "I'm just exploring right now"
         }
       }
+    }
+  },
+  "Ebook": {
+    "eyebrow": "Digital Guide",
+    "title": "Patient Flow",
+    "subtitle": "How to turn your patients into loyal clients",
+    "byAuthors": "By Dr. Osama Saleh & Dr. Ahmed Maher",
+    "description": [
+      "Most dental marketing campaigns fail — not because ads don't work, but because the clinic behind them isn't ready to receive the patients they bring in. Advertising is the last step, not the first.",
+      "Patient Flow is a practical, no-fluff guide to the internal system your clinic needs before you spend a single pound on ads: how to welcome a patient, how to talk to them, how to handle price objections with confidence, and how to turn one visit into lifelong loyalty."
+    ],
+    "tocTitle": "What's inside",
+    "toc": [
+      "Why most dental marketing campaigns fail",
+      "The golden loyalty equation: known, liked, trusted",
+      "The psychology of buying — the battle between mind and heart",
+      "Emotional intelligence: your quiet weapon",
+      "The 5-step rule for handling difficult moments",
+      "Scripted answers for \"Your prices are too high\"",
+      "Reception and environment that build trust",
+      "The smart waiting-room screen strategy",
+      "Managing the first session",
+      "Psychological pricing and the illusion of choice",
+      "Winning lifetime loyalty",
+      "The power of social proof",
+      "Building your patient funnel",
+      "Educating your patients to earn their trust"
+    ],
+    "priceLabel": "Price",
+    "formTitle": "Get your copy",
+    "fields": {
+      "name": { "label": "Full Name", "placeholder": "Enter your full name" },
+      "phone": { "label": "Phone Number", "placeholder": "Enter your phone number" },
+      "email": { "label": "Email", "placeholder": "Enter your email" }
+    },
+    "submit": "Buy the Ebook",
+    "errors": {
+      "invalidInput": "Please check your input and try again.",
+      "rateLimited": "Too many attempts. Please wait a bit and try again."
+    },
+    "order": {
+      "pendingTitle": "Order received!",
+      "pendingDescription": "Thanks for your order. Our team will contact you shortly by WhatsApp or phone to complete payment. Once confirmed, your download link will appear right here.",
+      "paidTitle": "You're all set!",
+      "paidDescription": "Payment confirmed — your copy is ready to download.",
+      "orderLabel": "Order",
+      "priceLabel": "Price",
+      "downloadCta": "Download the PDF",
+      "backHome": "Back to homepage"
     }
   }
 }

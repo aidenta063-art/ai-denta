@@ -50,6 +50,11 @@ enum PaymentProviderName {
   KASHIER
 }
 
+enum EbookOrderStatus {
+  PENDING
+  PAID
+}
+
 enum CmsSectionType {
   HERO
   SERVICES
@@ -79,13 +84,15 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts               Account[]
-  sessions               Session[]
-  bookings               Booking[]
-  resetTokens            PasswordResetToken[]
-  manuallyMarkedPayments Payment[]            @relation("PaymentManuallyMarkedBy")
-  uploadedMedia          Media[]              @relation("MediaUploadedBy")
-  updatedCmsSections     CmsSection[]         @relation("CmsSectionUpdatedBy")
+  accounts                  Account[]
+  sessions                  Session[]
+  bookings                  Booking[]
+  resetTokens               PasswordResetToken[]
+  manuallyMarkedPayments    Payment[]            @relation("PaymentManuallyMarkedBy")
+  uploadedMedia             Media[]              @relation("MediaUploadedBy")
+  updatedCmsSections        CmsSection[]         @relation("CmsSectionUpdatedBy")
+  ebookOrders               EbookOrder[]
+  manuallyMarkedEbookOrders EbookOrder[]         @relation("EbookOrderManuallyMarkedBy")
 
   @@index([role])
 }
@@ -243,6 +250,37 @@ model Payment {
 
   @@index([status])
   @@index([provider, providerRefId])
+}
+
+// ---------- Ebook ----------
+
+/** Orders for the "Patient Flow" ebook — a single fixed digital product,
+ * sold through the same manual payment flow as consultations (no real
+ * gateway yet): staff collect payment off-platform, then an admin marks
+ * the order paid here, which unlocks the download link. */
+model EbookOrder {
+  id String @id @default(cuid())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  buyerName  String
+  buyerEmail String
+  buyerPhone String
+
+  amountCents Int
+  currency    String           @default("EGP")
+  status      EbookOrderStatus @default(PENDING)
+
+  paidAt                 DateTime?
+  manuallyMarkedByUserId String?
+  manuallyMarkedBy       User?     @relation("EbookOrderManuallyMarkedBy", fields: [manuallyMarkedByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }
 
 // ---------- CMS / Site Content ----------
