@@ -7,6 +7,7 @@ import type { Locale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { GoogleSignInButton } from "@/components/auth/google-signin-button";
@@ -51,6 +52,7 @@ export function LoginForm({
             id="email"
             name="email"
             type="email"
+            autoComplete="email"
             required
             autoFocus
             className="h-11 px-3.5 text-base"
@@ -59,10 +61,10 @@ export function LoginForm({
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="password">{t("login.password")}</Label>
-          <Input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
+            autoComplete="current-password"
             required
             className="h-11 px-3.5 text-base"
           />

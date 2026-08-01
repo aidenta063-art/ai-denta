@@ -10,9 +10,11 @@ import type { Locale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { GoogleSignInButton } from "@/components/auth/google-signin-button";
+import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
 export function RegisterForm({
   locale,
@@ -30,6 +32,7 @@ export function RegisterForm({
   if (state.success) {
     return (
       <div className="flex flex-col gap-4">
+        <TrackMetaEvent event="CompleteRegistration" />
         <Alert>
           <AlertDescription>{t("register.success")}</AlertDescription>
         </Alert>
@@ -68,6 +71,7 @@ export function RegisterForm({
           <Input
             id="name"
             name="name"
+            autoComplete="name"
             required
             autoFocus
             className="h-11 px-3.5 text-base"
@@ -80,6 +84,7 @@ export function RegisterForm({
             id="email"
             name="email"
             type="email"
+            autoComplete="email"
             required
             className="h-11 px-3.5 text-base"
           />
@@ -87,10 +92,10 @@ export function RegisterForm({
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="password">{t("register.password")}</Label>
-          <Input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
+            autoComplete="new-password"
             minLength={8}
             required
             className="h-11 px-3.5 text-base"
