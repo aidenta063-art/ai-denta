@@ -10,6 +10,7 @@ import { BrandedCard } from "@/components/marketing/branded-card";
 import { prisma } from "@/lib/prisma";
 import { localized } from "@/lib/i18n-content";
 import { formatSlotTimeRange } from "@/lib/timezone";
+import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
 export default async function PaymentPendingPage({
   params,
@@ -45,6 +46,7 @@ export default async function PaymentPendingPage({
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
+      <TrackMetaEvent event="Schedule" />
       <BrandedCard title={t("pendingTitle")} description={t("pendingDescription")}>
         <div className="flex flex-col gap-4">
           <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-secondary text-primary">
