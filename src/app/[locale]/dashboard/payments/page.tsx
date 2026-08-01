@@ -7,6 +7,7 @@ import { markAsPaidAction } from "@/actions/dashboard/payments/mark-as-paid";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { PaymentStatus } from "@/generated/prisma/enums";
 import { APP_TIME_ZONE } from "@/lib/timezone";
+import { IntakeAnswersDialog } from "@/components/dashboard/intake-answers-dialog";
 
 export default async function PaymentsPage({
   params,
@@ -83,13 +84,23 @@ export default async function PaymentsPage({
                   }).format(payment.createdAt)}
                 </td>
                 <td className="px-4 py-2 text-end">
-                  {payment.status === PaymentStatus.PENDING && (
-                    <form action={markPaid.bind(null, payment.id)}>
-                      <Button size="sm" type="submit">
-                        Mark as Paid
-                      </Button>
-                    </form>
-                  )}
+                  <div className="flex justify-end gap-2">
+                    <IntakeAnswersDialog
+                      name={
+                        payment.booking.user?.name ??
+                        payment.booking.guestName ??
+                        "Guest"
+                      }
+                      intakeAnswers={payment.booking.intakeAnswers}
+                    />
+                    {payment.status === PaymentStatus.PENDING && (
+                      <form action={markPaid.bind(null, payment.id)}>
+                        <Button size="sm" type="submit">
+                          Mark as Paid
+                        </Button>
+                      </form>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

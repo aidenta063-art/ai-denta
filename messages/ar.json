@@ -213,5 +213,121 @@
       "priceLabel": "السعر",
       "backHome": "رجوع للصفحة الرئيسية"
     }
+  },
+  "Intake": {
+    "stepLabel": "خطوة {current} من {total}",
+    "next": "التالي",
+    "back": "رجوع",
+    "submit": "إرسال",
+    "selectPlaceholder": "- اختر -",
+    "errors": {
+      "invalidInput": "من فضلك راجع إجاباتك وحاول تاني."
+    },
+    "steps": {
+      "step1": "خلينا نتعرف عليك",
+      "step2": "نظرة عامة على العيادة",
+      "step3": "أهداف النمو والإيرادات",
+      "step4": "الرؤية الرقمية"
+    },
+    "fields": {
+      "name": { "label": "الاسم بالكامل", "placeholder": "اكتب اسمك بالكامل" },
+      "phone": { "label": "رقم الهاتف", "placeholder": "اكتب رقم هاتفك" },
+      "email": { "label": "أفضل بريد إلكتروني", "placeholder": "اكتب أفضل بريد إلكتروني للتواصل" },
+      "role": {
+        "label": "دورك في العيادة",
+        "options": {
+          "CLINIC_OWNER": "صاحب العيادة",
+          "CLINIC_MANAGER": "مدير العيادة",
+          "TEAM_MEMBER": "عضو فريق"
+        }
+      },
+      "clinicLocation": {
+        "label": "موقع العيادة (المدينة/المنطقة)",
+        "placeholder": "اكتب موقع العيادة (المدينة/المنطقة)"
+      },
+      "yearsInOperation": {
+        "label": "سنوات التشغيل",
+        "options": {
+          "LESS_THAN_1": "أقل من سنة",
+          "ONE_TO_THREE": "من 1 إلى 3 سنوات",
+          "THREE_TO_FIVE": "من 3 إلى 5 سنوات",
+          "FIVE_PLUS": "أكتر من 5 سنوات"
+        }
+      },
+      "teamSize": {
+        "label": "إجمالي حجم الفريق (أطباء وموظفين)",
+        "options": {
+          "ONE_TO_TWO": "من 1 إلى 2",
+          "THREE_TO_FIVE": "من 3 إلى 5",
+          "SIX_TO_TEN": "من 6 إلى 10",
+          "TEN_PLUS": "أكتر من 10"
+        }
+      },
+      "weeklyPatients": {
+        "label": "متوسط عدد المرضى أسبوعيًا",
+        "options": {
+          "BELOW_20": "أقل من 20",
+          "TWENTY_TO_FIFTY": "من 20 إلى 50",
+          "ABOVE_FIFTY": "أكتر من 50"
+        }
+      },
+      "targetPatientClass": {
+        "label": "فئة المرضى المستهدفة",
+        "options": {
+          "GENERAL": "مرضى عاديين",
+          "PREMIUM": "مرضى بريميوم",
+          "BOTH": "الاتنين"
+        }
+      },
+      "focusService": {
+        "label": "الخدمة اللي عايز تركز عليها",
+        "placeholder": "اكتب الخدمة اللي عايز تركز عليها"
+      },
+      "focusServicePrice": {
+        "label": "متوسط سعر الخدمة دي",
+        "placeholder": "اكتب متوسط سعر الخدمة دي"
+      },
+      "marketingBudget": {
+        "label": "الميزانية التسويقية الشهرية",
+        "options": {
+          "LESS_THAN_20K": "أقل من 20 ألف جنيه",
+          "TWENTY_TO_35K": "من 20 إلى 35 ألف جنيه",
+          "35K_TO_50K": "من 35 إلى 50 ألف جنيه",
+          "FIFTY_K_PLUS": "أكتر من 50 ألف جنيه"
+        }
+      },
+      "hasFollowUpSystem": {
+        "label": "عندك نظام استقبال/متابعة مرضى؟",
+        "options": { "YES": "أيوة", "NO": "لأ" }
+      },
+      "facebookLink": {
+        "label": "روابط السوشيال ميديا بتاعة العيادة (فيسبوك)",
+        "placeholder": "اكتب رابط الفيسبوك"
+      },
+      "instagramLink": {
+        "label": "روابط السوشيال ميديا بتاعة العيادة (إنستجرام)",
+        "placeholder": "اكتب رابط الإنستجرام"
+      },
+      "googleMapsLink": {
+        "label": "رابط جوجل ماب",
+        "placeholder": "اكتب رابط جوجل ماب"
+      },
+      "triedPaidMarketing": {
+        "label": "جربت التسويق المدفوع قبل كده؟",
+        "placeholder": "اشرح تجربتك باختصار"
+      },
+      "topGoal2026": {
+        "label": "إيه هدفك الأول للعيادة في 2026؟",
+        "placeholder": "كن أكتر تحديدًا في هدفك"
+      },
+      "actionReadiness": {
+        "label": "لو قدمنالك الخطة المظبوطة للوصول للهدف ده، جاهز تاخد إجراء بعد قد ايه؟",
+        "options": {
+          "IMMEDIATELY": "فورًا (جاهز دلوقتي)",
+          "WITHIN_30_DAYS": "خلال الـ30 يوم الجاية",
+          "EXPLORING": "لسه بستكشف بس"
+        }
+      }
+    }
   }
 }

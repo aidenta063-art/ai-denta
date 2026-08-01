@@ -8,7 +8,8 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
-import { FreeBookingForm } from "@/components/booking/free-booking-form";
+import { IntakeForm } from "@/components/booking/intake-form";
+import { createFreeBookingAction } from "@/actions/booking/create-free-booking";
 import { auth } from "@/lib/auth";
 import { hasUsedFreeConsultation } from "@/services/booking/booking.service";
 
@@ -40,7 +41,11 @@ export default async function FreeBookingPage({
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
-      <BrandedCard title={t("title")} description={t("description")}>
+      <BrandedCard
+        title={t("title")}
+        description={alreadyUsed ? t("description") : undefined}
+        className={alreadyUsed ? undefined : "max-w-xl"}
+      >
         {alreadyUsed ? (
           <div className="flex flex-col items-center gap-4 text-center">
             <div className="flex size-12 items-center justify-center rounded-full bg-secondary text-primary">
@@ -57,7 +62,7 @@ export default async function FreeBookingPage({
             </Button>
           </div>
         ) : (
-          <FreeBookingForm locale={locale} />
+          <IntakeForm action={createFreeBookingAction.bind(null, locale)} />
         )}
       </BrandedCard>
     </PurpleGlowSection>

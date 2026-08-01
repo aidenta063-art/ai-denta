@@ -207,6 +207,9 @@ model Booking {
 
   status BookingStatus @default(CONFIRMED)
   notes  String?       @db.Text
+  /// Answers from the 4-step qualification form (role, clinic size,
+  /// budget, goals, etc.) — see src/lib/validation/intake.schema.ts.
+  intakeAnswers Json?
 
   payment Payment?
 

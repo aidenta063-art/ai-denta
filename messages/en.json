@@ -213,5 +213,121 @@
       "priceLabel": "Price",
       "backHome": "Back to homepage"
     }
+  },
+  "Intake": {
+    "stepLabel": "Step {current} of {total}",
+    "next": "Next",
+    "back": "Back",
+    "submit": "Submit",
+    "selectPlaceholder": "- Select -",
+    "errors": {
+      "invalidInput": "Please check your answers and try again."
+    },
+    "steps": {
+      "step1": "Let's Get to Know You",
+      "step2": "Clinic Overview",
+      "step3": "Growth & Revenue Goals",
+      "step4": "Digital Vision"
+    },
+    "fields": {
+      "name": { "label": "Full Name", "placeholder": "Enter your full name" },
+      "phone": { "label": "Phone Number", "placeholder": "Enter your Phone number" },
+      "email": { "label": "Best Email Address", "placeholder": "Enter your best email address" },
+      "role": {
+        "label": "Your Role",
+        "options": {
+          "CLINIC_OWNER": "Clinic Owner",
+          "CLINIC_MANAGER": "Clinic Manager",
+          "TEAM_MEMBER": "Team Member"
+        }
+      },
+      "clinicLocation": {
+        "label": "Clinic Location (City/Area)",
+        "placeholder": "Enter clinic location (City/Area)"
+      },
+      "yearsInOperation": {
+        "label": "Years in Operation",
+        "options": {
+          "LESS_THAN_1": "Less than 1 year",
+          "ONE_TO_THREE": "1–3 years",
+          "THREE_TO_FIVE": "3–5 years",
+          "FIVE_PLUS": "5+ years"
+        }
+      },
+      "teamSize": {
+        "label": "Total Team Size (Doctors & Staff)",
+        "options": {
+          "ONE_TO_TWO": "1–2",
+          "THREE_TO_FIVE": "3–5",
+          "SIX_TO_TEN": "6–10",
+          "TEN_PLUS": "10+"
+        }
+      },
+      "weeklyPatients": {
+        "label": "Average Weekly Patients",
+        "options": {
+          "BELOW_20": "Below 20",
+          "TWENTY_TO_FIFTY": "20-50",
+          "ABOVE_FIFTY": "Above 50"
+        }
+      },
+      "targetPatientClass": {
+        "label": "Target Patient Class",
+        "options": {
+          "GENERAL": "General / standard patients",
+          "PREMIUM": "Premium / cosmetic patients",
+          "BOTH": "Both"
+        }
+      },
+      "focusService": {
+        "label": "The Service You Want to Focus On",
+        "placeholder": "Enter The Service You Want to Focus On"
+      },
+      "focusServicePrice": {
+        "label": "Average Price of This Service",
+        "placeholder": "Enter The Average Price of This Service"
+      },
+      "marketingBudget": {
+        "label": "Monthly Marketing Budget",
+        "options": {
+          "LESS_THAN_20K": "Less than 20k EGP",
+          "TWENTY_TO_35K": "20k - 35k EGP",
+          "35K_TO_50K": "35k - 50k EGP",
+          "FIFTY_K_PLUS": "50k+ EGP"
+        }
+      },
+      "hasFollowUpSystem": {
+        "label": "Do you have a reception/patient follow-up system?",
+        "options": { "YES": "Yes", "NO": "No" }
+      },
+      "facebookLink": {
+        "label": "Clinic Social Media Links (Facebook)",
+        "placeholder": "Enter Facebook link"
+      },
+      "instagramLink": {
+        "label": "Clinic Social Media Links (Instagram)",
+        "placeholder": "Enter Instagram link"
+      },
+      "googleMapsLink": {
+        "label": "Google Maps Link",
+        "placeholder": "Enter Google Maps link"
+      },
+      "triedPaidMarketing": {
+        "label": "Have you tried paid marketing before?",
+        "placeholder": "(Briefly explain your experience)"
+      },
+      "topGoal2026": {
+        "label": "What is your #1 clinic goal for 2026?",
+        "placeholder": "Be more specific about your goal"
+      },
+      "actionReadiness": {
+        "label": "If we provide the exact plan to reach this goal, how soon are you ready to take action?",
+        "options": {
+          "IMMEDIATELY": "Immediately (I am ready now)",
+          "WITHIN_30_DAYS": "Within the next 30 days",
+          "EXPLORING": "I'm just exploring right now"
+        }
+      }
+    }
   }
 }

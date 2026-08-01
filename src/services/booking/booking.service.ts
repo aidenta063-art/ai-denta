@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { SlotStatus, BookingStatus, ConsultationKind } from "@/generated/prisma/enums";
 import { sweepExpiredHolds } from "@/services/booking/availability";
 import { createPendingPayment } from "@/services/payments/payment.service";
-import type { FreeBookingInput } from "@/lib/validation/booking.schema";
+import type { IntakeInput } from "@/lib/validation/intake.schema";
 
 const HOLD_DURATION_MINUTES = 10;
 
@@ -30,7 +30,7 @@ export async function hasUsedFreeConsultation(userId: string): Promise<boolean> 
  * and contact people directly.
  */
 export async function createFreeBooking(
-  input: FreeBookingInput & { userId?: string },
+  input: IntakeInput & { userId?: string },
 ): Promise<CreateFreeBookingResult> {
   if (input.userId && (await hasUsedFreeConsultation(input.userId))) {
     return { error: "alreadyUsedFree" };
@@ -43,14 +43,17 @@ export async function createFreeBooking(
     throw new Error("FREE consultation type is not seeded");
   }
 
+  const { name, email, phone, userId, ...intakeAnswers } = input;
+
   const booking = await prisma.booking.create({
     data: {
       consultationTypeId: freeType.id,
       status: BookingStatus.CONFIRMED,
-      userId: input.userId,
-      guestName: input.name,
-      guestEmail: input.email,
-      guestPhone: input.phone,
+      userId,
+      guestName: name,
+      guestEmail: email,
+      guestPhone: phone,
+      intakeAnswers,
     },
   });
 
@@ -65,7 +68,7 @@ export async function createFreeBooking(
  * between page load and click) rolls back cleanly.
  */
 export async function createPaidBookingHold(
-  input: FreeBookingInput & { slotId: string; userId?: string },
+  input: IntakeInput & { slotId: string; userId?: string },
 ): Promise<CreatePaidBookingHoldResult> {
   await sweepExpiredHolds();
 
@@ -80,22 +83,25 @@ export async function createPaidBookingHold(
     Date.now() + HOLD_DURATION_MINUTES * 60_000,
   );
 
+  const { name, email, phone, slotId, userId, ...intakeAnswers } = input;
+
   const booking = await prisma.$transaction(async (tx) => {
     const claimed = await tx.slot.updateMany({
-      where: { id: input.slotId, status: SlotStatus.OPEN },
+      where: { id: slotId, status: SlotStatus.OPEN },
       data: { status: SlotStatus.HELD, holdExpiresAt },
     });
     if (claimed.count === 0) return null;
 
     const created = await tx.booking.create({
       data: {
-        slotId: input.slotId,
+        slotId,
         consultationTypeId: paidType.id,
         status: BookingStatus.PENDING_PAYMENT,
-        userId: input.userId,
-        guestName: input.name,
-        guestEmail: input.email,
-        guestPhone: input.phone,
+        userId,
+        guestName: name,
+        guestEmail: email,
+        guestPhone: phone,
+        intakeAnswers,
       },
     });
 

@@ -4,12 +4,11 @@ import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { createFreeBooking } from "@/services/booking/booking.service";
-import { freeBookingSchema } from "@/lib/validation/booking.schema";
+import { intakeSchema } from "@/lib/validation/intake.schema";
 import { checkActionRateLimit } from "@/lib/rate-limit";
+import type { IntakeFormState } from "@/components/booking/intake-form";
 
-export type FreeBookingState = {
-  error?: "invalidInput" | "rateLimited" | "alreadyUsedFree";
-};
+export type FreeBookingState = IntakeFormState;
 
 export async function createFreeBookingAction(
   locale: Locale,
@@ -24,11 +23,7 @@ export async function createFreeBookingAction(
     return { error: "rateLimited" };
   }
 
-  const parsed = freeBookingSchema.safeParse({
-    name: formData.get("name"),
-    email: formData.get("email"),
-    phone: formData.get("phone"),
-  });
+  const parsed = intakeSchema.safeParse(Object.fromEntries(formData));
 
   if (!parsed.success) {
     return { error: "invalidInput" };

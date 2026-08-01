@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { listFreeBookingRequests } from "@/services/booking/appointments.service";
 import { APP_TIME_ZONE } from "@/lib/timezone";
+import { IntakeAnswersDialog } from "@/components/dashboard/intake-answers-dialog";
 
 export default async function FreeRequestsPage({
   params,
@@ -49,12 +50,13 @@ export default async function FreeRequestsPage({
               <th className="px-4 py-2 text-start">Name</th>
               <th className="px-4 py-2 text-start">Phone</th>
               <th className="px-4 py-2 text-start">Email</th>
+              <th className="px-4 py-2" />
             </tr>
           </thead>
           <tbody>
             {requests.length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-muted-foreground" colSpan={4}>
+                <td className="px-4 py-6 text-muted-foreground" colSpan={5}>
                   No free consultation requests yet.
                 </td>
               </tr>
@@ -84,6 +86,12 @@ export default async function FreeRequestsPage({
                 </td>
                 <td className="px-4 py-2 text-muted-foreground">
                   {booking.user?.email ?? booking.guestEmail ?? "—"}
+                </td>
+                <td className="px-4 py-2 text-end">
+                  <IntakeAnswersDialog
+                    name={booking.user?.name ?? booking.guestName ?? "Guest"}
+                    intakeAnswers={booking.intakeAnswers}
+                  />
                 </td>
               </tr>
             ))}

@@ -9,7 +9,8 @@ import { BrandedCard } from "@/components/marketing/branded-card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { prisma } from "@/lib/prisma";
 import { SlotStatus } from "@/generated/prisma/enums";
-import { PaidBookingForm } from "@/components/booking/paid-booking-form";
+import { IntakeForm } from "@/components/booking/intake-form";
+import { createPaidBookingHoldAction } from "@/actions/booking/create-paid-booking-hold";
 import { formatSlotTimeRange } from "@/lib/timezone";
 
 export default async function ConfirmPaidSlotPage({
@@ -35,6 +36,7 @@ export default async function ConfirmPaidSlotPage({
       <BrandedCard
         title={t("confirmTitle")}
         description={formattedDate ?? undefined}
+        className={!slot || slot.status !== SlotStatus.OPEN ? undefined : "max-w-xl"}
       >
         {!slot || slot.status !== SlotStatus.OPEN ? (
           <div className="flex flex-col gap-4">
@@ -49,7 +51,9 @@ export default async function ConfirmPaidSlotPage({
             </Button>
           </div>
         ) : (
-          <PaidBookingForm locale={locale} slotId={slotId} />
+          <IntakeForm
+            action={createPaidBookingHoldAction.bind(null, locale, slotId)}
+          />
         )}
       </BrandedCard>
     </PurpleGlowSection>
