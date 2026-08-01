@@ -3,13 +3,19 @@
     "home": "الرئيسية",
     "services": "الخدمات",
     "booking": "احجز استشارة",
-    "account": "تسجيل الدخول / إنشاء حساب",
+    "bookingPaid": "استشارة مدفوعة",
+    "bookingFree": "استشارة مجانية",
+    "ourBook": "كتابنا",
+    "aboutUs": "من نحن",
+    "account": "تسجيل الدخول",
     "dashboard": "لوحة التحكم",
     "logout": "تسجيل الخروج",
     "greeting": "أهلاً، {name}",
     "switchAccount": "تبديل الحساب",
     "adminPanel": "لوحة الإدارة",
-    "myAccount": "حسابي"
+    "myAccount": "حسابي",
+    "menu": "القائمة",
+    "close": "إغلاق"
   },
   "Account": {
     "title": "حسابي",

@@ -44,6 +44,33 @@ export default async function BookingChoicePage({
       </div>
 
       <div className="relative mx-auto mt-12 grid max-w-4xl gap-6 sm:grid-cols-2">
+        <div className="flex flex-col overflow-hidden rounded-3xl border-2 border-[#7E00C9] bg-white shadow-2xl shadow-[#7E00C9]/30">
+          <div
+            className="h-1.5 w-full bg-gradient-to-r from-[#7E00C9] via-[#9a4fd6] to-[#B98AE8]"
+            aria-hidden
+          />
+          <div className="flex flex-1 flex-col gap-4 p-8">
+            <div className="flex size-12 items-center justify-center rounded-xl bg-secondary text-primary">
+              <Sparkles className="size-6" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <h2 className="text-xl font-semibold text-[#251037]">
+                {t("paidTitle")}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {t("paidDescription")}
+              </p>
+            </div>
+            <Button
+              className="mt-auto h-11 w-full gap-2 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+              render={<Link href="/booking/paid" locale={locale} />}
+            >
+              {t("paidCta")}
+              <Arrow className="size-4" />
+            </Button>
+          </div>
+        </div>
+
         <div className="flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/95 shadow-2xl shadow-black/30 backdrop-blur">
           <div
             className="h-1.5 w-full bg-gradient-to-r from-[#7E00C9] via-[#9a4fd6] to-[#B98AE8]"
@@ -62,38 +89,11 @@ export default async function BookingChoicePage({
               </p>
             </div>
             <Button
-              className="mt-auto h-11 w-full gap-2 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+              variant="outline"
+              className="mt-auto h-11 w-full gap-2 border-border/80 bg-white text-base font-medium hover:bg-secondary/60"
               render={<Link href="/booking/free" locale={locale} />}
             >
               {t("freeCta")}
-              <Arrow className="size-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/95 shadow-2xl shadow-black/30 backdrop-blur">
-          <div
-            className="h-1.5 w-full bg-gradient-to-r from-[#7E00C9] via-[#9a4fd6] to-[#B98AE8]"
-            aria-hidden
-          />
-          <div className="flex flex-1 flex-col gap-4 p-8">
-            <div className="flex size-12 items-center justify-center rounded-xl bg-secondary text-primary">
-              <Sparkles className="size-6" />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <h2 className="text-xl font-semibold text-[#251037]">
-                {t("paidTitle")}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {t("paidDescription")}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="mt-auto h-11 w-full gap-2 border-border/80 bg-white text-base font-medium hover:bg-secondary/60"
-              render={<Link href="/booking/paid" locale={locale} />}
-            >
-              {t("paidCta")}
               <Arrow className="size-4" />
             </Button>
           </div>

@@ -19,18 +19,18 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Button
             size="lg"
-            className="bg-white text-[#251037] hover:bg-white/90"
-            render={<Link href="/booking/free" locale={locale} />}
+            className="bg-white text-base text-[#251037] shadow-xl shadow-black/20 hover:bg-white/90"
+            render={<Link href="/booking/paid" locale={locale} />}
           >
-            {t("ctaFree")}
+            {t("ctaPaid")}
           </Button>
           <Button
             size="lg"
             variant="outline"
             className="border-white/30 bg-transparent text-white hover:bg-white/10"
-            render={<Link href="/booking" locale={locale} />}
+            render={<Link href="/booking/free" locale={locale} />}
           >
-            {t("ctaPaid")}
+            {t("ctaFree")}
           </Button>
         </div>
       </ScrollReveal>

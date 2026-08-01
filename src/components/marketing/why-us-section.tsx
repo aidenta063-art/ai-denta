@@ -8,7 +8,7 @@ export async function WhyUsSection() {
   const t = await getTranslations("HomePage.whyUs");
 
   return (
-    <section className="bg-background px-6 py-20">
+    <section id="about" className="scroll-mt-24 bg-background px-6 py-20">
       <div className="mx-auto max-w-5xl">
         <ScrollReveal className="mb-12 flex flex-col items-center gap-3 text-center">
           <span className="rounded-full border border-border bg-secondary px-4 py-1 text-sm font-medium text-primary">

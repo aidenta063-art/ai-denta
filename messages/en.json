@@ -3,13 +3,19 @@
     "home": "Home",
     "services": "Services",
     "booking": "Book a Consultation",
-    "account": "Login / Register",
+    "bookingPaid": "Paid Consultation",
+    "bookingFree": "Free Consultation",
+    "ourBook": "Our Book",
+    "aboutUs": "About Us",
+    "account": "Login / Sign In",
     "dashboard": "Dashboard",
     "logout": "Logout",
     "greeting": "Hi, {name}",
     "switchAccount": "Switch account",
     "adminPanel": "Admin panel",
-    "myAccount": "My Account"
+    "myAccount": "My Account",
+    "menu": "Menu",
+    "close": "Close"
   },
   "Account": {
     "title": "My Account",

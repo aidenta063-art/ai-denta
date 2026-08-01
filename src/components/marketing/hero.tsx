@@ -66,8 +66,11 @@ export function Hero({
               <video
                 src={videoUrl}
                 controls
+                autoPlay
+                muted
+                loop
                 playsInline
-                preload="metadata"
+                preload="auto"
                 className="aspect-video w-full"
               />
             </div>
@@ -91,18 +94,18 @@ export function Hero({
         <motion.div variants={item} className="flex flex-wrap justify-center gap-4 pt-4">
           <Button
             size="lg"
-            className="bg-white text-[#251037] hover:bg-white/90"
-            render={<Link href="/booking/free" locale={locale} />}
+            className="bg-white text-base text-[#251037] shadow-xl shadow-black/20 hover:bg-white/90"
+            render={<Link href="/booking/paid" locale={locale} />}
           >
-            {ctaFree}
+            {ctaPaid}
           </Button>
           <Button
             size="lg"
             variant="outline"
             className="border-white/30 bg-transparent text-white hover:bg-white/10"
-            render={<Link href="/booking" locale={locale} />}
+            render={<Link href="/booking/free" locale={locale} />}
           >
-            {ctaPaid}
+            {ctaFree}
           </Button>
         </motion.div>
       </motion.div>

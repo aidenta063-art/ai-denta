@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
-import { SocialFab } from "@/components/marketing/social-fab";
 import { FaqChatWidget } from "@/components/marketing/faq-chat-widget";
 import { AnalyticsBeacon } from "@/components/marketing/analytics-beacon";
 import { MetaPixel } from "@/components/marketing/meta-pixel";
@@ -37,7 +36,6 @@ export default async function AuthLayout({
         {children}
       </main>
       <MarketingFooter />
-      <SocialFab />
       <FaqChatWidget />
       <AnalyticsBeacon locale={locale} />
       <MetaPixel pixelId={pixelId} />
