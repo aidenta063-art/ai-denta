@@ -113,7 +113,7 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
               <VideoSlide
                 video={video}
                 isActive={i === index}
-                preload={Math.abs(i - index) <= 1}
+                shouldPreload={Math.abs(i - index) <= 2}
                 onOpenChange={setLightboxOpen}
               />
             </div>
@@ -162,15 +162,29 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
 function VideoSlide({
   video,
   isActive,
-  preload,
+  shouldPreload,
   onOpenChange,
 }: {
   video: VideoItem;
   isActive: boolean;
-  preload: boolean;
+  shouldPreload: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const hasTriggeredLoadRef = useRef(false);
+
+  // The `preload` attribute is only a hint the browser consults once, the
+  // first time it runs resource selection for the element — flipping it
+  // from "none" to "auto" later (as this slide enters the carousel's
+  // preload window) does nothing on its own. Calling load() explicitly
+  // re-runs resource selection against the *current* preload value, so
+  // this is what actually starts buffering ahead of time.
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || !shouldPreload || hasTriggeredLoadRef.current) return;
+    hasTriggeredLoadRef.current = true;
+    el.load();
+  }, [shouldPreload]);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -192,7 +206,7 @@ function VideoSlide({
           muted
           loop
           playsInline
-          preload={preload ? "auto" : "none"}
+          preload={shouldPreload ? "auto" : "none"}
         />
       </DialogTrigger>
       <DialogContent className="max-w-sm border-none bg-black p-0 shadow-[0_0_0_1px_rgba(255,255,255,0.1)]">
