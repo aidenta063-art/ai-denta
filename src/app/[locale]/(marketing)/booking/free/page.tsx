@@ -8,10 +8,11 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
-import { IntakeForm } from "@/components/booking/intake-form";
+import { FreeBookingGate } from "@/components/booking/free-booking-gate";
 import { createFreeBookingAction } from "@/actions/booking/create-free-booking";
 import { auth } from "@/lib/auth";
 import { hasUsedFreeConsultation } from "@/services/booking/booking.service";
+import { getFreeBookingIntroVideo } from "@/services/content/cms.service";
 
 export async function generateMetadata({
   params,
@@ -38,15 +39,12 @@ export default async function FreeBookingPage({
   const alreadyUsed = session?.user
     ? await hasUsedFreeConsultation(session.user.id)
     : false;
+  const introVideo = alreadyUsed ? null : await getFreeBookingIntroVideo();
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
-      <BrandedCard
-        title={t("title")}
-        description={alreadyUsed ? t("description") : undefined}
-        className={alreadyUsed ? undefined : "max-w-xl lg:max-w-2xl"}
-      >
-        {alreadyUsed ? (
+      {alreadyUsed ? (
+        <BrandedCard title={t("title")} description={t("description")}>
           <div className="flex flex-col items-center gap-4 text-center">
             <div className="flex size-12 items-center justify-center rounded-full bg-secondary text-primary">
               <CheckCircle2 className="size-6" />
@@ -61,10 +59,15 @@ export default async function FreeBookingPage({
               {t("viewPaidOption")}
             </Button>
           </div>
-        ) : (
-          <IntakeForm action={createFreeBookingAction.bind(null, locale)} />
-        )}
-      </BrandedCard>
+        </BrandedCard>
+      ) : (
+        <FreeBookingGate
+          locale={locale}
+          videoUrl={introVideo?.url ?? null}
+          formTitle={t("title")}
+          action={createFreeBookingAction.bind(null, locale)}
+        />
+      )}
     </PurpleGlowSection>
   );
 }

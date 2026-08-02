@@ -204,3 +204,85 @@ export async function detachVideoFromHomepage(mediaId: string) {
     where: { cmsSectionId: section.id, mediaId },
   });
 }
+
+const FREE_BOOKING_INTRO_SLUG = "free-booking-intro";
+
+export async function getFreeBookingIntroVideo() {
+  const section = await prisma.cmsSection.findUnique({
+    where: { slug: FREE_BOOKING_INTRO_SLUG },
+    include: {
+      media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+    },
+  });
+  return section?.media[0]?.media ?? null;
+}
+
+async function ensureFreeBookingIntroSection(updatedById: string) {
+  return prisma.cmsSection.upsert({
+    where: { slug: FREE_BOOKING_INTRO_SLUG },
+    update: {},
+    create: {
+      slug: FREE_BOOKING_INTRO_SLUG,
+      type: CmsSectionType.CUSTOM,
+      contentEn: {},
+      contentAr: {},
+      updatedById,
+    },
+  });
+}
+
+export async function setFreeBookingIntroVideo(mediaId: string, updatedById: string) {
+  const section = await ensureFreeBookingIntroSection(updatedById);
+  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+  await prisma.cmsSectionMedia.create({
+    data: { cmsSectionId: section.id, mediaId, sortOrder: 0 },
+  });
+}
+
+export async function clearFreeBookingIntroVideo() {
+  const section = await prisma.cmsSection.findUnique({
+    where: { slug: FREE_BOOKING_INTRO_SLUG },
+  });
+  if (!section) return;
+  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+}
+
+const FREE_PDF_SLUG = "free-pdf";
+
+export async function getFreePdf() {
+  const section = await prisma.cmsSection.findUnique({
+    where: { slug: FREE_PDF_SLUG },
+    include: {
+      media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+    },
+  });
+  return section?.media[0]?.media ?? null;
+}
+
+async function ensureFreePdfSection(updatedById: string) {
+  return prisma.cmsSection.upsert({
+    where: { slug: FREE_PDF_SLUG },
+    update: {},
+    create: {
+      slug: FREE_PDF_SLUG,
+      type: CmsSectionType.CUSTOM,
+      contentEn: {},
+      contentAr: {},
+      updatedById,
+    },
+  });
+}
+
+export async function setFreePdf(mediaId: string, updatedById: string) {
+  const section = await ensureFreePdfSection(updatedById);
+  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+  await prisma.cmsSectionMedia.create({
+    data: { cmsSectionId: section.id, mediaId, sortOrder: 0 },
+  });
+}
+
+export async function clearFreePdf() {
+  const section = await prisma.cmsSection.findUnique({ where: { slug: FREE_PDF_SLUG } });
+  if (!section) return;
+  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+}

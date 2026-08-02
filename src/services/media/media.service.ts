@@ -6,15 +6,19 @@ export async function listMedia() {
   return prisma.media.findMany({ orderBy: { createdAt: "desc" } });
 }
 
+function mediaTypeForContentType(contentType: string): MediaType {
+  if (contentType.startsWith("video/")) return MediaType.VIDEO;
+  if (contentType === "application/pdf") return MediaType.DOCUMENT;
+  return MediaType.IMAGE;
+}
+
 export async function createMedia(input: {
   body: Buffer;
   contentType: string;
   originalName: string;
   uploadedById: string;
 }) {
-  const type = input.contentType.startsWith("video/")
-    ? MediaType.VIDEO
-    : MediaType.IMAGE;
+  const type = mediaTypeForContentType(input.contentType);
 
   const { key, url } = await uploadMediaFile(input);
 
@@ -38,9 +42,7 @@ export async function recordMedia(input: {
   sizeBytes: number;
   uploadedById: string;
 }) {
-  const type = input.contentType.startsWith("video/")
-    ? MediaType.VIDEO
-    : MediaType.IMAGE;
+  const type = mediaTypeForContentType(input.contentType);
 
   return prisma.media.create({
     data: {

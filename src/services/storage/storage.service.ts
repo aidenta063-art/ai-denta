@@ -48,6 +48,7 @@ const ALLOWED_CONTENT_TYPES = new Set([
   "video/mp4",
   "video/webm",
   "video/quicktime",
+  "application/pdf",
 ]);
 
 export function isAllowedUploadType(contentType: string): boolean {

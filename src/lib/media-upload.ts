@@ -2,7 +2,7 @@ export type UploadedMedia = {
   id: string;
   key: string;
   url: string;
-  type: "IMAGE" | "VIDEO";
+  type: "IMAGE" | "VIDEO" | "DOCUMENT";
 };
 
 type UploadResult = { media: UploadedMedia } | { error: string };

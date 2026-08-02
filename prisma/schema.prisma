@@ -68,6 +68,7 @@ enum CmsSectionType {
 enum MediaType {
   IMAGE
   VIDEO
+  DOCUMENT
 }
 
 // ---------- Identity / Auth ----------

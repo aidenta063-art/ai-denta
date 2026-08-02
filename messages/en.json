@@ -6,6 +6,7 @@
     "bookingPaid": "Paid Consultation",
     "bookingFree": "Free Consultation",
     "ourBook": "Our Book",
+    "freeGuide": "Free Guide",
     "aboutUs": "About Us",
     "account": "Login / Sign In",
     "dashboard": "Dashboard",
@@ -176,6 +177,12 @@
     }
   },
   "Booking": {
+    "freeGate": {
+      "title": "Before you go free — see what Paid unlocks",
+      "description": "A paid consultation gets you a scheduled time, priority attention, and a deeper strategy session. Free consultations go on a waitlist and are handled as capacity allows.",
+      "paidOption": "Book a Paid Consultation",
+      "freeOption": "Continue with Free Consultation"
+    },
     "choice": {
       "title": "Book your consultation",
       "description": "Choose the option that works for you.",
@@ -399,5 +406,12 @@
       "downloadCta": "Download the PDF",
       "backHome": "Back to homepage"
     }
+  },
+  "FreePdf": {
+    "eyebrow": "Free Resource",
+    "title": "Your Free Guide",
+    "subtitle": "A quick, practical read — no cost, no catch.",
+    "downloadCta": "Download PDF",
+    "comingSoon": "Our free guide is being prepared — check back soon."
   }
 }

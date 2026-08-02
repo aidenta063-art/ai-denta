@@ -30,6 +30,16 @@ const SECTIONS = [
     title: "Media Library",
     description: "Upload and manage images and videos.",
   },
+  {
+    href: "/dashboard/content/free-booking-intro",
+    title: "Free Booking Intro Video",
+    description: "The video shown before the free-consultation form.",
+  },
+  {
+    href: "/dashboard/content/free-pdf",
+    title: "Free Guide (PDF)",
+    description: "The downloadable PDF linked from the site menu.",
+  },
 ] as const;
 
 export default async function ContentPage({

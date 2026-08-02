@@ -12,6 +12,7 @@ import {
   Sparkles,
   Gift,
   BookOpen,
+  FileText,
   LogIn,
   UserRound,
   LayoutDashboard,
@@ -37,6 +38,7 @@ const NAV_LINKS = [
   { key: "bookingPaid", href: "/booking/paid", Icon: Sparkles, scrollId: undefined },
   { key: "bookingFree", href: "/booking/free", Icon: Gift, scrollId: undefined },
   { key: "ourBook", href: "/ebook", Icon: BookOpen, scrollId: undefined },
+  { key: "freeGuide", href: "/free-pdf", Icon: FileText, scrollId: undefined },
 ] as const;
 
 export function HeaderMenu({
