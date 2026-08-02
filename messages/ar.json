@@ -302,9 +302,9 @@
       "targetPatientClass": {
         "label": "فئة المرضى المستهدفة",
         "options": {
-          "GENERAL": "مرضى عاديين",
-          "PREMIUM": "مرضى بريميوم",
-          "BOTH": "الاتنين"
+          "CLASS_A": "الفئة A",
+          "CLASS_B": "الفئة B",
+          "CLASS_C": "الفئة C"
         }
       },
       "focusService": {

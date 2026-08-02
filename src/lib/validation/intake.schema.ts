@@ -15,7 +15,7 @@ export const intakeSchema = z.object({
   weeklyPatients: z.enum(["BELOW_20", "TWENTY_TO_FIFTY", "ABOVE_FIFTY"]),
 
   // Step 3 — Growth & Revenue Goals
-  targetPatientClass: z.enum(["GENERAL", "PREMIUM", "BOTH"]),
+  targetPatientClass: z.enum(["CLASS_A", "CLASS_B", "CLASS_C"]),
   focusService: z.string().trim().min(2).max(200),
   focusServicePrice: z.string().trim().min(1).max(50),
   marketingBudget: z.enum(["LESS_THAN_20K", "TWENTY_TO_35K", "35K_TO_50K", "FIFTY_K_PLUS"]),

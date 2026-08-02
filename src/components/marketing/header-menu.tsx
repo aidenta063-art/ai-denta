@@ -9,8 +9,6 @@ import {
   Home,
   Info,
   CalendarDays,
-  Sparkles,
-  Gift,
   BookOpen,
   FileText,
   LogIn,
@@ -35,8 +33,6 @@ const NAV_LINKS = [
   { key: "home", href: "/", Icon: Home, scrollId: undefined },
   { key: "aboutUs", href: "/#about", Icon: Info, scrollId: "about" },
   { key: "booking", href: "/booking", Icon: CalendarDays, scrollId: undefined },
-  { key: "bookingPaid", href: "/booking/paid", Icon: Sparkles, scrollId: undefined },
-  { key: "bookingFree", href: "/booking/free", Icon: Gift, scrollId: undefined },
   { key: "ourBook", href: "/ebook", Icon: BookOpen, scrollId: undefined },
   { key: "freeGuide", href: "/free-pdf", Icon: FileText, scrollId: undefined },
 ] as const;

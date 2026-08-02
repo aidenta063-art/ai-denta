@@ -45,7 +45,7 @@ export const INTAKE_STEPS: IntakeStepConfig[] = [
   {
     titleKey: "step3",
     fields: [
-      { key: "targetPatientClass", type: "select", options: ["GENERAL", "PREMIUM", "BOTH"] },
+      { key: "targetPatientClass", type: "select", options: ["CLASS_A", "CLASS_B", "CLASS_C"] },
       { key: "focusService", type: "text" },
       { key: "focusServicePrice", type: "text" },
       {
