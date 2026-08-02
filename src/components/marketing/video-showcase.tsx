@@ -9,7 +9,7 @@ export async function VideoShowcase() {
   const videos = await getHomeVideoMedia();
 
   return (
-    <section className="bg-[#251037] px-6 py-20">
+    <section id="work" className="scroll-mt-24 bg-[#251037] px-6 py-20">
       <div className="mx-auto max-w-3xl">
         <ScrollReveal className="mb-12 flex flex-col gap-2 text-center">
           <h2 className="text-3xl font-bold text-white">{t("title")}</h2>

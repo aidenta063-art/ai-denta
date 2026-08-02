@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 
-const AUTOPLAY_MS = 2000;
+const AUTOPLAY_MS = 4000;
 const SWIPE_THRESHOLD = 40;
 
 type VideoItem = { id: string; url: string };
@@ -113,6 +113,7 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
               <VideoSlide
                 video={video}
                 isActive={i === index}
+                preload={Math.abs(i - index) <= 1}
                 onOpenChange={setLightboxOpen}
               />
             </div>
@@ -161,10 +162,12 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
 function VideoSlide({
   video,
   isActive,
+  preload,
   onOpenChange,
 }: {
   video: VideoItem;
   isActive: boolean;
+  preload: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -189,7 +192,7 @@ function VideoSlide({
           muted
           loop
           playsInline
-          preload={isActive ? "auto" : "none"}
+          preload={preload ? "auto" : "none"}
         />
       </DialogTrigger>
       <DialogContent className="max-w-sm border-none bg-black p-0 shadow-[0_0_0_1px_rgba(255,255,255,0.1)]">
