@@ -1,16 +1,31 @@
 import crypto from "node:crypto";
-import { cache } from "react";
+import { unstable_cache as nextCache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { CmsSectionType, ConsultationKind } from "@/generated/prisma/enums";
 import type { HeroFormInput, PricingFormInput, ServiceFormInput } from "@/lib/validation/cms.schema";
 
 const HERO_SLUG = "home-hero";
 
-// generateMetadata and the page component both need this on every homepage
-// request; cache() dedupes the two calls into a single query per render.
-export const getHeroContent = cache(async () => {
-  return prisma.cmsSection.findUnique({ where: { slug: HERO_SLUG } });
-});
+// This CMS content changes rarely (admin-edited) but is read on every
+// marketing page load. unstable_cache keeps it out of Postgres across
+// requests for CACHE_SECONDS at a time; every admin action that touches
+// a tag below calls revalidateTag(...) so edits still show up
+// immediately instead of waiting out the window.
+const CACHE_SECONDS = 60;
+export const CMS_TAGS = {
+  heroContent: "cms:hero-content",
+  heroVideo: "cms:hero-video",
+  homeVideos: "cms:home-videos",
+  services: "cms:services",
+  freeBookingIntro: "cms:free-booking-intro",
+  freePdf: "cms:free-pdf",
+} as const;
+
+export const getHeroContent = nextCache(
+  async () => prisma.cmsSection.findUnique({ where: { slug: HERO_SLUG } }),
+  ["cms-hero-content"],
+  { tags: [CMS_TAGS.heroContent], revalidate: CACHE_SECONDS },
+);
 
 export async function saveHeroContent(input: HeroFormInput, updatedById: string) {
   const contentEn = {
@@ -37,15 +52,19 @@ export async function saveHeroContent(input: HeroFormInput, updatedById: string)
   });
 }
 
-export async function getHeroVideo() {
-  const section = await prisma.cmsSection.findUnique({
-    where: { slug: HERO_SLUG },
-    include: {
-      media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
-    },
-  });
-  return section?.media[0]?.media ?? null;
-}
+export const getHeroVideo = nextCache(
+  async () => {
+    const section = await prisma.cmsSection.findUnique({
+      where: { slug: HERO_SLUG },
+      include: {
+        media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+      },
+    });
+    return section?.media[0]?.media ?? null;
+  },
+  ["cms-hero-video"],
+  { tags: [CMS_TAGS.heroVideo], revalidate: CACHE_SECONDS },
+);
 
 async function ensureHeroSection(updatedById: string) {
   return prisma.cmsSection.upsert({
@@ -99,9 +118,11 @@ export async function updateConsultationTypePricing(
   });
 }
 
-export async function listServices() {
-  return prisma.service.findMany({ orderBy: { sortOrder: "asc" } });
-}
+export const listServices = nextCache(
+  async () => prisma.service.findMany({ orderBy: { sortOrder: "asc" } }),
+  ["cms-services"],
+  { tags: [CMS_TAGS.services], revalidate: CACHE_SECONDS },
+);
 
 function slugify(value: string) {
   return (
@@ -152,13 +173,17 @@ export async function deleteService(id: string) {
 
 const HOME_VIDEOS_SLUG = "home-videos";
 
-export async function getHomeVideoMedia() {
-  const section = await prisma.cmsSection.findUnique({
-    where: { slug: HOME_VIDEOS_SLUG },
-    include: { media: { include: { media: true }, orderBy: { sortOrder: "asc" } } },
-  });
-  return section?.media.map((join) => join.media) ?? [];
-}
+export const getHomeVideoMedia = nextCache(
+  async () => {
+    const section = await prisma.cmsSection.findUnique({
+      where: { slug: HOME_VIDEOS_SLUG },
+      include: { media: { include: { media: true }, orderBy: { sortOrder: "asc" } } },
+    });
+    return section?.media.map((join) => join.media) ?? [];
+  },
+  ["cms-home-videos"],
+  { tags: [CMS_TAGS.homeVideos], revalidate: CACHE_SECONDS },
+);
 
 export async function getHomeVideoMediaIds() {
   const media = await getHomeVideoMedia();
@@ -207,15 +232,19 @@ export async function detachVideoFromHomepage(mediaId: string) {
 
 const FREE_BOOKING_INTRO_SLUG = "free-booking-intro";
 
-export async function getFreeBookingIntroVideo() {
-  const section = await prisma.cmsSection.findUnique({
-    where: { slug: FREE_BOOKING_INTRO_SLUG },
-    include: {
-      media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
-    },
-  });
-  return section?.media[0]?.media ?? null;
-}
+export const getFreeBookingIntroVideo = nextCache(
+  async () => {
+    const section = await prisma.cmsSection.findUnique({
+      where: { slug: FREE_BOOKING_INTRO_SLUG },
+      include: {
+        media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+      },
+    });
+    return section?.media[0]?.media ?? null;
+  },
+  ["cms-free-booking-intro"],
+  { tags: [CMS_TAGS.freeBookingIntro], revalidate: CACHE_SECONDS },
+);
 
 async function ensureFreeBookingIntroSection(updatedById: string) {
   return prisma.cmsSection.upsert({
@@ -249,15 +278,19 @@ export async function clearFreeBookingIntroVideo() {
 
 const FREE_PDF_SLUG = "free-pdf";
 
-export async function getFreePdf() {
-  const section = await prisma.cmsSection.findUnique({
-    where: { slug: FREE_PDF_SLUG },
-    include: {
-      media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
-    },
-  });
-  return section?.media[0]?.media ?? null;
-}
+export const getFreePdf = nextCache(
+  async () => {
+    const section = await prisma.cmsSection.findUnique({
+      where: { slug: FREE_PDF_SLUG },
+      include: {
+        media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+      },
+    });
+    return section?.media[0]?.media ?? null;
+  },
+  ["cms-free-pdf"],
+  { tags: [CMS_TAGS.freePdf], revalidate: CACHE_SECONDS },
+);
 
 async function ensureFreePdfSection(updatedById: string) {
   return prisma.cmsSection.upsert({

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { requireRole } from "@/lib/authz";
 import { Role } from "@/generated/prisma/enums";
 import type { Locale } from "@/i18n/routing";
@@ -8,6 +8,7 @@ import {
   createService,
   updateService,
   deleteService,
+  CMS_TAGS,
 } from "@/services/content/cms.service";
 import { serviceFormSchema } from "@/lib/validation/cms.schema";
 
@@ -16,6 +17,7 @@ export type ServiceActionState = {
 };
 
 async function revalidateHomepage(locale: Locale) {
+  updateTag(CMS_TAGS.services);
   revalidatePath("/ar");
   revalidatePath("/en");
   revalidatePath(`/${locale}/dashboard/content/services`);

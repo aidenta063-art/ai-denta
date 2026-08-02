@@ -1,4 +1,12 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  CreateMultipartUploadCommand,
+  UploadPartCopyCommand,
+  CompleteMultipartUploadCommand,
+  AbortMultipartUploadCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type {
   StorageProvider,
@@ -71,5 +79,78 @@ export class R2StorageProvider implements StorageProvider {
     );
 
     return { uploadUrl, publicUrl: `${this.publicBaseUrl}/${key}` };
+  }
+
+  async completeChunkedUpload({
+    finalKey,
+    contentType,
+    partKeys,
+  }: {
+    finalKey: string;
+    contentType: string;
+    partKeys: string[];
+  }): Promise<{ url: string }> {
+    const created = await this.client.send(
+      new CreateMultipartUploadCommand({
+        Bucket: this.bucket,
+        Key: finalKey,
+        ContentType: contentType,
+      }),
+    );
+    const uploadId = created.UploadId;
+    if (!uploadId) {
+      throw new Error("R2 did not return a multipart upload id");
+    }
+
+    try {
+      const parts = await Promise.all(
+        partKeys.map(async (partKey, i) => {
+          const copied = await this.client.send(
+            new UploadPartCopyCommand({
+              Bucket: this.bucket,
+              Key: finalKey,
+              UploadId: uploadId,
+              PartNumber: i + 1,
+              CopySource: `${this.bucket}/${partKey}`,
+            }),
+          );
+          const etag = copied.CopyPartResult?.ETag;
+          if (!etag) {
+            throw new Error(`Missing ETag copying part ${i + 1}`);
+          }
+          return { PartNumber: i + 1, ETag: etag };
+        }),
+      );
+
+      await this.client.send(
+        new CompleteMultipartUploadCommand({
+          Bucket: this.bucket,
+          Key: finalKey,
+          UploadId: uploadId,
+          MultipartUpload: { Parts: parts },
+        }),
+      );
+    } catch (err) {
+      await this.client
+        .send(
+          new AbortMultipartUploadCommand({
+            Bucket: this.bucket,
+            Key: finalKey,
+            UploadId: uploadId,
+          }),
+        )
+        .catch(() => {});
+      throw err;
+    } finally {
+      await Promise.all(
+        partKeys.map((partKey) =>
+          this.client
+            .send(new DeleteObjectCommand({ Bucket: this.bucket, Key: partKey }))
+            .catch(() => {}),
+        ),
+      );
+    }
+
+    return { url: `${this.publicBaseUrl}/${finalKey}` };
   }
 }

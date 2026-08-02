@@ -1,12 +1,13 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { requireRole } from "@/lib/authz";
 import { Role } from "@/generated/prisma/enums";
 import type { Locale } from "@/i18n/routing";
-import { setFreePdf, clearFreePdf } from "@/services/content/cms.service";
+import { setFreePdf, clearFreePdf, CMS_TAGS } from "@/services/content/cms.service";
 
 async function revalidateFreePdfPage(locale: Locale) {
+  updateTag(CMS_TAGS.freePdf);
   revalidatePath("/ar/free-pdf");
   revalidatePath("/en/free-pdf");
   revalidatePath(`/${locale}/dashboard/content/free-pdf`);

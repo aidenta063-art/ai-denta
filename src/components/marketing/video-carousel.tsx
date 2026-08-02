@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Play, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 
 const AUTOPLAY_MS = 2000;
@@ -87,7 +87,7 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
 
   return (
     <div
-      className="relative"
+      className="relative mx-auto w-full max-w-xs sm:max-w-sm"
       dir="ltr"
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
@@ -109,7 +109,7 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
           onAnimationComplete={handleAnimationComplete}
         >
           {slides.map((video, i) => (
-            <div key={`${video.id}-${i}`} className="aspect-video w-full shrink-0">
+            <div key={`${video.id}-${i}`} className="aspect-[9/16] w-full shrink-0">
               <VideoSlide
                 video={video}
                 isActive={i === index}
@@ -191,16 +191,11 @@ function VideoSlide({
           playsInline
           preload={isActive ? "auto" : "none"}
         />
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="flex size-14 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-transform group-hover:scale-110">
-            <Play className="size-6 fill-white text-white" />
-          </div>
-        </div>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl border-none bg-black p-0 shadow-[0_0_0_1px_rgba(255,255,255,0.1)]">
+      <DialogContent className="max-w-sm border-none bg-black p-0 shadow-[0_0_0_1px_rgba(255,255,255,0.1)]">
         <video
           src={video.url}
-          className="aspect-video w-full rounded-2xl"
+          className="aspect-[9/16] w-full rounded-2xl"
           controls
           autoPlay
           playsInline

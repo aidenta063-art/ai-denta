@@ -1,12 +1,13 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { requireRole } from "@/lib/authz";
 import { Role } from "@/generated/prisma/enums";
 import type { Locale } from "@/i18n/routing";
-import { setHeroVideo, clearHeroVideo } from "@/services/content/cms.service";
+import { setHeroVideo, clearHeroVideo, CMS_TAGS } from "@/services/content/cms.service";
 
 async function revalidateHomepage(locale: Locale) {
+  updateTag(CMS_TAGS.heroVideo);
   revalidatePath("/ar");
   revalidatePath("/en");
   revalidatePath(`/${locale}/dashboard/content/hero`);

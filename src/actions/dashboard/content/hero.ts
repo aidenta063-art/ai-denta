@@ -1,10 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { requireRole } from "@/lib/authz";
 import { Role } from "@/generated/prisma/enums";
 import type { Locale } from "@/i18n/routing";
-import { saveHeroContent } from "@/services/content/cms.service";
+import { saveHeroContent, CMS_TAGS } from "@/services/content/cms.service";
 import { heroFormSchema } from "@/lib/validation/cms.schema";
 
 export type HeroActionState = {
@@ -33,6 +33,7 @@ export async function saveHeroAction(
   }
 
   await saveHeroContent(parsed.data, session.user.id);
+  updateTag(CMS_TAGS.heroContent);
   revalidatePath("/ar");
   revalidatePath("/en");
   revalidatePath(`/${locale}/dashboard/content/hero`);

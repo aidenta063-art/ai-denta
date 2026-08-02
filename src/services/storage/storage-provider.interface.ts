@@ -34,4 +34,20 @@ export interface StorageProvider {
     key: string;
     contentType: string;
   }): Promise<PresignedUpload>;
+  /**
+   * Stitches a set of already-uploaded temporary objects (each uploaded
+   * in parallel via its own getPresignedUploadUrl — see
+   * storage.service.ts's chunked upload flow) into one final object via
+   * server-side multipart-copy, then deletes the temporary objects.
+   *
+   * Browsers can't read the ETag response header from a presigned PUT
+   * (R2's CORS policy doesn't expose it), which rules out true
+   * client-driven S3 multipart upload. Copying server-side sidesteps
+   * that entirely: the SDK reads ETags directly, no CORS involved.
+   */
+  completeChunkedUpload?(input: {
+    finalKey: string;
+    contentType: string;
+    partKeys: string[];
+  }): Promise<{ url: string }>;
 }

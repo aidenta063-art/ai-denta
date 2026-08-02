@@ -1,15 +1,17 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { requireRole } from "@/lib/authz";
 import { Role } from "@/generated/prisma/enums";
 import type { Locale } from "@/i18n/routing";
 import {
   setFreeBookingIntroVideo,
   clearFreeBookingIntroVideo,
+  CMS_TAGS,
 } from "@/services/content/cms.service";
 
 async function revalidateFreeBookingPage(locale: Locale) {
+  updateTag(CMS_TAGS.freeBookingIntro);
   revalidatePath("/ar/booking/free");
   revalidatePath("/en/booking/free");
   revalidatePath(`/${locale}/dashboard/content/free-booking-intro`);
