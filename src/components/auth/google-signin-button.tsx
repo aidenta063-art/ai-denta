@@ -23,11 +23,17 @@ function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: st
   );
 }
 
-export function GoogleSignInButton({ locale }: { locale: Locale }) {
+export function GoogleSignInButton({
+  locale,
+  next,
+}: {
+  locale: Locale;
+  next?: string;
+}) {
   const t = useTranslations("Auth");
 
   return (
-    <form action={googleSignInAction.bind(null, locale)}>
+    <form action={googleSignInAction.bind(null, locale, next)}>
       <SubmitButton
         label={t("continueWithGoogle")}
         pendingLabel={t("continueWithGooglePending")}

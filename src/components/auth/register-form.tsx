@@ -19,9 +19,11 @@ import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 export function RegisterForm({
   locale,
   googleEnabled,
+  next,
 }: {
   locale: Locale;
   googleEnabled: boolean;
+  next?: string;
 }) {
   const t = useTranslations("Auth");
   const [state, formAction, isPending] = useActionState<
@@ -38,7 +40,12 @@ export function RegisterForm({
         </Alert>
         <Button
           className="h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
-          render={<Link href="/login" locale={locale} />}
+          render={
+            <Link
+              href={next ? { pathname: "/login", query: { next } } : "/login"}
+              locale={locale}
+            />
+          }
         >
           {t("login.submit")}
         </Button>
@@ -50,7 +57,7 @@ export function RegisterForm({
     <div className="flex flex-col gap-5">
       {googleEnabled && (
         <>
-          <GoogleSignInButton locale={locale} />
+          <GoogleSignInButton locale={locale} next={next} />
           <div className="flex items-center gap-3 text-xs font-medium tracking-wide text-muted-foreground uppercase">
             <span className="h-px flex-1 bg-border" />
             {t("orDivider")}
@@ -113,7 +120,7 @@ export function RegisterForm({
         <p className="text-center text-sm text-muted-foreground">
           {t("register.hasAccount")}{" "}
           <Link
-            href="/login"
+            href={next ? { pathname: "/login", query: { next } } : "/login"}
             locale={locale}
             className="font-medium text-[#7E00C9]"
           >

@@ -7,6 +7,7 @@ import { Role } from "@/generated/prisma/enums";
 import { loginSchema } from "@/lib/validation/auth.schema";
 import { checkActionRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { isSafeRedirectPath } from "@/lib/safe-redirect";
 import type { Locale } from "@/i18n/routing";
 
 export type LoginState = {
@@ -15,6 +16,7 @@ export type LoginState = {
 
 export async function loginAction(
   locale: Locale,
+  next: string | undefined,
   _prevState: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
@@ -42,7 +44,11 @@ export async function loginAction(
     select: { role: true },
   });
   const isStaff = user?.role === Role.ADMIN || user?.role === Role.STAFF;
-  const redirectTo = isStaff ? `/${locale}/dashboard` : `/${locale}`;
+  const redirectTo = isSafeRedirectPath(next)
+    ? next
+    : isStaff
+      ? `/${locale}/dashboard`
+      : `/${locale}`;
 
   try {
     await signIn("credentials", {

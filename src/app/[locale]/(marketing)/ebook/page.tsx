@@ -4,12 +4,14 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { routing } from "@/i18n/routing";
+import { redirect } from "@/i18n/navigation";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
 import { EbookCover } from "@/components/marketing/ebook-cover";
 import { EbookOrderForm } from "@/components/ebook/ebook-order-form";
 import { createEbookOrderAction } from "@/actions/ebook/create-ebook-order";
 import { PATIENT_FLOW_EBOOK } from "@/lib/ebook";
+import { auth } from "@/lib/auth";
 
 export async function generateMetadata({
   params,
@@ -29,6 +31,15 @@ export default async function EbookPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+
+  const session = await auth();
+  if (!session?.user) {
+    redirect({
+      href: { pathname: "/login", query: { next: `/${locale}/ebook` } },
+      locale,
+    });
+    return null;
+  }
 
   const t = await getTranslations("Ebook");
   const description = t.raw("description") as string[];

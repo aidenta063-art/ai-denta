@@ -4,8 +4,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Download, FileText } from "lucide-react";
 import { routing } from "@/i18n/routing";
+import { redirect } from "@/i18n/navigation";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { getFreePdf } from "@/services/content/cms.service";
+import { auth } from "@/lib/auth";
 
 export async function generateMetadata({
   params,
@@ -25,6 +27,15 @@ export default async function FreePdfPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+
+  const session = await auth();
+  if (!session?.user) {
+    redirect({
+      href: { pathname: "/login", query: { next: `/${locale}/free-pdf` } },
+      locale,
+    });
+    return null;
+  }
 
   const t = await getTranslations("FreePdf");
   const pdf = await getFreePdf();

@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
@@ -36,9 +36,14 @@ export default async function FreeBookingPage({
   const t = await getTranslations("Booking.free");
 
   const session = await auth();
-  const alreadyUsed = session?.user
-    ? await hasUsedFreeConsultation(session.user.id)
-    : false;
+  if (!session?.user) {
+    redirect({
+      href: { pathname: "/login", query: { next: `/${locale}/booking/free` } },
+      locale,
+    });
+    return null;
+  }
+  const alreadyUsed = await hasUsedFreeConsultation(session.user.id);
   const introVideo = alreadyUsed ? null : await getFreeBookingIntroVideo();
 
   return (

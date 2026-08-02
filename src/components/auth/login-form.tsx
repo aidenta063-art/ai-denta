@@ -15,12 +15,14 @@ import { GoogleSignInButton } from "@/components/auth/google-signin-button";
 export function LoginForm({
   locale,
   googleEnabled,
+  next,
 }: {
   locale: Locale;
   googleEnabled: boolean;
+  next?: string;
 }) {
   const t = useTranslations("Auth");
-  const action = loginAction.bind(null, locale);
+  const action = loginAction.bind(null, locale, next);
   const [state, formAction, isPending] = useActionState<LoginState, FormData>(
     action,
     {},
@@ -30,7 +32,7 @@ export function LoginForm({
     <div className="flex flex-col gap-5">
       {googleEnabled && (
         <>
-          <GoogleSignInButton locale={locale} />
+          <GoogleSignInButton locale={locale} next={next} />
           <div className="flex items-center gap-3 text-xs font-medium tracking-wide text-muted-foreground uppercase">
             <span className="h-px flex-1 bg-border" />
             {t("orDivider")}
@@ -87,7 +89,7 @@ export function LoginForm({
         <p className="text-center text-sm text-muted-foreground">
           {t("login.noAccount")}{" "}
           <Link
-            href="/register"
+            href={next ? { pathname: "/register", query: { next } } : "/register"}
             locale={locale}
             className="font-medium text-[#7E00C9]"
           >

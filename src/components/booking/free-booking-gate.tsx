@@ -28,7 +28,7 @@ export function FreeBookingGate({
 
   if (showForm) {
     return (
-      <BrandedCard title={formTitle} className="max-w-xl lg:max-w-2xl">
+      <BrandedCard title={formTitle} className="max-w-xl lg:max-w-3xl xl:max-w-4xl">
         <IntakeForm action={action} />
       </BrandedCard>
     );

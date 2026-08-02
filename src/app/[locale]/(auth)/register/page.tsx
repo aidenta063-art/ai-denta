@@ -18,12 +18,15 @@ export async function generateMetadata({
 
 export default async function RegisterPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ next?: string }>;
 }) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const { next } = await searchParams;
   const t = await getTranslations("Auth.register");
   const googleEnabled = Boolean(
     process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
@@ -31,7 +34,7 @@ export default async function RegisterPage({
 
   return (
     <BrandedCard title={t("title")}>
-      <RegisterForm locale={locale} googleEnabled={googleEnabled} />
+      <RegisterForm locale={locale} googleEnabled={googleEnabled} next={next} />
     </BrandedCard>
   );
 }

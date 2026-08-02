@@ -22,7 +22,7 @@ export function PurpleGlowSection({
         className="pointer-events-none absolute top-1/3 -right-24 size-96 rounded-full bg-[#B98AE8] opacity-30 blur-[110px]"
         aria-hidden
       />
-      <div className="relative">{children}</div>
+      <div className="relative w-full">{children}</div>
     </section>
   );
 }

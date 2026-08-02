@@ -2,7 +2,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
@@ -12,6 +12,7 @@ import { SlotStatus } from "@/generated/prisma/enums";
 import { IntakeForm } from "@/components/booking/intake-form";
 import { createPaidBookingHoldAction } from "@/actions/booking/create-paid-booking-hold";
 import { formatSlotTimeRange } from "@/lib/timezone";
+import { auth } from "@/lib/auth";
 
 export default async function ConfirmPaidSlotPage({
   params,
@@ -21,6 +22,18 @@ export default async function ConfirmPaidSlotPage({
   const { locale, slotId } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+
+  const session = await auth();
+  if (!session?.user) {
+    redirect({
+      href: {
+        pathname: "/login",
+        query: { next: `/${locale}/booking/paid/${slotId}` },
+      },
+      locale,
+    });
+    return null;
+  }
 
   const t = await getTranslations("Booking.paid");
   const slot = await prisma.slot.findUnique({ where: { id: slotId } });
@@ -39,7 +52,7 @@ export default async function ConfirmPaidSlotPage({
         className={
           !slot || slot.status !== SlotStatus.OPEN
             ? undefined
-            : "max-w-xl lg:max-w-2xl"
+            : "max-w-xl lg:max-w-3xl xl:max-w-4xl"
         }
       >
         {!slot || slot.status !== SlotStatus.OPEN ? (
