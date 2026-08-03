@@ -59,8 +59,16 @@ export function isWithinUploadSizeLimit(sizeBytes: number): boolean {
   return sizeBytes <= MAX_UPLOAD_BYTES;
 }
 
+// Only plain alphanumeric extensions (jpg, mp4, pdf, ...) are kept — this
+// blocks path-traversal sequences (`../`), null bytes, and any other
+// characters an attacker could smuggle in via a crafted upload filename.
+const SAFE_EXTENSION = /^[a-z0-9]{1,10}$/i;
+
 function generateKey(originalName: string): string {
-  const ext = originalName.includes(".") ? originalName.split(".").pop() : "";
+  const rawExt = originalName.includes(".")
+    ? originalName.split(".").pop()!
+    : "";
+  const ext = SAFE_EXTENSION.test(rawExt) ? rawExt.toLowerCase() : "";
   return `${crypto.randomUUID()}${ext ? `.${ext}` : ""}`;
 }
 

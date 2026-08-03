@@ -1,29 +1,18 @@
 import { headers } from "next/headers";
-
-interface Bucket {
-  count: number;
-  resetAt: number;
-}
+import { prisma } from "@/lib/prisma";
 
 /**
- * In-memory fixed-window limiter. Fine for a single Node process (this
- * project's current deployment target); move to a shared store (Redis/
- * Upstash) before running multiple instances, since counts here don't
- * cross processes.
+ * Fixed-window limiter backed by Postgres (RateLimitBucket). Vercel runs
+ * each request on one of several independent serverless instances, so an
+ * in-memory counter doesn't see traffic that lands on a different
+ * instance — a shared store is required for the limit to mean anything.
+ * This reuses the app's existing Postgres/Prisma connection rather than
+ * adding a new service (e.g. Redis/Upstash).
+ *
+ * The upsert is a single atomic statement: concurrent callers racing on
+ * the same key still serialize correctly through Postgres's row lock,
+ * so the count can't be under-reported the way a read-then-write would.
  */
-const buckets = new Map<string, Bucket>();
-
-// Periodic sweep so the map doesn't grow unbounded across a long-running process.
-setInterval(
-  () => {
-    const now = Date.now();
-    for (const [key, bucket] of buckets) {
-      if (bucket.resetAt < now) buckets.delete(key);
-    }
-  },
-  10 * 60_000,
-).unref?.();
-
 export interface RateLimitOptions {
   limit: number;
   windowMs: number;
@@ -34,24 +23,27 @@ export interface RateLimitResult {
   remaining: number;
 }
 
-export function checkRateLimit(
+export async function checkRateLimit(
   key: string,
   { limit, windowMs }: RateLimitOptions,
-): RateLimitResult {
-  const now = Date.now();
-  const bucket = buckets.get(key);
+): Promise<RateLimitResult> {
+  const now = new Date();
+  const resetAt = new Date(now.getTime() + windowMs);
 
-  if (!bucket || bucket.resetAt < now) {
-    buckets.set(key, { count: 1, resetAt: now + windowMs });
-    return { allowed: true, remaining: limit - 1 };
-  }
+  const rows = await prisma.$queryRaw<{ count: number }[]>`
+    INSERT INTO "RateLimitBucket" AS b (key, count, "resetAt")
+    VALUES (${key}, 1, ${resetAt})
+    ON CONFLICT (key) DO UPDATE SET
+      count = CASE WHEN b."resetAt" < ${now} THEN 1 ELSE b.count + 1 END,
+      "resetAt" = CASE WHEN b."resetAt" < ${now} THEN ${resetAt} ELSE b."resetAt" END
+    RETURNING count
+  `;
 
-  if (bucket.count >= limit) {
+  const count = rows[0].count;
+  if (count > limit) {
     return { allowed: false, remaining: 0 };
   }
-
-  bucket.count++;
-  return { allowed: true, remaining: limit - bucket.count };
+  return { allowed: true, remaining: limit - count };
 }
 
 /**

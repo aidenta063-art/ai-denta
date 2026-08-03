@@ -11,6 +11,8 @@ import { prisma } from "@/lib/prisma";
 import { localized } from "@/lib/i18n-content";
 import { formatSlotTimeRange } from "@/lib/timezone";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
+import { requireOwnerOrStaff } from "@/lib/authz";
+import { Role } from "@/generated/prisma/enums";
 
 export default async function PaymentPendingPage({
   params,
@@ -29,6 +31,8 @@ export default async function PaymentPendingPage({
   });
 
   if (!booking || !booking.slot) notFound();
+
+  await requireOwnerOrStaff(booking.userId, [Role.ADMIN, Role.STAFF], locale);
 
   const formattedDate = formatSlotTimeRange(
     booking.slot.startAt,

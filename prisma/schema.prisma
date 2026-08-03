@@ -358,3 +358,14 @@ model PageView {
   @@index([createdAt])
   @@index([visitorId])
 }
+
+/** Fixed-window counters backing checkRateLimit() (see src/lib/rate-limit.ts).
+ * Stored in Postgres rather than in-memory so limits hold across the
+ * separate serverless instances a Vercel deployment runs requests on. */
+model RateLimitBucket {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+
+  @@index([resetAt])
+}

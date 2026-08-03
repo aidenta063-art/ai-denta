@@ -10,6 +10,8 @@ import { BrandedCard } from "@/components/marketing/branded-card";
 import { prisma } from "@/lib/prisma";
 import { localized } from "@/lib/i18n-content";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
+import { requireOwnerOrStaff } from "@/lib/authz";
+import { Role } from "@/generated/prisma/enums";
 
 export default async function BookingConfirmationPage({
   params,
@@ -28,6 +30,8 @@ export default async function BookingConfirmationPage({
   });
 
   if (!booking) notFound();
+
+  await requireOwnerOrStaff(booking.userId, [Role.ADMIN, Role.STAFF], locale);
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">

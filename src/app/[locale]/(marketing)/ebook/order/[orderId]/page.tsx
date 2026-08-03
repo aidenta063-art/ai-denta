@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
 import { getEbookOrder } from "@/services/ebook/ebook.service";
-import { EbookOrderStatus } from "@/generated/prisma/enums";
+import { EbookOrderStatus, Role } from "@/generated/prisma/enums";
+import { requireOwnerOrStaff } from "@/lib/authz";
 
 export default async function EbookOrderPage({
   params,
@@ -22,6 +23,8 @@ export default async function EbookOrderPage({
   const t = await getTranslations("Ebook.order");
   const order = await getEbookOrder(orderId);
   if (!order) notFound();
+
+  await requireOwnerOrStaff(order.userId, [Role.ADMIN, Role.STAFF], locale);
 
   const isPaid = order.status === EbookOrderStatus.PAID;
 
