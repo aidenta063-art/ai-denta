@@ -236,8 +236,10 @@
         "slotNoLongerAvailable": "This time was just taken. Please pick another.",
         "rateLimited": "Too many attempts. Please wait a bit and try again."
       },
-      "pendingTitle": "Almost done",
-      "pendingDescription": "Your slot is reserved. Our team will confirm your payment and finalize your appointment shortly.",
+      "pendingTitle": "Complete your payment",
+      "pendingDescription": "Your slot is reserved for a short while — complete the payment below to confirm your appointment.",
+      "confirmedTitle": "Appointment confirmed",
+      "confirmedDescription": "Your payment is confirmed and your appointment is booked.",
       "consultationLabel": "Consultation",
       "priceLabel": "Price",
       "backHome": "Back to homepage"
@@ -398,14 +400,36 @@
       "rateLimited": "Too many attempts. Please wait a bit and try again."
     },
     "order": {
-      "pendingTitle": "Order received!",
-      "pendingDescription": "Thanks for your order. Our team will contact you shortly by WhatsApp or phone to complete payment. Once confirmed, your download link will appear right here.",
+      "pendingTitle": "Complete your payment",
+      "pendingDescription": "Complete the payment below and your download link will appear right here once it's confirmed.",
       "paidTitle": "You're all set!",
       "paidDescription": "Payment confirmed — your copy is ready to download.",
       "orderLabel": "Order",
       "priceLabel": "Price",
       "downloadCta": "Download the PDF",
       "backHome": "Back to homepage"
+    }
+  },
+  "Payment": {
+    "amountDue": "Amount due",
+    "instapayLabel": "Pay via InstaPay",
+    "instapayCta": "Open InstaPay link",
+    "vodafoneCashLabel": "Or send via Vodafone Cash",
+    "copyNumber": "Copy number",
+    "copied": "Copied",
+    "instructions": "Choose either payment method above and transfer the amount due, then send us proof of the transfer.",
+    "sendProofCta": "Send Payment Proof via WhatsApp",
+    "booking": {
+      "proofNotice": "After completing the transfer, please send a screenshot as proof of payment via WhatsApp so we can review it and confirm your booking.",
+      "whatsappMessage": "Hello, I've completed the payment and attached a screenshot as proof. Please review and confirm my booking. (Ref: {reference})",
+      "receivedTitle": "Request received!",
+      "receivedDescription": "We're reviewing your payment. Your booking will be confirmed as soon as the transfer is verified."
+    },
+    "ebook": {
+      "proofNotice": "After completing the transfer, please send a screenshot as proof of payment via WhatsApp so we can review it and confirm your order.",
+      "whatsappMessage": "Hello, I've completed the payment and attached a screenshot as proof. Please review and confirm my ebook order. (Ref: {reference})",
+      "receivedTitle": "Request received!",
+      "receivedDescription": "We're reviewing your payment. Your order will be confirmed as soon as the transfer is verified."
     }
   },
   "FreePdf": {

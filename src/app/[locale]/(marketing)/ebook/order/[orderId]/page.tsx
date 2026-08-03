@@ -3,10 +3,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Clock, CheckCircle2, Download } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
+import { PaymentPanel } from "@/components/payment/payment-panel";
 import { getEbookOrder } from "@/services/ebook/ebook.service";
 import { EbookOrderStatus, Role } from "@/generated/prisma/enums";
 import { requireOwnerOrStaff } from "@/lib/authz";
@@ -38,6 +38,7 @@ export default async function EbookOrderPage({
       <BrandedCard
         title={isPaid ? t("paidTitle") : t("pendingTitle")}
         description={isPaid ? t("paidDescription") : t("pendingDescription")}
+        className={isPaid ? undefined : "max-w-xl lg:max-w-2xl"}
       >
         <div className="flex flex-col gap-4">
           <div
@@ -59,12 +60,14 @@ export default async function EbookOrderPage({
               </p>
               <p className="font-medium text-foreground">#{order.id.slice(-8)}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">
-                {t("priceLabel")}
-              </p>
-              <p className="font-medium text-foreground">{formattedPrice}</p>
-            </div>
+            {isPaid && (
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  {t("priceLabel")}
+                </p>
+                <p className="font-medium text-foreground">{formattedPrice}</p>
+              </div>
+            )}
           </div>
 
           {isPaid ? (
@@ -76,13 +79,11 @@ export default async function EbookOrderPage({
               {t("downloadCta")}
             </Button>
           ) : (
-            <Button
-              variant="outline"
-              className="h-11 text-base"
-              render={<Link href="/" locale={locale} />}
-            >
-              {t("backHome")}
-            </Button>
+            <PaymentPanel
+              kind="ebook"
+              amountLabel={formattedPrice}
+              reference={order.id.slice(-8)}
+            />
           )}
         </div>
       </BrandedCard>
