@@ -27,6 +27,32 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
   const [hovering, setHovering] = useState(false);
   const startX = useRef<number | null>(null);
   const suppressClickRef = useRef(false);
+  // Shared across every VideoSlide instance so the loop's first/last clones
+  // (which reference the same URL as a real slide) don't each independently
+  // re-fetch the whole file — see VideoSlide's preload effect.
+  const loadedUrlsRef = useRef<Set<string>>(new Set());
+
+  // This section sits below the fold; don't start pulling multi-MB video
+  // files over the network until the carousel is actually about to be
+  // seen, or they'd compete with the rest of the page's initial load.
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [nearViewport, setNearViewport] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNearViewport(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "800px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const goTo = useCallback((next: number) => {
     setWithTransition(true);
@@ -87,6 +113,7 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
 
   return (
     <div
+      ref={containerRef}
       className="relative mx-auto w-full max-w-xs sm:max-w-sm"
       dir="ltr"
       onMouseEnter={() => setHovering(true)}
@@ -113,7 +140,9 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
               <VideoSlide
                 video={video}
                 isActive={i === index}
-                shouldPreload={Math.abs(i - index) <= 2}
+                nearViewport={nearViewport}
+                shouldPreload={nearViewport && Math.abs(i - index) <= 1}
+                loadedUrlsRef={loadedUrlsRef}
                 onOpenChange={setLightboxOpen}
               />
             </div>
@@ -162,16 +191,19 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
 function VideoSlide({
   video,
   isActive,
+  nearViewport,
   shouldPreload,
+  loadedUrlsRef,
   onOpenChange,
 }: {
   video: VideoItem;
   isActive: boolean;
+  nearViewport: boolean;
   shouldPreload: boolean;
+  loadedUrlsRef: React.RefObject<Set<string>>;
   onOpenChange: (open: boolean) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const hasTriggeredLoadRef = useRef(false);
 
   // The `preload` attribute is only a hint the browser consults once, the
   // first time it runs resource selection for the element — flipping it
@@ -179,22 +211,27 @@ function VideoSlide({
   // preload window) does nothing on its own. Calling load() explicitly
   // re-runs resource selection against the *current* preload value, so
   // this is what actually starts buffering ahead of time.
+  //
+  // The loop's first/last slides are cloned (see slides above) so the
+  // same video URL can back two separate <video> elements at once —
+  // without the shared loadedUrlsRef guard, each clone would trigger its
+  // own full fetch of the same file.
   useEffect(() => {
     const el = videoRef.current;
-    if (!el || !shouldPreload || hasTriggeredLoadRef.current) return;
-    hasTriggeredLoadRef.current = true;
+    if (!el || !shouldPreload || loadedUrlsRef.current.has(video.url)) return;
+    loadedUrlsRef.current.add(video.url);
     el.load();
-  }, [shouldPreload]);
+  }, [shouldPreload, video.url, loadedUrlsRef]);
 
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
-    if (isActive) {
+    if (isActive && nearViewport) {
       el.play().catch(() => {});
     } else {
       el.pause();
     }
-  }, [isActive]);
+  }, [isActive, nearViewport]);
 
   return (
     <Dialog onOpenChange={onOpenChange}>
