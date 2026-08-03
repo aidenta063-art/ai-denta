@@ -31,9 +31,12 @@ export default async function LoginPage({
   const googleEnabled = Boolean(
     process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
   );
+  const contextDescription = next?.includes("/free-pdf")
+    ? t("freePdfContext")
+    : undefined;
 
   return (
-    <BrandedCard title={t("title")}>
+    <BrandedCard title={t("title")} description={contextDescription}>
       <LoginForm locale={locale} googleEnabled={googleEnabled} next={next} />
     </BrandedCard>
   );

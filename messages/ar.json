@@ -143,7 +143,8 @@
       "submit": "تسجيل الدخول",
       "forgotPassword": "نسيت كلمة المرور؟",
       "noAccount": "معندكش حساب؟",
-      "registerLink": "أنشئ حساب"
+      "registerLink": "أنشئ حساب",
+      "freePdfContext": "سجل دخول علشان تحصل على الكتاب"
     },
     "register": {
       "title": "إنشاء حساب",
@@ -395,6 +396,7 @@
       "email": { "label": "البريد الإلكتروني", "placeholder": "اكتب بريدك الإلكتروني" }
     },
     "submit": "اطلب الكتاب",
+    "loginToBuyDescription": "سجل دخولك الأول عشان تكمل عملية الشراء.",
     "errors": {
       "invalidInput": "من فضلك راجع بياناتك وحاول تاني.",
       "rateLimited": "محاولات كتير أوي. استنى شوية وحاول تاني."

@@ -4,9 +4,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { redirect } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
+import { Button } from "@/components/ui/button";
 import { EbookCover } from "@/components/marketing/ebook-cover";
 import { EbookOrderForm } from "@/components/ebook/ebook-order-form";
 import { createEbookOrderAction } from "@/actions/ebook/create-ebook-order";
@@ -33,14 +34,6 @@ export default async function EbookPage({
   setRequestLocale(locale);
 
   const session = await auth();
-  if (!session?.user) {
-    redirect({
-      href: { pathname: "/login", query: { next: `/${locale}/ebook` } },
-      locale,
-    });
-    return null;
-  }
-
   const t = await getTranslations("Ebook");
   const description = t.raw("description") as string[];
   const toc = t.raw("toc") as string[];
@@ -113,7 +106,29 @@ export default async function EbookPage({
 
         <div className="mx-auto w-full max-w-md">
           <BrandedCard title={t("formTitle")}>
-            <EbookOrderForm action={createEbookOrderAction.bind(null, locale)} />
+            {session?.user ? (
+              <EbookOrderForm action={createEbookOrderAction.bind(null, locale)} />
+            ) : (
+              <div className="flex flex-col gap-3">
+                <p className="text-sm text-muted-foreground">
+                  {t("loginToBuyDescription")}
+                </p>
+                <Button
+                  className="h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+                  render={
+                    <Link
+                      href={{
+                        pathname: "/login",
+                        query: { next: `/${locale}/ebook` },
+                      }}
+                      locale={locale}
+                    />
+                  }
+                >
+                  {t("submit")}
+                </Button>
+              </div>
+            )}
           </BrandedCard>
         </div>
       </div>
