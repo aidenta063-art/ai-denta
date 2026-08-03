@@ -20,7 +20,7 @@ export function BrandedCard({
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={cn("relative w-full max-w-md lg:max-w-lg", className)}
+      className={cn("relative mx-auto w-full max-w-md lg:max-w-lg", className)}
     >
       <div
         className="absolute inset-x-10 -top-4 h-8 rounded-full bg-[#7E00C9]/50 blur-2xl"

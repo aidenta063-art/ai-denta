@@ -35,7 +35,7 @@ export function FreeBookingGate({
   }
 
   return (
-    <div className="flex w-full max-w-4xl flex-col items-center gap-8 px-2 text-center">
+    <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-2 text-center">
       {videoUrl && (
         <AutoplaySoundVideo videoUrl={videoUrl} className="w-full" />
       )}
