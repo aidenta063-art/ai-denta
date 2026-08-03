@@ -12,6 +12,8 @@ const DOT_STYLES: Record<string, string> = {
   FAILED: "bg-red-500",
   REFUNDED: "bg-gray-400",
   MANUALLY_MARKED_PAID: "bg-green-500",
+  APPROVED: "bg-green-500",
+  REJECTED: "bg-red-500",
 };
 
 export function StatusBadge({ status }: { status: string }) {

@@ -103,6 +103,26 @@
       "title": "Turn your patients into loyal clients",
       "subtitle": "A practical guide to the internal system every clinic needs before spending a single pound on ads.",
       "cta": "Get the Ebook"
+    },
+    "reviews": {
+      "eyebrow": "Client Reviews",
+      "title": "What our clients say",
+      "subtitle": "Real feedback from the clinics we've worked with.",
+      "empty": "Be the first to share your experience.",
+      "formTitle": "Share your experience",
+      "nameLabel": "Your name",
+      "namePlaceholder": "Enter your name",
+      "ratingLabel": "Your rating",
+      "textLabel": "Your review",
+      "textPlaceholder": "Tell us about your experience...",
+      "submit": "Submit Review",
+      "submitting": "Sending...",
+      "successTitle": "Thank you!",
+      "successDescription": "Your review has been received and will appear here once it's approved.",
+      "errors": {
+        "invalidInput": "Please check your input and try again.",
+        "rateLimited": "Too many attempts. Please wait a bit and try again."
+      }
     }
   },
   "Footer": {

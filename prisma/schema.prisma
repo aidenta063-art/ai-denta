@@ -23,6 +23,12 @@ enum ConsultationKind {
   PAID
 }
 
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum SlotStatus {
   OPEN
   HELD
@@ -94,6 +100,7 @@ model User {
   updatedCmsSections        CmsSection[]         @relation("CmsSectionUpdatedBy")
   ebookOrders               EbookOrder[]
   manuallyMarkedEbookOrders EbookOrder[]         @relation("EbookOrderManuallyMarkedBy")
+  reviewedReviews           Review[]             @relation("ReviewReviewedBy")
 
   @@index([role])
 }
@@ -368,4 +375,25 @@ model RateLimitBucket {
   resetAt DateTime
 
   @@index([resetAt])
+}
+
+// ---------- Reviews ----------
+
+/** Public testimonials — anyone can submit one (no login required), but
+ * it only shows on the site once staff approve it here. */
+model Review {
+  id     String       @id @default(cuid())
+  name   String
+  rating Int
+  text   String       @db.Text
+  status ReviewStatus @default(PENDING)
+
+  reviewedAt       DateTime?
+  reviewedByUserId String?
+  reviewedBy       User?     @relation("ReviewReviewedBy", fields: [reviewedByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([status])
+  @@index([createdAt])
 }
