@@ -218,7 +218,17 @@ function VideoSlide({
   // own full fetch of the same file.
   useEffect(() => {
     const el = videoRef.current;
-    if (!el || !shouldPreload || loadedUrlsRef.current.has(video.url)) return;
+    if (
+      !el ||
+      !shouldPreload ||
+      loadedUrlsRef.current.has(video.url) ||
+      // NETWORK_EMPTY (0): resource selection hasn't run for this element
+      // yet. Anything past that means it's already loading/loaded, so
+      // calling load() again would only abort and restart the fetch.
+      el.networkState !== HTMLMediaElement.NETWORK_EMPTY
+    ) {
+      return;
+    }
     loadedUrlsRef.current.add(video.url);
     el.load();
   }, [shouldPreload, video.url, loadedUrlsRef]);
