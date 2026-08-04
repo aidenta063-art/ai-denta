@@ -13,11 +13,13 @@ export function FreeBookingGate({
   locale,
   videoUrl,
   formTitle,
+  isLoggedIn,
   action,
 }: {
   locale: Locale;
   videoUrl: string | null;
   formTitle: string;
+  isLoggedIn: boolean;
   action: (
     prevState: IntakeFormState,
     formData: FormData,
@@ -55,14 +57,33 @@ export function FreeBookingGate({
         >
           {t("paidOption")}
         </Button>
-        <Button
-          size="lg"
-          variant="outline"
-          className="h-12 w-full border-white/30 bg-transparent text-base text-white hover:bg-white/10"
-          onClick={() => setShowForm(true)}
-        >
-          {t("freeOption")}
-        </Button>
+        {isLoggedIn ? (
+          <Button
+            size="lg"
+            variant="outline"
+            className="h-12 w-full border-white/30 bg-transparent text-base text-white hover:bg-white/10"
+            onClick={() => setShowForm(true)}
+          >
+            {t("freeOption")}
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            variant="outline"
+            className="h-12 w-full border-white/30 bg-transparent text-base text-white hover:bg-white/10"
+            render={
+              <Link
+                href={{
+                  pathname: "/login",
+                  query: { next: `/${locale}/booking/free` },
+                }}
+                locale={locale}
+              />
+            }
+          >
+            {t("freeOption")}
+          </Button>
+        )}
       </div>
     </div>
   );

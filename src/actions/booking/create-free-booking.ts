@@ -29,10 +29,21 @@ export async function createFreeBookingAction(
     return { error: "invalidInput" };
   }
 
+  // The intro/gate page is public now (see proxy.ts), so this is the
+  // actual enforcement point for "must be logged in to book" — not just
+  // a client-side nicety.
   const session = await auth();
+  if (!session?.user) {
+    redirect({
+      href: { pathname: "/login", query: { next: `/${locale}/booking/free` } },
+      locale,
+    });
+    return {};
+  }
+
   const result = await createFreeBooking({
     ...parsed.data,
-    userId: session?.user?.id,
+    userId: session.user.id,
   });
 
   if ("error" in result) {

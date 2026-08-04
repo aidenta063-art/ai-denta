@@ -7,14 +7,10 @@ const intlMiddleware = createMiddleware(routing);
 
 // Prefix match against the pathname with its locale segment stripped —
 // covers both the page itself and any sub-paths (e.g. /booking/paid/[slotId]).
-// /ebook itself (the landing page) is intentionally public — only placing
-// an order (/ebook/order) requires login.
-const PROTECTED_PREFIXES = [
-  "/booking/free",
-  "/booking/paid",
-  "/ebook/order",
-  "/free-pdf",
-];
+// /ebook (landing) and /booking/free (intro video + choice) are
+// intentionally public — only actually placing an order/booking requires
+// login, gated at the page/component level instead.
+const PROTECTED_PREFIXES = ["/booking/paid", "/ebook/order", "/free-pdf"];
 
 function isProtectedPath(pathWithoutLocale: string): boolean {
   return PROTECTED_PREFIXES.some(
