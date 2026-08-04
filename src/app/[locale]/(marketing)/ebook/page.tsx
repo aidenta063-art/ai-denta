@@ -10,6 +10,7 @@ import { BrandedCard } from "@/components/marketing/branded-card";
 import { Button } from "@/components/ui/button";
 import { EbookCover } from "@/components/marketing/ebook-cover";
 import { EbookOrderForm } from "@/components/ebook/ebook-order-form";
+import { ReviewsSection } from "@/components/marketing/reviews-section";
 import { createEbookOrderAction } from "@/actions/ebook/create-ebook-order";
 import { PATIENT_FLOW_EBOOK } from "@/lib/ebook";
 import { auth } from "@/lib/auth";
@@ -44,94 +45,99 @@ export default async function EbookPage({
   ).format(PATIENT_FLOW_EBOOK.priceCents / 100);
 
   return (
-    <PurpleGlowSection className="px-4 py-24 sm:py-28">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8">
-        <div className="overflow-hidden rounded-3xl border border-white/60 bg-white/95 shadow-2xl shadow-black/30 backdrop-blur">
-          <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[260px_1fr]">
-            <div className="mx-auto flex w-44 flex-col gap-4 sm:w-52 lg:w-full">
-              <EbookCover locale={locale} />
-              <div className="flex items-center justify-between rounded-xl bg-secondary/60 px-4 py-3">
-                <span className="text-sm text-muted-foreground">
-                  {t("priceLabel")}
-                </span>
-                <span className="text-lg font-bold text-foreground">
-                  {formattedPrice}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-5">
-              <div className="flex flex-col gap-2">
-                <span className="w-fit rounded-full border border-border bg-secondary px-4 py-1 text-sm font-medium text-primary">
-                  {t("eyebrow")}
-                </span>
-                <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
-                  {t("title")}
-                </h1>
-                <p className="text-lg text-muted-foreground">
-                  {t("subtitle")}
-                </p>
-                <p className="text-sm font-medium text-primary">
-                  {t("byAuthors")}
-                </p>
+    <>
+      <PurpleGlowSection className="px-4 py-24 sm:py-28">
+        <div className="mx-auto flex max-w-5xl flex-col gap-8">
+          <div className="overflow-hidden rounded-3xl border border-white/60 bg-white/95 shadow-2xl shadow-black/30 backdrop-blur">
+            <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[260px_1fr]">
+              <div className="mx-auto flex w-44 flex-col gap-4 sm:w-52 lg:w-full">
+                <EbookCover locale={locale} />
+                <div className="flex items-center justify-between rounded-xl bg-secondary/60 px-4 py-3">
+                  <span className="text-sm text-muted-foreground">
+                    {t("priceLabel")}
+                  </span>
+                  <span className="text-lg font-bold text-foreground">
+                    {formattedPrice}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex flex-col gap-3">
-                {description.map((paragraph) => (
-                  <p key={paragraph} className="text-muted-foreground">
-                    {paragraph}
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-2">
+                  <span className="w-fit rounded-full border border-border bg-secondary px-4 py-1 text-sm font-medium text-primary">
+                    {t("eyebrow")}
+                  </span>
+                  <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
+                    {t("title")}
+                  </h1>
+                  <p className="text-lg text-muted-foreground">
+                    {t("subtitle")}
                   </p>
-                ))}
-              </div>
+                  <p className="text-sm font-medium text-primary">
+                    {t("byAuthors")}
+                  </p>
+                </div>
 
-              <div className="flex flex-col gap-3 border-t border-border pt-5">
-                <h2 className="font-semibold text-foreground">
-                  {t("tocTitle")}
-                </h2>
-                <ul className="grid gap-2.5 sm:grid-cols-2">
-                  {toc.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-start gap-2 text-sm text-muted-foreground"
-                    >
-                      <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
-                      <span>{item}</span>
-                    </li>
+                <div className="flex flex-col gap-3">
+                  {description.map((paragraph) => (
+                    <p key={paragraph} className="text-muted-foreground">
+                      {paragraph}
+                    </p>
                   ))}
-                </ul>
+                </div>
+
+                <div className="flex flex-col gap-3 border-t border-border pt-5">
+                  <h2 className="font-semibold text-foreground">
+                    {t("tocTitle")}
+                  </h2>
+                  <ul className="grid gap-2.5 sm:grid-cols-2">
+                    {toc.map((item) => (
+                      <li
+                        key={item}
+                        className="flex items-start gap-2 text-sm text-muted-foreground"
+                      >
+                        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="mx-auto w-full max-w-md">
-          <BrandedCard title={t("formTitle")}>
-            {session?.user ? (
-              <EbookOrderForm action={createEbookOrderAction.bind(null, locale)} />
-            ) : (
-              <div className="flex flex-col gap-3">
-                <p className="text-sm text-muted-foreground">
-                  {t("loginToBuyDescription")}
-                </p>
-                <Button
-                  className="h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
-                  render={
-                    <Link
-                      href={{
-                        pathname: "/login",
-                        query: { next: `/${locale}/ebook` },
-                      }}
-                      locale={locale}
-                    />
-                  }
-                >
-                  {t("submit")}
-                </Button>
-              </div>
-            )}
-          </BrandedCard>
+          <div className="mx-auto w-full max-w-md">
+            <BrandedCard title={t("formTitle")}>
+              {session?.user ? (
+                <EbookOrderForm
+                  action={createEbookOrderAction.bind(null, locale)}
+                />
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    {t("loginToBuyDescription")}
+                  </p>
+                  <Button
+                    className="h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+                    render={
+                      <Link
+                        href={{
+                          pathname: "/login",
+                          query: { next: `/${locale}/ebook` },
+                        }}
+                        locale={locale}
+                      />
+                    }
+                  >
+                    {t("submit")}
+                  </Button>
+                </div>
+              )}
+            </BrandedCard>
+          </div>
         </div>
-      </div>
-    </PurpleGlowSection>
+      </PurpleGlowSection>
+      <ReviewsSection />
+    </>
   );
 }

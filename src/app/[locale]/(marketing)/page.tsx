@@ -9,7 +9,6 @@ import { VideoShowcase } from "@/components/marketing/video-showcase";
 import { WhyUsSection } from "@/components/marketing/why-us-section";
 import { EbookTeaser } from "@/components/marketing/ebook-teaser";
 import { ConsultationCta } from "@/components/marketing/consultation-cta";
-import { ReviewsSection } from "@/components/marketing/reviews-section";
 import { ScrollToHash } from "@/components/marketing/scroll-to-hash";
 import { getHeroContent, getHeroVideo } from "@/services/content/cms.service";
 import { heroContentSchema } from "@/lib/validation/cms.schema";
@@ -83,7 +82,6 @@ export default async function HomePage({
       <WhyUsSection />
       <EbookTeaser locale={locale} />
       <ConsultationCta locale={locale} />
-      <ReviewsSection />
     </>
   );
 }
