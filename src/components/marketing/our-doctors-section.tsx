@@ -12,8 +12,6 @@ export async function OurDoctorsSection({ locale }: { locale: Locale }) {
   const t = await getTranslations("HomePage.doctors");
   const doctors = await listActiveDoctors();
 
-  if (doctors.length === 0) return null;
-
   return (
     <section id="doctors" className="scroll-mt-24 bg-background px-6 py-20">
       <div className="mx-auto max-w-6xl">
@@ -26,6 +24,10 @@ export async function OurDoctorsSection({ locale }: { locale: Locale }) {
           </h2>
           <p className="max-w-2xl text-muted-foreground">{t("subtitle")}</p>
         </ScrollReveal>
+
+        {doctors.length === 0 && (
+          <p className="text-center text-muted-foreground">{t("empty")}</p>
+        )}
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {doctors.map((doctor, i) => {

@@ -78,7 +78,8 @@
       "title": "Real Clinics, Real Results",
       "subtitle": "Meet some of the doctors we've helped grow their practice.",
       "successStoryLabel": "Success Story",
-      "servicesLabel": "Services Provided"
+      "servicesLabel": "Services Provided",
+      "empty": "Doctor case studies are coming soon."
     },
     "cta": {
       "title": "Ready to grow your clinic?",
