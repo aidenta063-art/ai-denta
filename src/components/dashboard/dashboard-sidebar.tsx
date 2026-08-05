@@ -10,6 +10,7 @@ import {
   Settings,
   BookOpen,
   MessageSquareQuote,
+  Stethoscope,
 } from "lucide-react";
 import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/payments", label: "Payments", Icon: CreditCard },
   { href: "/dashboard/ebook-orders", label: "Ebook Orders", Icon: BookOpen },
   { href: "/dashboard/reviews", label: "Reviews", Icon: MessageSquareQuote },
+  { href: "/dashboard/doctors", label: "Our Doctors", Icon: Stethoscope },
   { href: "/dashboard/content", label: "Content", Icon: FileText },
   { href: "/dashboard/settings", label: "Settings", Icon: Settings },
 ] as const;

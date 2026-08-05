@@ -325,6 +325,7 @@ model Media {
 
   cmsSections CmsSectionMedia[]
   services    Service[]
+  doctorPhotoOf Doctor[] @relation("DoctorPhoto")
 }
 
 model CmsSectionMedia {
@@ -396,4 +397,34 @@ model Review {
 
   @@index([status])
   @@index([createdAt])
+}
+
+// ---------- Doctors ----------
+
+/** Case-study cards for the "Our Doctors" homepage section — one per
+ * clinic/doctor we've worked with, with a short success story and the
+ * list of services provided. `services` is a small JSON array
+ * ({ nameEn, nameAr, descriptionEn, descriptionAr }[]) rather than a
+ * relation since it's only ever edited as a whole from the doctor's own
+ * admin form, never queried independently. */
+model Doctor {
+  id         String  @id @default(cuid())
+  nameEn     String
+  nameAr     String
+  locationEn String
+  locationAr String
+  storyEn    String  @db.Text
+  storyAr    String  @db.Text
+  services   Json
+
+  photoMediaId String?
+  photoMedia   Media?  @relation("DoctorPhoto", fields: [photoMediaId], references: [id])
+
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
 }

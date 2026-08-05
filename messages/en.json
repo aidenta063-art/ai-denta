@@ -5,7 +5,7 @@
     "booking": "Book a Consultation",
     "bookingPaid": "Paid Consultation",
     "bookingFree": "Free Consultation",
-    "ourWork": "Our Work",
+    "ourDoctors": "Our Doctors",
     "ourBook": "Our Book",
     "freeGuide": "Free Guide",
     "aboutUs": "About Us",
@@ -72,6 +72,13 @@
       "title": "See the work",
       "subtitle": "A look at the content we produce for clinics like yours.",
       "items": ["Content Creation", "Clinic Spotlight", "Patient Journey"]
+    },
+    "doctors": {
+      "eyebrow": "Our Doctors",
+      "title": "Real Clinics, Real Results",
+      "subtitle": "Meet some of the doctors we've helped grow their practice.",
+      "successStoryLabel": "Success Story",
+      "servicesLabel": "Services Provided"
     },
     "cta": {
       "title": "Ready to grow your clinic?",
