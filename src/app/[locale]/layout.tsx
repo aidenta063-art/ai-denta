@@ -37,6 +37,9 @@ export async function generateMetadata({
       locale: locale === "ar" ? "ar_EG" : "en_US",
       type: "website",
     },
+    verification: {
+      google: "OS9uQiKaCT9O5Jzjl79WZUXmmg7Jbhs1YYufYy-LGoI",
+    },
   };
 }
 
