@@ -21,6 +21,12 @@ export const doctorFormSchema = z.object({
     .trim()
     .transform((v) => (v.length > 0 ? v : undefined))
     .optional(),
+  instagramUrl: z
+    .string()
+    .trim()
+    .max(300)
+    .transform((v) => (v.length > 0 ? v : undefined))
+    .optional(),
 });
 
 export type DoctorServiceInput = z.infer<typeof doctorServiceSchema>;

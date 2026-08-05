@@ -416,6 +416,7 @@ model Doctor {
   storyEn    String  @db.Text
   storyAr    String  @db.Text
   services   Json
+  instagramUrl String?
 
   photoMediaId String?
   photoMedia   Media?  @relation("DoctorPhoto", fields: [photoMediaId], references: [id])

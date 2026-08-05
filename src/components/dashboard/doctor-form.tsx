@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import Image from "next/image";
+import { RiInstagramLine } from "react-icons/ri";
 import {
   createDoctorAction,
   updateDoctorAction,
@@ -27,6 +28,7 @@ type DoctorDefaults = {
   sortOrder: number;
   photoMediaId: string | null;
   photoUrl: string | null;
+  instagramUrl: string | null;
 };
 
 const EMPTY_SERVICE: DoctorServiceInput = {
@@ -198,6 +200,18 @@ export function DoctorForm({
             dir="rtl"
             defaultValue={doctor?.locationAr}
             required
+          />
+        </div>
+        <div className="flex flex-col gap-2 sm:col-span-2">
+          <Label className="flex items-center gap-1.5">
+            <RiInstagramLine className="size-3.5" />
+            Instagram link (optional)
+          </Label>
+          <Input
+            name="instagramUrl"
+            type="url"
+            placeholder="https://instagram.com/..."
+            defaultValue={doctor?.instagramUrl ?? ""}
           />
         </div>
       </div>

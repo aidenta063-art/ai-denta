@@ -61,6 +61,7 @@ export default async function DoctorsPage({
                 sortOrder: doctor.sortOrder,
                 photoMediaId: doctor.photoMediaId,
                 photoUrl: doctor.photoMedia?.url ?? null,
+                instagramUrl: doctor.instagramUrl,
               }}
             />
             <form action={removeAction.bind(null, doctor.id)}>

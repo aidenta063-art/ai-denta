@@ -42,6 +42,7 @@ function parseDoctorForm(formData: FormData) {
     services,
     sortOrder: formData.get("sortOrder"),
     photoMediaId: formData.get("photoMediaId"),
+    instagramUrl: formData.get("instagramUrl"),
   });
 }
 

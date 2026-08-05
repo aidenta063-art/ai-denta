@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
+import { RiInstagramLine } from "react-icons/ri";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { listActiveDoctors } from "@/services/doctors/doctor.service";
 import { localized } from "@/lib/i18n-content";
@@ -64,6 +65,17 @@ export async function OurDoctorsSection({ locale }: { locale: Locale }) {
                         <MapPin className="size-3.5 shrink-0 text-primary" />
                         {localized(locale, doctor.locationEn, doctor.locationAr)}
                       </p>
+                      {doctor.instagramUrl && (
+                        <a
+                          href={doctor.instagramUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-1 flex w-fit items-center gap-1.5 text-sm text-primary transition-colors hover:underline"
+                        >
+                          <RiInstagramLine className="size-3.5 shrink-0" />
+                          Instagram
+                        </a>
+                      )}
                     </div>
 
                     <div className="flex flex-col gap-1.5">
