@@ -6,7 +6,6 @@ import { routing } from "@/i18n/routing";
 import { Hero } from "@/components/marketing/hero";
 import { ServicesSection } from "@/components/marketing/services-section";
 import { VideoShowcase } from "@/components/marketing/video-showcase";
-import { OurDoctorsSection } from "@/components/marketing/our-doctors-section";
 import { WhyUsSection } from "@/components/marketing/why-us-section";
 import { EbookTeaser } from "@/components/marketing/ebook-teaser";
 import { ConsultationCta } from "@/components/marketing/consultation-cta";
@@ -80,7 +79,6 @@ export default async function HomePage({
       />
       <ServicesSection locale={locale} />
       <VideoShowcase />
-      <OurDoctorsSection locale={locale} />
       <WhyUsSection />
       <EbookTeaser locale={locale} />
       <ConsultationCta locale={locale} />

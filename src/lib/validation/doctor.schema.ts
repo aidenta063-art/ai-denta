@@ -16,6 +16,11 @@ export const doctorFormSchema = z.object({
   storyAr: z.string().trim().min(1).max(2000),
   services: z.array(doctorServiceSchema).max(12),
   sortOrder: z.coerce.number().int().min(0).default(0),
+  photoMediaId: z
+    .string()
+    .trim()
+    .transform((v) => (v.length > 0 ? v : undefined))
+    .optional(),
 });
 
 export type DoctorServiceInput = z.infer<typeof doctorServiceSchema>;

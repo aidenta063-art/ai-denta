@@ -13,7 +13,7 @@ export async function OurDoctorsSection({ locale }: { locale: Locale }) {
   const doctors = await listActiveDoctors();
 
   return (
-    <section id="doctors" className="scroll-mt-24 bg-background px-6 py-20">
+    <section id="doctors" className="bg-background px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-6xl">
         <ScrollReveal className="mb-12 flex flex-col items-center gap-3 text-center">
           <span className="rounded-full border border-border bg-secondary px-4 py-1 text-sm font-medium text-primary">

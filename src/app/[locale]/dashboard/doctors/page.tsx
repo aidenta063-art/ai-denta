@@ -4,13 +4,8 @@ import { routing } from "@/i18n/routing";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { listDoctors } from "@/services/doctors/doctor.service";
-import {
-  deleteDoctorAction,
-  setDoctorPhotoAction,
-  clearDoctorPhotoAction,
-} from "@/actions/dashboard/doctors/manage-doctor";
+import { deleteDoctorAction } from "@/actions/dashboard/doctors/manage-doctor";
 import { DoctorForm } from "@/components/dashboard/doctor-form";
-import { DoctorPhotoUploader } from "@/components/dashboard/doctor-photo-uploader";
 import type { DoctorServiceInput } from "@/lib/validation/doctor.schema";
 
 export default async function DoctorsPage({
@@ -34,8 +29,8 @@ export default async function DoctorsPage({
 
       {doctors.length === 0 && (
         <p className="text-sm text-muted-foreground">
-          No doctors yet — the &quot;Our Doctors&quot; section on the
-          homepage won&apos;t show until you add one below.
+          No doctors yet — the &quot;Our Doctors&quot; page won&apos;t show
+          any until you add one below.
         </p>
       )}
 
@@ -52,11 +47,6 @@ export default async function DoctorsPage({
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-6">
-            <DoctorPhotoUploader
-              currentPhotoUrl={doctor.photoMedia?.url ?? null}
-              setAction={setDoctorPhotoAction.bind(null, locale, doctor.id)}
-              clearAction={clearDoctorPhotoAction.bind(null, locale, doctor.id)}
-            />
             <DoctorForm
               locale={locale}
               doctor={{
@@ -69,6 +59,8 @@ export default async function DoctorsPage({
                 storyAr: doctor.storyAr,
                 services: doctor.services as DoctorServiceInput[],
                 sortOrder: doctor.sortOrder,
+                photoMediaId: doctor.photoMediaId,
+                photoUrl: doctor.photoMedia?.url ?? null,
               }}
             />
             <form action={removeAction.bind(null, doctor.id)}>

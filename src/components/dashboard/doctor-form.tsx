@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Image from "next/image";
 import {
   createDoctorAction,
   updateDoctorAction,
@@ -12,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { uploadMediaFromBrowser } from "@/lib/media-upload";
 
 type DoctorDefaults = {
   id: string;
@@ -23,6 +25,8 @@ type DoctorDefaults = {
   storyAr: string;
   services: DoctorServiceInput[];
   sortOrder: number;
+  photoMediaId: string | null;
+  photoUrl: string | null;
 };
 
 const EMPTY_SERVICE: DoctorServiceInput = {
@@ -53,6 +57,50 @@ export function DoctorForm({
   // of the form — drop them instead of failing validation on submit.
   const filledServices = services.filter((s) => s.nameEn.trim().length > 0);
 
+  const [photoMediaId, setPhotoMediaId] = useState<string | null>(
+    doctor?.photoMediaId ?? null,
+  );
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(
+    doctor?.photoUrl ?? null,
+  );
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setPhotoError("Please choose an image file.");
+      e.target.value = "";
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    setPhotoError(null);
+
+    try {
+      const result = await uploadMediaFromBrowser(file);
+      if ("error" in result) {
+        setPhotoError(result.error);
+        return;
+      }
+      setPhotoMediaId(result.media.id);
+      setPhotoPreviewUrl(result.media.url);
+    } catch (err) {
+      console.error(err);
+      setPhotoError("Upload failed — check your connection and try again.");
+    } finally {
+      setIsUploadingPhoto(false);
+      e.target.value = "";
+    }
+  }
+
+  function removePhoto() {
+    setPhotoMediaId(null);
+    setPhotoPreviewUrl(null);
+  }
+
   function updateService(
     index: number,
     field: keyof DoctorServiceInput,
@@ -80,6 +128,50 @@ export function DoctorForm({
           </AlertDescription>
         </Alert>
       )}
+
+      <div className="flex flex-col gap-2">
+        <Label>Photo</Label>
+        {photoError && (
+          <Alert variant="destructive">
+            <AlertDescription>{photoError}</AlertDescription>
+          </Alert>
+        )}
+        {photoPreviewUrl && (
+          <Image
+            key={photoPreviewUrl}
+            src={photoPreviewUrl}
+            alt=""
+            width={112}
+            height={112}
+            className="size-28 rounded-xl border border-border bg-muted object-cover"
+          />
+        )}
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={handlePhotoChange}
+            disabled={isUploadingPhoto}
+            className="text-sm"
+          />
+          {isUploadingPhoto && (
+            <Button size="sm" disabled>
+              Uploading…
+            </Button>
+          )}
+          {photoMediaId && !isUploadingPhoto && (
+            <Button
+              type="button"
+              size="sm"
+              variant="destructive"
+              onClick={removePhoto}
+            >
+              Remove photo
+            </Button>
+          )}
+        </div>
+      </div>
+      <input type="hidden" name="photoMediaId" value={photoMediaId ?? ""} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
@@ -204,7 +296,11 @@ export function DoctorForm({
         />
       </div>
 
-      <Button type="submit" disabled={isPending} className="w-fit">
+      <Button
+        type="submit"
+        disabled={isPending || isUploadingPhoto}
+        className="w-fit"
+      >
         {doctor ? "Save" : "Add doctor"}
       </Button>
     </form>

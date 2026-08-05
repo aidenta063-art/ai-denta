@@ -8,8 +8,6 @@ import {
   createDoctor,
   updateDoctor,
   deleteDoctor,
-  setDoctorPhoto,
-  clearDoctorPhoto,
   DOCTOR_TAGS,
 } from "@/services/doctors/doctor.service";
 import { doctorFormSchema } from "@/lib/validation/doctor.schema";
@@ -43,6 +41,7 @@ function parseDoctorForm(formData: FormData) {
     storyAr: formData.get("storyAr"),
     services,
     sortOrder: formData.get("sortOrder"),
+    photoMediaId: formData.get("photoMediaId"),
   });
 }
 
@@ -84,21 +83,5 @@ export async function updateDoctorAction(
 export async function deleteDoctorAction(locale: Locale, doctorId: string) {
   await requireRole([Role.ADMIN, Role.STAFF], locale);
   await deleteDoctor(doctorId);
-  await revalidateDoctors(locale);
-}
-
-export async function setDoctorPhotoAction(
-  locale: Locale,
-  doctorId: string,
-  mediaId: string,
-) {
-  await requireRole([Role.ADMIN, Role.STAFF], locale);
-  await setDoctorPhoto(doctorId, mediaId);
-  await revalidateDoctors(locale);
-}
-
-export async function clearDoctorPhotoAction(locale: Locale, doctorId: string) {
-  await requireRole([Role.ADMIN, Role.STAFF], locale);
-  await clearDoctorPhoto(doctorId);
   await revalidateDoctors(locale);
 }

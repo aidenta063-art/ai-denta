@@ -26,22 +26,24 @@ export async function listDoctors() {
   });
 }
 
+// The form always submits the photo field as the doctor's full desired
+// state (an id, or "" meaning no photo) rather than a partial patch, so
+// this always sets photoMediaId explicitly — passing `undefined` through
+// to Prisma would mean "leave whatever was there," which would silently
+// ignore an admin clicking "Remove photo".
 export async function createDoctor(input: DoctorFormInput) {
-  return prisma.doctor.create({ data: input });
+  const { photoMediaId, ...rest } = input;
+  return prisma.doctor.create({ data: { ...rest, photoMediaId: photoMediaId ?? null } });
 }
 
 export async function updateDoctor(id: string, input: DoctorFormInput) {
-  await prisma.doctor.update({ where: { id }, data: input });
+  const { photoMediaId, ...rest } = input;
+  await prisma.doctor.update({
+    where: { id },
+    data: { ...rest, photoMediaId: photoMediaId ?? null },
+  });
 }
 
 export async function deleteDoctor(id: string) {
   await prisma.doctor.delete({ where: { id } });
-}
-
-export async function setDoctorPhoto(id: string, mediaId: string) {
-  await prisma.doctor.update({ where: { id }, data: { photoMediaId: mediaId } });
-}
-
-export async function clearDoctorPhoto(id: string) {
-  await prisma.doctor.update({ where: { id }, data: { photoMediaId: null } });
 }
