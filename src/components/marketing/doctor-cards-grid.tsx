@@ -63,7 +63,10 @@ export function DoctorCardsGrid({
                     transition={{ duration: 0.25, ease: "easeOut" }}
                     className="flex flex-col gap-6 p-6 sm:flex-row"
                   >
-                    <div className="relative aspect-4/3 w-full shrink-0 overflow-hidden rounded-2xl bg-secondary sm:w-64">
+                    <motion.div
+                      layout
+                      className="relative aspect-4/3 w-full shrink-0 overflow-hidden rounded-2xl bg-secondary sm:w-64"
+                    >
                       {doctor.photoUrl ? (
                         <Image
                           src={doctor.photoUrl}
@@ -77,9 +80,9 @@ export function DoctorCardsGrid({
                           {doctor.name.charAt(0)}
                         </div>
                       )}
-                    </div>
+                    </motion.div>
 
-                    <div className="flex flex-1 flex-col gap-4">
+                    <motion.div layout className="flex flex-1 flex-col gap-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <h3 className="text-xl font-bold text-card-foreground">
@@ -158,7 +161,7 @@ export function DoctorCardsGrid({
                           </div>
                         </div>
                       )}
-                    </div>
+                    </motion.div>
                   </motion.div>
                 ) : (
                   <motion.button
@@ -171,26 +174,28 @@ export function DoctorCardsGrid({
                     transition={{ duration: 0.25, ease: "easeOut" }}
                     className="group relative block aspect-[3/4] w-full text-start"
                   >
-                    {doctor.photoUrl ? (
-                      <Image
-                        src={doctor.photoUrl}
-                        alt={doctor.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                      />
-                    ) : (
-                      <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#7E00C9]/20 to-[#B98AE8]/20 text-4xl font-bold text-primary/40">
-                        {doctor.name.charAt(0)}
+                    <motion.div layout className="absolute inset-0">
+                      {doctor.photoUrl ? (
+                        <Image
+                          src={doctor.photoUrl}
+                          alt={doctor.name}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        />
+                      ) : (
+                        <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#7E00C9]/20 to-[#B98AE8]/20 text-4xl font-bold text-primary/40">
+                          {doctor.name.charAt(0)}
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+                      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5 text-white">
+                        <h3 className="text-lg font-bold">{doctor.name}</h3>
+                        <span className="inline-flex items-center gap-1 text-sm font-medium text-white/90 underline-offset-4 group-hover:underline">
+                          {labels.viewStory}
+                        </span>
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5 text-white">
-                      <h3 className="text-lg font-bold">{doctor.name}</h3>
-                      <span className="inline-flex items-center gap-1 text-sm font-medium text-white/90 underline-offset-4 group-hover:underline">
-                        {labels.viewStory}
-                      </span>
-                    </div>
+                    </motion.div>
                   </motion.button>
                 )}
               </AnimatePresence>
