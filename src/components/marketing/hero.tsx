@@ -46,7 +46,7 @@ export function Hero({
 
       <motion.div
         variants={container}
-        initial="hidden"
+        initial={false}
         animate="show"
         className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 py-20 text-center sm:py-28"
       >
