@@ -79,6 +79,8 @@
       "subtitle": "Meet some of the doctors we've helped grow their practice.",
       "successStoryLabel": "Success Story",
       "servicesLabel": "Services Provided",
+      "viewStory": "View success story",
+      "close": "Close",
       "empty": "Doctor case studies are coming soon."
     },
     "cta": {
