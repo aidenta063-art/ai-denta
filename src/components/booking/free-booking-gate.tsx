@@ -7,19 +7,25 @@ import type { Locale } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { BrandedCard } from "@/components/marketing/branded-card";
 import { AutoplaySoundVideo } from "@/components/marketing/autoplay-sound-video";
-import { IntakeForm, type IntakeFormState } from "@/components/booking/intake-form";
+import {
+  IntakeForm,
+  type IntakeFormState,
+} from "@/components/booking/intake-form";
+import type { IntakeStepConfig } from "@/lib/intake-fields";
 
 export function FreeBookingGate({
   locale,
   videoUrl,
   formTitle,
   isLoggedIn,
+  steps,
   action,
 }: {
   locale: Locale;
   videoUrl: string | null;
   formTitle: string;
   isLoggedIn: boolean;
+  steps: IntakeStepConfig[];
   action: (
     prevState: IntakeFormState,
     formData: FormData,
@@ -30,8 +36,11 @@ export function FreeBookingGate({
 
   if (showForm) {
     return (
-      <BrandedCard title={formTitle} className="max-w-xl lg:max-w-3xl xl:max-w-4xl">
-        <IntakeForm action={action} />
+      <BrandedCard
+        title={formTitle}
+        className="max-w-xl lg:max-w-3xl xl:max-w-4xl"
+      >
+        <IntakeForm locale={locale} steps={steps} action={action} />
       </BrandedCard>
     );
   }

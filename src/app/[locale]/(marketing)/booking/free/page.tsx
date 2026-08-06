@@ -13,6 +13,7 @@ import { createFreeBookingAction } from "@/actions/booking/create-free-booking";
 import { auth } from "@/lib/auth";
 import { hasUsedFreeConsultation } from "@/services/booking/booking.service";
 import { getFreeBookingIntroVideo } from "@/services/content/cms.service";
+import { getIntakeFormSteps } from "@/services/content/intake-form.service";
 
 export async function generateMetadata({
   params,
@@ -39,7 +40,10 @@ export default async function FreeBookingPage({
   const alreadyUsed = session?.user
     ? await hasUsedFreeConsultation(session.user.id)
     : false;
-  const introVideo = alreadyUsed ? null : await getFreeBookingIntroVideo();
+  const [introVideo, steps] = await Promise.all([
+    alreadyUsed ? null : getFreeBookingIntroVideo(),
+    getIntakeFormSteps(),
+  ]);
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
@@ -49,9 +53,7 @@ export default async function FreeBookingPage({
             <div className="flex size-12 items-center justify-center rounded-full bg-secondary text-primary">
               <CheckCircle2 className="size-6" />
             </div>
-            <p className="text-sm text-muted-foreground">
-              {t("alreadyUsed")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("alreadyUsed")}</p>
             <Button
               className="h-11 w-full bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
               render={<Link href="/booking" locale={locale} />}
@@ -66,6 +68,7 @@ export default async function FreeBookingPage({
           videoUrl={introVideo?.url ?? null}
           formTitle={t("title")}
           isLoggedIn={!!session?.user}
+          steps={steps}
           action={createFreeBookingAction.bind(null, locale)}
         />
       )}

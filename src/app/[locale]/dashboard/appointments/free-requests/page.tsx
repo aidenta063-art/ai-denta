@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { listFreeBookingRequests } from "@/services/booking/appointments.service";
 import { APP_TIME_ZONE } from "@/lib/timezone";
 import { IntakeAnswersDialog } from "@/components/dashboard/intake-answers-dialog";
+import { getIntakeFormSteps } from "@/services/content/intake-form.service";
 
 export default async function FreeRequestsPage({
   params,
@@ -15,7 +16,10 @@ export default async function FreeRequestsPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
-  const requests = await listFreeBookingRequests();
+  const [requests, steps] = await Promise.all([
+    listFreeBookingRequests(),
+    getIntakeFormSteps(),
+  ]);
 
   const formatter = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
@@ -91,6 +95,7 @@ export default async function FreeRequestsPage({
                   <IntakeAnswersDialog
                     name={booking.user?.name ?? booking.guestName ?? "Guest"}
                     intakeAnswers={booking.intakeAnswers}
+                    steps={steps}
                   />
                 </td>
               </tr>

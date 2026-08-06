@@ -13,12 +13,14 @@ const SECTIONS = [
   {
     href: "/dashboard/content/hero",
     title: "Homepage Hero",
-    description: "Eyebrow, title, and subtitle shown at the top of the homepage.",
+    description:
+      "Eyebrow, title, and subtitle shown at the top of the homepage.",
   },
   {
     href: "/dashboard/content/pricing",
     title: "Pricing",
-    description: "Names, descriptions, price, and duration for the free and paid consultations.",
+    description:
+      "Names, descriptions, price, and duration for the free and paid consultations.",
   },
   {
     href: "/dashboard/content/services",
@@ -39,6 +41,12 @@ const SECTIONS = [
     href: "/dashboard/content/free-pdf",
     title: "Free Guide (PDF)",
     description: "The downloadable PDF linked from the site menu.",
+  },
+  {
+    href: "/dashboard/content/intake-form",
+    title: "Booking Form Questions",
+    description:
+      "The steps and questions in the qualification form used by both booking flows.",
   },
 ] as const;
 

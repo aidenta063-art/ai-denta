@@ -13,6 +13,7 @@ import { IntakeForm } from "@/components/booking/intake-form";
 import { createPaidBookingHoldAction } from "@/actions/booking/create-paid-booking-hold";
 import { formatSlotTimeRange } from "@/lib/timezone";
 import { auth } from "@/lib/auth";
+import { getIntakeFormSteps } from "@/services/content/intake-form.service";
 
 export default async function ConfirmPaidSlotPage({
   params,
@@ -36,7 +37,10 @@ export default async function ConfirmPaidSlotPage({
   }
 
   const t = await getTranslations("Booking.paid");
-  const slot = await prisma.slot.findUnique({ where: { id: slotId } });
+  const [slot, steps] = await Promise.all([
+    prisma.slot.findUnique({ where: { id: slotId } }),
+    getIntakeFormSteps(),
+  ]);
 
   const formattedDate = slot
     ? formatSlotTimeRange(slot.startAt, slot.endAt, locale, {
@@ -69,6 +73,8 @@ export default async function ConfirmPaidSlotPage({
           </div>
         ) : (
           <IntakeForm
+            locale={locale}
+            steps={steps}
             action={createPaidBookingHoldAction.bind(null, locale, slotId)}
           />
         )}

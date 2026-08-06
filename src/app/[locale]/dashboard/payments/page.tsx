@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/dashboard/status-badge";
 import { PaymentStatus } from "@/generated/prisma/enums";
 import { APP_TIME_ZONE } from "@/lib/timezone";
 import { IntakeAnswersDialog } from "@/components/dashboard/intake-answers-dialog";
+import { getIntakeFormSteps } from "@/services/content/intake-form.service";
 
 export default async function PaymentsPage({
   params,
@@ -17,7 +18,10 @@ export default async function PaymentsPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
-  const payments = await listPayments();
+  const [payments, steps] = await Promise.all([
+    listPayments(),
+    getIntakeFormSteps(),
+  ]);
   const markPaid = markAsPaidAction.bind(null, locale);
 
   return (
@@ -92,6 +96,7 @@ export default async function PaymentsPage({
                         "Guest"
                       }
                       intakeAnswers={payment.booking.intakeAnswers}
+                      steps={steps}
                     />
                     {payment.status === PaymentStatus.PENDING && (
                       <form action={markPaid.bind(null, payment.id)}>

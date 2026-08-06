@@ -2,23 +2,18 @@
 
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-} from "@/components/ui/dialog";
-import {
-  INTAKE_ANSWER_ORDER,
-  INTAKE_FIELD_LABELS,
-  formatIntakeAnswerValue,
-} from "@/lib/intake-labels";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { buildIntakeLabelLookup } from "@/lib/intake-labels";
+import type { IntakeStepConfig } from "@/lib/intake-fields";
 
 export function IntakeAnswersDialog({
   name,
   intakeAnswers,
+  steps,
 }: {
   name: string;
   intakeAnswers: unknown;
+  steps: IntakeStepConfig[];
 }) {
   const answers =
     intakeAnswers && typeof intakeAnswers === "object"
@@ -26,6 +21,16 @@ export function IntakeAnswersDialog({
       : null;
 
   if (!answers) return <span className="text-muted-foreground">—</span>;
+
+  const { fieldLabels, order, formatValue } = buildIntakeLabelLookup(steps);
+  // Known questions first (in the form's current order), then any
+  // historical answers whose question was since renamed or removed —
+  // shown with their raw key rather than silently dropped.
+  const answerKeys = Object.keys(answers);
+  const orderedKeys = [
+    ...order.filter((key) => key in answers),
+    ...answerKeys.filter((key) => !order.includes(key)),
+  ];
 
   return (
     <Dialog>
@@ -42,13 +47,13 @@ export function IntakeAnswersDialog({
           {name}&rsquo;s intake answers
         </h2>
         <dl className="mt-4 flex flex-col divide-y divide-border">
-          {INTAKE_ANSWER_ORDER.filter((key) => key in answers).map((key) => (
+          {orderedKeys.map((key) => (
             <div key={key} className="grid gap-1 py-3 sm:grid-cols-[220px_1fr]">
               <dt className="text-sm font-medium text-muted-foreground">
-                {INTAKE_FIELD_LABELS[key] ?? key}
+                {fieldLabels[key] ?? key}
               </dt>
               <dd className="text-sm text-popover-foreground">
-                {formatIntakeAnswerValue(key, answers[key])}
+                {formatValue(answers[key])}
               </dd>
             </div>
           ))}

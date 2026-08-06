@@ -101,6 +101,7 @@ model User {
   ebookOrders               EbookOrder[]
   manuallyMarkedEbookOrders EbookOrder[]         @relation("EbookOrderManuallyMarkedBy")
   reviewedReviews           Review[]             @relation("ReviewReviewedBy")
+  updatedIntakeFormConfig   IntakeFormConfig[]   @relation("IntakeFormConfigUpdatedBy")
 
   @@index([role])
 }
@@ -307,6 +308,19 @@ model CmsSection {
   updatedBy   User?    @relation("CmsSectionUpdatedBy", fields: [updatedById], references: [id])
 
   media CmsSectionMedia[]
+}
+
+/// The booking qualification form's steps/questions, admin-editable from
+/// the dashboard. A single row (fixed id "singleton"); each step's
+/// `fields` is a bilingual, self-contained JSON array — see
+/// src/lib/intake-fields.ts for the shape.
+model IntakeFormConfig {
+  id    String @id @default("singleton")
+  steps Json
+
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+  updatedBy   User?    @relation("IntakeFormConfigUpdatedBy", fields: [updatedById], references: [id])
 }
 
 model Media {

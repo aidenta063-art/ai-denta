@@ -6,10 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { INTAKE_STEPS, type IntakeFieldConfig } from "@/lib/intake-fields";
+import { localized } from "@/lib/i18n-content";
+import type { Locale } from "@/i18n/routing";
+import type { IntakeFieldConfig, IntakeStepConfig } from "@/lib/intake-fields";
 
 export type IntakeFormState = {
-  error?: "invalidInput" | "rateLimited" | "slotNoLongerAvailable" | "alreadyUsedFree";
+  error?:
+    | "invalidInput"
+    | "rateLimited"
+    | "slotNoLongerAvailable"
+    | "alreadyUsedFree";
 };
 
 const fieldClassName =
@@ -19,22 +25,26 @@ const textareaClassName =
   "w-full min-w-0 rounded-lg border border-input bg-transparent px-3.5 py-2.5 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50";
 
 export function IntakeForm({
+  locale,
+  steps,
   action,
 }: {
+  locale: Locale;
+  steps: IntakeStepConfig[];
   action: (
     prevState: IntakeFormState,
     formData: FormData,
   ) => Promise<IntakeFormState>;
 }) {
   const t = useTranslations("Intake");
-  const [state, formAction, isPending] = useActionState<IntakeFormState, FormData>(
-    action,
-    {},
-  );
+  const [state, formAction, isPending] = useActionState<
+    IntakeFormState,
+    FormData
+  >(action, {});
   const [step, setStep] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const totalSteps = INTAKE_STEPS.length;
+  const totalSteps = steps.length;
   const isLastStep = step === totalSteps - 1;
 
   function goNext() {
@@ -68,16 +78,16 @@ export function IntakeForm({
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between text-sm">
           <span className="font-medium text-foreground">
-            {t(`steps.step${step + 1}`)}
+            {localized(locale, steps[step].titleEn, steps[step].titleAr)}
           </span>
           <span className="text-muted-foreground">
             {t("stepLabel", { current: step + 1, total: totalSteps })}
           </span>
         </div>
         <div className="flex gap-1.5">
-          {INTAKE_STEPS.map((s, i) => (
+          {steps.map((s, i) => (
             <div
-              key={s.titleKey}
+              key={`${s.titleEn}-${i}`}
               className={`h-1.5 flex-1 rounded-full transition-colors ${
                 i <= step ? "bg-[#7E00C9]" : "bg-secondary"
               }`}
@@ -86,16 +96,52 @@ export function IntakeForm({
         </div>
       </div>
 
-      {INTAKE_STEPS.map((stepConfig, i) => (
+      {steps.map((stepConfig, i) => (
         <div
-          key={stepConfig.titleKey}
+          key={`${stepConfig.titleEn}-${i}`}
           ref={(el) => {
             stepRefs.current[i] = el;
           }}
           className={i === step ? "flex flex-col gap-4" : "hidden"}
         >
+          {i === 0 && (
+            <>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="name">{t("fields.name.label")}</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  required
+                  placeholder={t("fields.name.placeholder")}
+                  className="h-11 px-3.5 text-base"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="phone">{t("fields.phone.label")}</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  placeholder={t("fields.phone.placeholder")}
+                  className="h-11 px-3.5 text-base"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="email">{t("fields.email.label")}</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder={t("fields.email.placeholder")}
+                  className="h-11 px-3.5 text-base"
+                />
+              </div>
+            </>
+          )}
           {stepConfig.fields.map((field) => (
-            <IntakeField key={field.key} field={field} />
+            <IntakeField key={field.key} locale={locale} field={field} />
           ))}
         </div>
       ))}
@@ -133,9 +179,20 @@ export function IntakeForm({
   );
 }
 
-function IntakeField({ field }: { field: IntakeFieldConfig }) {
+function IntakeField({
+  locale,
+  field,
+}: {
+  locale: Locale;
+  field: IntakeFieldConfig;
+}) {
   const t = useTranslations("Intake");
-  const label = t(`fields.${field.key}.label`);
+  const label = localized(locale, field.labelEn, field.labelAr);
+  const placeholder = localized(
+    locale,
+    field.placeholderEn ?? "",
+    field.placeholderAr ?? "",
+  );
 
   if (field.type === "select") {
     return (
@@ -144,7 +201,7 @@ function IntakeField({ field }: { field: IntakeFieldConfig }) {
         <select
           id={field.key}
           name={field.key}
-          required
+          required={field.required}
           defaultValue=""
           className={fieldClassName}
         >
@@ -152,8 +209,8 @@ function IntakeField({ field }: { field: IntakeFieldConfig }) {
             {t("selectPlaceholder")}
           </option>
           {field.options?.map((opt) => (
-            <option key={opt} value={opt}>
-              {t(`fields.${field.key}.options.${opt}`)}
+            <option key={opt.value} value={opt.value}>
+              {localized(locale, opt.labelEn, opt.labelAr)}
             </option>
           ))}
         </select>
@@ -168,17 +225,17 @@ function IntakeField({ field }: { field: IntakeFieldConfig }) {
         <div className="flex gap-5">
           {field.options?.map((opt) => (
             <label
-              key={opt}
+              key={opt.value}
               className="flex items-center gap-2 text-sm text-foreground"
             >
               <input
                 type="radio"
                 name={field.key}
-                value={opt}
-                required
+                value={opt.value}
+                required={field.required}
                 className="size-4 accent-[#7E00C9]"
               />
-              {t(`fields.${field.key}.options.${opt}`)}
+              {localized(locale, opt.labelEn, opt.labelAr)}
             </label>
           ))}
         </div>
@@ -193,9 +250,9 @@ function IntakeField({ field }: { field: IntakeFieldConfig }) {
         <textarea
           id={field.key}
           name={field.key}
-          required
+          required={field.required}
           rows={3}
-          placeholder={t(`fields.${field.key}.placeholder`)}
+          placeholder={placeholder}
           className={textareaClassName}
         />
       </div>
@@ -209,8 +266,8 @@ function IntakeField({ field }: { field: IntakeFieldConfig }) {
         id={field.key}
         name={field.key}
         type={field.type}
-        required
-        placeholder={t(`fields.${field.key}.placeholder`)}
+        required={field.required}
+        placeholder={placeholder}
         className="h-11 px-3.5 text-base"
       />
     </div>
