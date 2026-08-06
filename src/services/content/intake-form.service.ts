@@ -1,5 +1,6 @@
 import { unstable_cache as nextCache } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { ConsultationKind } from "@/generated/prisma/enums";
 import {
   DEFAULT_INTAKE_STEPS,
   type IntakeStepConfig,
@@ -8,7 +9,10 @@ import type { IntakeStepInput } from "@/lib/validation/intake-form-config.schema
 import { INTAKE_CORE_FIELDS } from "@/lib/validation/intake.schema";
 
 const CACHE_SECONDS = 60;
-export const INTAKE_FORM_CACHE_TAG = "cms:intake-form-steps";
+
+export function intakeFormCacheTag(kind: ConsultationKind) {
+  return `cms:intake-form-steps:${kind}`;
+}
 
 function slugify(value: string) {
   return (
@@ -69,27 +73,51 @@ export function assignIntakeKeys(steps: IntakeStepInput[]): IntakeStepConfig[] {
   }));
 }
 
-export const getIntakeFormSteps = nextCache(
-  async (): Promise<IntakeStepConfig[]> => {
-    const config = await prisma.intakeFormConfig.findUnique({
-      where: { id: "singleton" },
-    });
-    return (
-      (config?.steps as unknown as IntakeStepConfig[] | undefined) ??
-      DEFAULT_INTAKE_STEPS
-    );
+async function readIntakeFormSteps(
+  kind: ConsultationKind,
+): Promise<IntakeStepConfig[]> {
+  const config = await prisma.intakeFormConfig.findUnique({ where: { kind } });
+  return (
+    (config?.steps as unknown as IntakeStepConfig[] | undefined) ??
+    DEFAULT_INTAKE_STEPS
+  );
+}
+
+// unstable_cache's `tags` are fixed at wrap time, not per-call — so free
+// and paid each get their own cached function/tag rather than one
+// function parameterized by kind, or saving one would invalidate both.
+const getFreeIntakeFormSteps = nextCache(
+  () => readIntakeFormSteps(ConsultationKind.FREE),
+  ["cms-intake-form-steps-free"],
+  {
+    tags: [intakeFormCacheTag(ConsultationKind.FREE)],
+    revalidate: CACHE_SECONDS,
   },
-  ["cms-intake-form-steps"],
-  { tags: [INTAKE_FORM_CACHE_TAG], revalidate: CACHE_SECONDS },
 );
 
+const getPaidIntakeFormSteps = nextCache(
+  () => readIntakeFormSteps(ConsultationKind.PAID),
+  ["cms-intake-form-steps-paid"],
+  {
+    tags: [intakeFormCacheTag(ConsultationKind.PAID)],
+    revalidate: CACHE_SECONDS,
+  },
+);
+
+export function getIntakeFormSteps(kind: ConsultationKind) {
+  return kind === ConsultationKind.FREE
+    ? getFreeIntakeFormSteps()
+    : getPaidIntakeFormSteps();
+}
+
 export async function saveIntakeFormSteps(
+  kind: ConsultationKind,
   steps: IntakeStepConfig[],
   updatedById: string,
 ) {
   await prisma.intakeFormConfig.upsert({
-    where: { id: "singleton" },
+    where: { kind },
     update: { steps: steps as object, updatedById },
-    create: { id: "singleton", steps: steps as object, updatedById },
+    create: { kind, steps: steps as object, updatedById },
   });
 }

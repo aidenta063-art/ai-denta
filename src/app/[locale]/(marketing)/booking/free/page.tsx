@@ -14,6 +14,7 @@ import { auth } from "@/lib/auth";
 import { hasUsedFreeConsultation } from "@/services/booking/booking.service";
 import { getFreeBookingIntroVideo } from "@/services/content/cms.service";
 import { getIntakeFormSteps } from "@/services/content/intake-form.service";
+import { ConsultationKind } from "@/generated/prisma/enums";
 
 export async function generateMetadata({
   params,
@@ -42,7 +43,7 @@ export default async function FreeBookingPage({
     : false;
   const [introVideo, steps] = await Promise.all([
     alreadyUsed ? null : getFreeBookingIntroVideo(),
-    getIntakeFormSteps(),
+    getIntakeFormSteps(ConsultationKind.FREE),
   ]);
 
   return (

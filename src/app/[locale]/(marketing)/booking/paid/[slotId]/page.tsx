@@ -8,7 +8,7 @@ import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { prisma } from "@/lib/prisma";
-import { SlotStatus } from "@/generated/prisma/enums";
+import { SlotStatus, ConsultationKind } from "@/generated/prisma/enums";
 import { IntakeForm } from "@/components/booking/intake-form";
 import { createPaidBookingHoldAction } from "@/actions/booking/create-paid-booking-hold";
 import { formatSlotTimeRange } from "@/lib/timezone";
@@ -39,7 +39,7 @@ export default async function ConfirmPaidSlotPage({
   const t = await getTranslations("Booking.paid");
   const [slot, steps] = await Promise.all([
     prisma.slot.findUnique({ where: { id: slotId } }),
-    getIntakeFormSteps(),
+    getIntakeFormSteps(ConsultationKind.PAID),
   ]);
 
   const formattedDate = slot

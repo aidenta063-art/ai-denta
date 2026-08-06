@@ -7,6 +7,7 @@ import { listFreeBookingRequests } from "@/services/booking/appointments.service
 import { APP_TIME_ZONE } from "@/lib/timezone";
 import { IntakeAnswersDialog } from "@/components/dashboard/intake-answers-dialog";
 import { getIntakeFormSteps } from "@/services/content/intake-form.service";
+import { ConsultationKind } from "@/generated/prisma/enums";
 
 export default async function FreeRequestsPage({
   params,
@@ -18,7 +19,7 @@ export default async function FreeRequestsPage({
 
   const [requests, steps] = await Promise.all([
     listFreeBookingRequests(),
-    getIntakeFormSteps(),
+    getIntakeFormSteps(ConsultationKind.FREE),
   ]);
 
   const formatter = new Intl.DateTimeFormat("en-US", {

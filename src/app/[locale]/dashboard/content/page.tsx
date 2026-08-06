@@ -43,10 +43,16 @@ const SECTIONS = [
     description: "The downloadable PDF linked from the site menu.",
   },
   {
-    href: "/dashboard/content/intake-form",
-    title: "Booking Form Questions",
+    href: "/dashboard/content/intake-form/free",
+    title: "Free Booking Form Questions",
     description:
-      "The steps and questions in the qualification form used by both booking flows.",
+      "The steps and questions in the free consultation's qualification form.",
+  },
+  {
+    href: "/dashboard/content/intake-form/paid",
+    title: "Paid Booking Form Questions",
+    description:
+      "The steps and questions in the paid consultation's qualification form.",
   },
 ] as const;
 

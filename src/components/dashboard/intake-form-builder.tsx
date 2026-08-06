@@ -7,6 +7,7 @@ import {
   type IntakeFormBuilderState,
 } from "@/actions/dashboard/content/intake-form";
 import type { Locale } from "@/i18n/routing";
+import type { ConsultationKind } from "@/generated/prisma/enums";
 import type {
   IntakeFieldConfig,
   IntakeFieldType,
@@ -51,13 +52,15 @@ function move<T>(list: T[], index: number, direction: -1 | 1): T[] {
 
 export function IntakeFormBuilder({
   locale,
+  kind,
   initialSteps,
 }: {
   locale: Locale;
+  kind: ConsultationKind;
   initialSteps: IntakeStepConfig[];
 }) {
   const [steps, setSteps] = useState<IntakeStepConfig[]>(initialSteps);
-  const action = saveIntakeFormStepsAction.bind(null, locale);
+  const action = saveIntakeFormStepsAction.bind(null, locale, kind);
   const [state, formAction, isPending] = useActionState<
     IntakeFormBuilderState,
     FormData

@@ -6,6 +6,7 @@ import type { Locale } from "@/i18n/routing";
 import { createFreeBooking } from "@/services/booking/booking.service";
 import { buildIntakeSchema } from "@/lib/validation/intake.schema";
 import { getIntakeFormSteps } from "@/services/content/intake-form.service";
+import { ConsultationKind } from "@/generated/prisma/enums";
 import { checkActionRateLimit } from "@/lib/rate-limit";
 import type { IntakeFormState } from "@/components/booking/intake-form";
 
@@ -24,8 +25,10 @@ export async function createFreeBookingAction(
     return { error: "rateLimited" };
   }
 
-  const steps = await getIntakeFormSteps();
-  const parsed = buildIntakeSchema(steps).safeParse(Object.fromEntries(formData));
+  const steps = await getIntakeFormSteps(ConsultationKind.FREE);
+  const parsed = buildIntakeSchema(steps).safeParse(
+    Object.fromEntries(formData),
+  );
 
   if (!parsed.success) {
     return { error: "invalidInput" };

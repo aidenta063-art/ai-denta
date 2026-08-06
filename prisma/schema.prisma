@@ -311,11 +311,12 @@ model CmsSection {
 }
 
 /// The booking qualification form's steps/questions, admin-editable from
-/// the dashboard. A single row (fixed id "singleton"); each step's
-/// `fields` is a bilingual, self-contained JSON array — see
-/// src/lib/intake-fields.ts for the shape.
+/// the dashboard — one independent row per consultation kind (free and
+/// paid have separate questions). Each step's `fields` is a bilingual,
+/// self-contained JSON array — see src/lib/intake-fields.ts for the shape.
 model IntakeFormConfig {
-  id    String @id @default("singleton")
+  id    String           @id @default(cuid())
+  kind  ConsultationKind @unique
   steps Json
 
   updatedAt   DateTime @updatedAt
