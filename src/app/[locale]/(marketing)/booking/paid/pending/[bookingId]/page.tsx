@@ -54,9 +54,30 @@ export default async function PaymentPendingPage({
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
       <TrackMetaEvent event="Schedule" />
+      {isConfirmed ? (
+        <TrackMetaEvent
+          event="Purchase"
+          params={
+            booking.payment
+              ? {
+                  value: booking.payment.amountCents / 100,
+                  currency: booking.payment.currency,
+                  content_name: "paid_consultation",
+                }
+              : { content_name: "paid_consultation" }
+          }
+        />
+      ) : (
+        <TrackMetaEvent
+          event="AddPaymentInfo"
+          params={{ content_name: "paid_consultation" }}
+        />
+      )}
       <BrandedCard
         title={isConfirmed ? t("confirmedTitle") : t("pendingTitle")}
-        description={isConfirmed ? t("confirmedDescription") : t("pendingDescription")}
+        description={
+          isConfirmed ? t("confirmedDescription") : t("pendingDescription")
+        }
         className={isConfirmed ? undefined : "max-w-xl lg:max-w-2xl"}
       >
         <div className="flex flex-col gap-4">
@@ -82,9 +103,7 @@ export default async function PaymentPendingPage({
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">
-                {t("dateLabel")}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("dateLabel")}</p>
               <p className="font-medium text-foreground">{formattedDate}</p>
             </div>
             {isConfirmed && formattedPrice && (
@@ -92,9 +111,7 @@ export default async function PaymentPendingPage({
                 <p className="text-sm text-muted-foreground">
                   {t("priceLabel")}
                 </p>
-                <p className="font-medium text-foreground">
-                  {formattedPrice}
-                </p>
+                <p className="font-medium text-foreground">{formattedPrice}</p>
               </div>
             )}
           </div>

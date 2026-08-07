@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { AutoplaySoundVideo } from "@/components/marketing/autoplay-sound-video";
 import type { Locale } from "@/i18n/routing";
+import { trackMetaCustomEvent } from "@/lib/meta-pixel";
 
 const container: Variants = {
   hidden: {},
@@ -59,7 +60,10 @@ export function Hero({
 
         {videoUrl && (
           <motion.div variants={item} className="w-full">
-            <AutoplaySoundVideo videoUrl={videoUrl} className="mx-auto max-w-4xl" />
+            <AutoplaySoundVideo
+              videoUrl={videoUrl}
+              className="mx-auto max-w-4xl"
+            />
           </motion.div>
         )}
 
@@ -77,11 +81,22 @@ export function Hero({
           {subtitle}
         </motion.p>
 
-        <motion.div variants={item} className="flex flex-wrap justify-center gap-4 pt-4">
+        <motion.div
+          variants={item}
+          className="flex flex-wrap justify-center gap-4 pt-4"
+        >
           <Button
             size="lg"
             className="bg-white text-base text-[#251037] shadow-xl shadow-black/20 hover:bg-white/90"
-            render={<Link href="/booking/paid" locale={locale} />}
+            render={
+              <Link
+                href="/booking/paid"
+                locale={locale}
+                onClick={() =>
+                  trackMetaCustomEvent("CTAClick", { cta: "hero_paid" })
+                }
+              />
+            }
           >
             {ctaPaid}
           </Button>
@@ -89,7 +104,15 @@ export function Hero({
             size="lg"
             variant="outline"
             className="border-white/30 bg-transparent text-white hover:bg-white/10"
-            render={<Link href="/booking/free" locale={locale} />}
+            render={
+              <Link
+                href="/booking/free"
+                locale={locale}
+                onClick={() =>
+                  trackMetaCustomEvent("CTAClick", { cta: "hero_free" })
+                }
+              />
+            }
           >
             {ctaFree}
           </Button>

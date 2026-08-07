@@ -14,6 +14,7 @@ import { ReviewsSection } from "@/components/marketing/reviews-section";
 import { createEbookOrderAction } from "@/actions/ebook/create-ebook-order";
 import { PATIENT_FLOW_EBOOK } from "@/lib/ebook";
 import { auth } from "@/lib/auth";
+import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
 export async function generateMetadata({
   params,
@@ -46,6 +47,14 @@ export default async function EbookPage({
 
   return (
     <>
+      <TrackMetaEvent
+        event="ViewContent"
+        params={{
+          content_name: "ebook",
+          value: PATIENT_FLOW_EBOOK.priceCents / 100,
+          currency: PATIENT_FLOW_EBOOK.currency,
+        }}
+      />
       <PurpleGlowSection className="px-4 py-24 sm:py-28">
         <div className="mx-auto flex max-w-5xl flex-col gap-8">
           <div className="overflow-hidden rounded-3xl border border-white/60 bg-white/95 shadow-2xl shadow-black/30 backdrop-blur">

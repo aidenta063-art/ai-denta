@@ -54,6 +54,12 @@ const SECTIONS = [
     description:
       "The steps and questions in the paid consultation's qualification form.",
   },
+  {
+    href: "/dashboard/content/faq-chat",
+    title: "FAQ Chat Widget",
+    description:
+      "The quick questions and answers shown in the chat bubble on every page.",
+  },
 ] as const;
 
 export default async function ContentPage({

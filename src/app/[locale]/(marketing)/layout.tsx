@@ -6,8 +6,11 @@ import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { FaqChatWidget } from "@/components/marketing/faq-chat-widget";
 import { AnalyticsBeacon } from "@/components/marketing/analytics-beacon";
 import { MetaPixel } from "@/components/marketing/meta-pixel";
+import { ScrollDepthTracker } from "@/components/marketing/scroll-depth-tracker";
 import { MotionProvider } from "@/components/marketing/motion-provider";
 import { getMetaPixelId } from "@/services/content/integrations.service";
+import { getFaqQuestions } from "@/services/content/faq-chat.service";
+import { localized } from "@/lib/i18n-content";
 
 export default async function MarketingLayout({
   children,
@@ -19,16 +22,24 @@ export default async function MarketingLayout({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
-  const pixelId = await getMetaPixelId();
+  const [pixelId, faqQuestions] = await Promise.all([
+    getMetaPixelId(),
+    getFaqQuestions(),
+  ]);
+  const questions = faqQuestions.map((q) => ({
+    q: localized(locale, q.qEn, q.qAr),
+    a: localized(locale, q.aEn, q.aAr),
+  }));
 
   return (
     <MotionProvider>
       <MarketingHeader locale={locale} />
       <main className="flex-1">{children}</main>
       <MarketingFooter locale={locale} />
-      <FaqChatWidget />
+      <FaqChatWidget questions={questions} />
       <AnalyticsBeacon locale={locale} />
       <MetaPixel pixelId={pixelId} />
+      {pixelId && <ScrollDepthTracker />}
     </MotionProvider>
   );
 }

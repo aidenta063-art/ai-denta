@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { listConsultationTypes } from "@/services/content/cms.service";
 import { ConsultationKind } from "@/generated/prisma/enums";
+import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
 export async function generateMetadata({
   params,
@@ -48,6 +49,10 @@ export default async function BookingChoicePage({
 
   return (
     <PurpleGlowSection className="py-24 sm:py-28">
+      <TrackMetaEvent
+        event="ViewContent"
+        params={{ content_name: "booking_choice" }}
+      />
       <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-3 px-2 text-center">
         <span className="rounded-full border border-white/15 bg-white/10 px-4 py-1 text-sm font-medium text-[#EDE3F5] backdrop-blur">
           {tNav("booking")}

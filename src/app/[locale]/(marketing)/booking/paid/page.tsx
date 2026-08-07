@@ -16,6 +16,7 @@ import {
 import { BookingCalendar } from "@/components/booking/booking-calendar";
 import { formatSlotTimeRange } from "@/lib/timezone";
 import { auth } from "@/lib/auth";
+import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
 export async function generateMetadata({
   params,
@@ -58,6 +59,10 @@ export default async function PaidBookingPage({
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
+      <TrackMetaEvent
+        event="ViewContent"
+        params={{ content_name: "paid_slot_picker" }}
+      />
       <BrandedCard
         title={t("title")}
         description={t("description")}
@@ -93,10 +98,7 @@ export default async function PaidBookingPage({
                     variant="outline"
                     className="h-10 border-border/80 text-xs sm:text-sm"
                     render={
-                      <Link
-                        href={`/booking/paid/${slot.id}`}
-                        locale={locale}
-                      />
+                      <Link href={`/booking/paid/${slot.id}`} locale={locale} />
                     }
                   >
                     {formatSlotTimeRange(slot.startAt, slot.endAt, locale)}

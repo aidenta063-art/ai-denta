@@ -7,9 +7,12 @@ import { useTranslations } from "next-intl";
 
 type ChatMessage = { role: "user" | "bot"; text: string };
 
-export function FaqChatWidget() {
+export function FaqChatWidget({
+  questions,
+}: {
+  questions: { q: string; a: string }[];
+}) {
   const t = useTranslations("FaqChat");
-  const questions = t.raw("questions") as { q: string; a: string }[];
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -30,15 +33,25 @@ export function FaqChatWidget() {
   }, [open]);
 
   useEffect(() => {
-    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
+    logRef.current?.scrollTo({
+      top: logRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   function askQuestion(q: string, a: string) {
-    setMessages((prev) => [...prev, { role: "user", text: q }, { role: "bot", text: a }]);
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", text: q },
+      { role: "bot", text: a },
+    ]);
   }
 
   return (
-    <div ref={containerRef} className="fixed bottom-6 start-6 z-30 flex flex-col items-start gap-3">
+    <div
+      ref={containerRef}
+      className="fixed bottom-6 start-6 z-30 flex flex-col items-start gap-3"
+    >
       <AnimatePresence>
         {open && (
           <motion.div
@@ -55,7 +68,10 @@ export function FaqChatWidget() {
               <p className="text-sm font-semibold text-white">{t("title")}</p>
             </div>
 
-            <div ref={logRef} className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
+            <div
+              ref={logRef}
+              className="flex flex-1 flex-col gap-3 overflow-y-auto p-4"
+            >
               <ChatBubble role="bot" text={t("greeting")} />
               {messages.map((message, i) => (
                 <ChatBubble key={i} role={message.role} text={message.text} />
@@ -85,7 +101,11 @@ export function FaqChatWidget() {
         aria-expanded={open}
         className="flex size-14 items-center justify-center rounded-full bg-[#7E00C9] text-white shadow-xl transition-transform hover:scale-105"
       >
-        {open ? <X className="size-5" /> : <MessageCircleQuestion className="size-6" />}
+        {open ? (
+          <X className="size-5" />
+        ) : (
+          <MessageCircleQuestion className="size-6" />
+        )}
       </button>
     </div>
   );

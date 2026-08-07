@@ -15,6 +15,7 @@ import { hasUsedFreeConsultation } from "@/services/booking/booking.service";
 import { getFreeBookingIntroVideo } from "@/services/content/cms.service";
 import { getIntakeFormSteps } from "@/services/content/intake-form.service";
 import { ConsultationKind } from "@/generated/prisma/enums";
+import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
 export async function generateMetadata({
   params,
@@ -48,6 +49,10 @@ export default async function FreeBookingPage({
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
+      <TrackMetaEvent
+        event="ViewContent"
+        params={{ content_name: "free_booking_intro" }}
+      />
       {alreadyUsed ? (
         <BrandedCard title={t("title")} description={t("description")}>
           <div className="flex flex-col items-center gap-4 text-center">

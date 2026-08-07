@@ -14,6 +14,7 @@ import { createPaidBookingHoldAction } from "@/actions/booking/create-paid-booki
 import { formatSlotTimeRange } from "@/lib/timezone";
 import { auth } from "@/lib/auth";
 import { getIntakeFormSteps } from "@/services/content/intake-form.service";
+import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
 export default async function ConfirmPaidSlotPage({
   params,
@@ -72,11 +73,19 @@ export default async function ConfirmPaidSlotPage({
             </Button>
           </div>
         ) : (
-          <IntakeForm
-            locale={locale}
-            steps={steps}
-            action={createPaidBookingHoldAction.bind(null, locale, slotId)}
-          />
+          <>
+            <TrackMetaEvent event="SlotSelected" custom />
+            <TrackMetaEvent
+              event="InitiateCheckout"
+              params={{ form: "paid" }}
+            />
+            <IntakeForm
+              locale={locale}
+              steps={steps}
+              action={createPaidBookingHoldAction.bind(null, locale, slotId)}
+              formKind="paid"
+            />
+          </>
         )}
       </BrandedCard>
     </PurpleGlowSection>

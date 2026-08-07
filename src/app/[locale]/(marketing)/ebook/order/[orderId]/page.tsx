@@ -10,6 +10,7 @@ import { PaymentPanel } from "@/components/payment/payment-panel";
 import { getEbookOrder } from "@/services/ebook/ebook.service";
 import { EbookOrderStatus, Role } from "@/generated/prisma/enums";
 import { requireOwnerOrStaff } from "@/lib/authz";
+import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
 export default async function EbookOrderPage({
   params,
@@ -35,6 +36,21 @@ export default async function EbookOrderPage({
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
+      {isPaid ? (
+        <TrackMetaEvent
+          event="Purchase"
+          params={{
+            value: order.amountCents / 100,
+            currency: order.currency,
+            content_name: "ebook",
+          }}
+        />
+      ) : (
+        <TrackMetaEvent
+          event="InitiateCheckout"
+          params={{ content_name: "ebook" }}
+        />
+      )}
       <BrandedCard
         title={isPaid ? t("paidTitle") : t("pendingTitle")}
         description={isPaid ? t("paidDescription") : t("pendingDescription")}
@@ -43,7 +59,9 @@ export default async function EbookOrderPage({
         <div className="flex flex-col gap-4">
           <div
             className={`mx-auto flex size-12 items-center justify-center rounded-full ${
-              isPaid ? "bg-green-100 text-green-600" : "bg-secondary text-primary"
+              isPaid
+                ? "bg-green-100 text-green-600"
+                : "bg-secondary text-primary"
             }`}
           >
             {isPaid ? (
@@ -55,10 +73,10 @@ export default async function EbookOrderPage({
 
           <div className="flex flex-col gap-3 rounded-2xl bg-secondary/50 p-4">
             <div>
-              <p className="text-sm text-muted-foreground">
-                {t("orderLabel")}
+              <p className="text-sm text-muted-foreground">{t("orderLabel")}</p>
+              <p className="font-medium text-foreground">
+                #{order.id.slice(-8)}
               </p>
-              <p className="font-medium text-foreground">#{order.id.slice(-8)}</p>
             </div>
             {isPaid && (
               <div>

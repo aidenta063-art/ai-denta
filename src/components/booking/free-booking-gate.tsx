@@ -12,6 +12,7 @@ import {
   type IntakeFormState,
 } from "@/components/booking/intake-form";
 import type { IntakeStepConfig } from "@/lib/intake-fields";
+import { trackMetaEvent } from "@/lib/meta-pixel";
 
 export function FreeBookingGate({
   locale,
@@ -34,13 +35,23 @@ export function FreeBookingGate({
   const t = useTranslations("Booking.freeGate");
   const [showForm, setShowForm] = useState(false);
 
+  function startForm() {
+    trackMetaEvent("InitiateCheckout", { form: "free" });
+    setShowForm(true);
+  }
+
   if (showForm) {
     return (
       <BrandedCard
         title={formTitle}
         className="max-w-xl lg:max-w-3xl xl:max-w-4xl"
       >
-        <IntakeForm locale={locale} steps={steps} action={action} />
+        <IntakeForm
+          locale={locale}
+          steps={steps}
+          action={action}
+          formKind="free"
+        />
       </BrandedCard>
     );
   }
@@ -71,7 +82,7 @@ export function FreeBookingGate({
             size="lg"
             variant="outline"
             className="h-12 w-full border-white/30 bg-transparent text-base text-white hover:bg-white/10"
-            onClick={() => setShowForm(true)}
+            onClick={startForm}
           >
             {t("freeOption")}
           </Button>

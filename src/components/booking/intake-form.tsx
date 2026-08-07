@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { localized } from "@/lib/i18n-content";
 import type { Locale } from "@/i18n/routing";
 import type { IntakeFieldConfig, IntakeStepConfig } from "@/lib/intake-fields";
+import { trackMetaCustomEvent } from "@/lib/meta-pixel";
 
 export type IntakeFormState = {
   error?:
@@ -28,6 +29,7 @@ export function IntakeForm({
   locale,
   steps,
   action,
+  formKind,
 }: {
   locale: Locale;
   steps: IntakeStepConfig[];
@@ -35,6 +37,7 @@ export function IntakeForm({
     prevState: IntakeFormState,
     formData: FormData,
   ) => Promise<IntakeFormState>;
+  formKind: "free" | "paid";
 }) {
   const t = useTranslations("Intake");
   const [state, formAction, isPending] = useActionState<
@@ -60,6 +63,11 @@ export function IntakeForm({
     for (const field of fields) {
       if (!field.reportValidity()) return;
     }
+    trackMetaCustomEvent("BookingStepCompleted", {
+      form: formKind,
+      step: step + 1,
+      total_steps: totalSteps,
+    });
     setStep((s) => Math.min(s + 1, totalSteps - 1));
   }
 

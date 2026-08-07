@@ -102,6 +102,7 @@ model User {
   manuallyMarkedEbookOrders EbookOrder[]         @relation("EbookOrderManuallyMarkedBy")
   reviewedReviews           Review[]             @relation("ReviewReviewedBy")
   updatedIntakeFormConfig   IntakeFormConfig[]   @relation("IntakeFormConfigUpdatedBy")
+  updatedFaqChatConfig      FaqChatConfig[]      @relation("FaqChatConfigUpdatedBy")
 
   @@index([role])
 }
@@ -322,6 +323,18 @@ model IntakeFormConfig {
   updatedAt   DateTime @updatedAt
   updatedById String?
   updatedBy   User?    @relation("IntakeFormConfigUpdatedBy", fields: [updatedById], references: [id])
+}
+
+/// The FAQ chat widget's quick-question buttons, admin-editable from the
+/// dashboard. A single row (fixed id "singleton"); `questions` is a
+/// bilingual JSON array — see src/lib/faq-chat-fields.ts for the shape.
+model FaqChatConfig {
+  id        String @id @default("singleton")
+  questions Json
+
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+  updatedBy   User?    @relation("FaqChatConfigUpdatedBy", fields: [updatedById], references: [id])
 }
 
 model Media {
