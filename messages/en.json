@@ -175,7 +175,8 @@
       "forgotPassword": "Forgot your password?",
       "noAccount": "Don't have an account?",
       "registerLink": "Create one",
-      "freePdfContext": "Log in to get the free guide"
+      "freePdfContext": "Log in to get the free guide",
+      "bookingConfirmContext": "Log in to confirm your booking"
     },
     "register": {
       "title": "Create an account",

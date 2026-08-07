@@ -6,16 +6,18 @@ import { edgeAuth } from "@/lib/auth-edge";
 const intlMiddleware = createMiddleware(routing);
 
 // Prefix match against the pathname with its locale segment stripped —
-// covers both the page itself and any sub-paths (e.g. /booking/paid/[slotId]).
-// /ebook (landing) and /booking/free (intro video + choice) are
-// intentionally public — only actually placing an order/booking requires
-// login, gated at the page/component level instead.
-const PROTECTED_PREFIXES = ["/booking/paid", "/ebook/order", "/free-pdf"];
+// covers both the page itself and any sub-paths. /ebook (landing),
+// /booking/free, and /booking/paid (intro/slot-picker/intake form) are
+// intentionally public — the qualification form can be filled out
+// anonymously, and login is only required to actually submit it (gated
+// in the form's own submit handler + the server action).
+const PROTECTED_PREFIXES = ["/ebook/order", "/free-pdf"];
 
 function isProtectedPath(pathWithoutLocale: string): boolean {
   return PROTECTED_PREFIXES.some(
     (prefix) =>
-      pathWithoutLocale === prefix || pathWithoutLocale.startsWith(`${prefix}/`),
+      pathWithoutLocale === prefix ||
+      pathWithoutLocale.startsWith(`${prefix}/`),
   );
 }
 

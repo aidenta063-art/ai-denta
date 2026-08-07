@@ -33,7 +33,9 @@ export default async function LoginPage({
   );
   const contextDescription = next?.includes("/free-pdf")
     ? t("freePdfContext")
-    : undefined;
+    : next?.includes("/booking/free") || next?.includes("/booking/paid")
+      ? t("bookingConfirmContext")
+      : undefined;
 
   return (
     <BrandedCard title={t("title")} description={contextDescription}>

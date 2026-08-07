@@ -2,7 +2,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Link, redirect } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
@@ -26,17 +26,6 @@ export default async function ConfirmPaidSlotPage({
   setRequestLocale(locale);
 
   const session = await auth();
-  if (!session?.user) {
-    redirect({
-      href: {
-        pathname: "/login",
-        query: { next: `/${locale}/booking/paid/${slotId}` },
-      },
-      locale,
-    });
-    return null;
-  }
-
   const t = await getTranslations("Booking.paid");
   const [slot, steps] = await Promise.all([
     prisma.slot.findUnique({ where: { id: slotId } }),
@@ -84,6 +73,7 @@ export default async function ConfirmPaidSlotPage({
               steps={steps}
               action={createPaidBookingHoldAction.bind(null, locale, slotId)}
               formKind="paid"
+              isLoggedIn={!!session?.user}
             />
           </>
         )}

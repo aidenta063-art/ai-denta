@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Clock } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { Link, redirect } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
@@ -15,7 +15,6 @@ import {
 } from "@/services/booking/availability";
 import { BookingCalendar } from "@/components/booking/booking-calendar";
 import { formatSlotTimeRange } from "@/lib/timezone";
-import { auth } from "@/lib/auth";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
 export async function generateMetadata({
@@ -38,15 +37,6 @@ export default async function PaidBookingPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
-
-  const session = await auth();
-  if (!session?.user) {
-    redirect({
-      href: { pathname: "/login", query: { next: `/${locale}/booking/paid` } },
-      locale,
-    });
-    return null;
-  }
 
   const t = await getTranslations("Booking.paid");
   const { date: requestedDate } = await searchParams;

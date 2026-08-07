@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
@@ -35,6 +35,20 @@ export function FreeBookingGate({
   const t = useTranslations("Booking.freeGate");
   const [showForm, setShowForm] = useState(false);
 
+  // If the user submitted while logged out, they were sent to log in and
+  // are now back here fresh (see IntakeForm's handleSubmit) — jump straight
+  // to the form so its own resume effect can refill and re-submit it,
+  // instead of showing the gate and losing the stashed answers.
+  useLayoutEffect(() => {
+    if (isLoggedIn && sessionStorage.getItem("pendingBooking:/booking/free")) {
+      // sessionStorage isn't available during SSR, so this can't be a
+      // useState lazy initializer without risking a hydration mismatch —
+      // syncing from it after mount is the correct pattern here.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowForm(true);
+    }
+  }, [isLoggedIn]);
+
   function startForm() {
     trackMetaEvent("InitiateCheckout", { form: "free" });
     setShowForm(true);
@@ -51,6 +65,7 @@ export function FreeBookingGate({
           steps={steps}
           action={action}
           formKind="free"
+          isLoggedIn={isLoggedIn}
         />
       </BrandedCard>
     );
@@ -77,33 +92,14 @@ export function FreeBookingGate({
         >
           {t("paidOption")}
         </Button>
-        {isLoggedIn ? (
-          <Button
-            size="lg"
-            variant="outline"
-            className="h-12 w-full border-white/30 bg-transparent text-base text-white hover:bg-white/10"
-            onClick={startForm}
-          >
-            {t("freeOption")}
-          </Button>
-        ) : (
-          <Button
-            size="lg"
-            variant="outline"
-            className="h-12 w-full border-white/30 bg-transparent text-base text-white hover:bg-white/10"
-            render={
-              <Link
-                href={{
-                  pathname: "/login",
-                  query: { next: `/${locale}/booking/free` },
-                }}
-                locale={locale}
-              />
-            }
-          >
-            {t("freeOption")}
-          </Button>
-        )}
+        <Button
+          size="lg"
+          variant="outline"
+          className="h-12 w-full border-white/30 bg-transparent text-base text-white hover:bg-white/10"
+          onClick={startForm}
+        >
+          {t("freeOption")}
+        </Button>
       </div>
     </div>
   );

@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { usePathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +31,7 @@ export function IntakeForm({
   steps,
   action,
   formKind,
+  isLoggedIn,
 }: {
   locale: Locale;
   steps: IntakeStepConfig[];
@@ -38,8 +40,10 @@ export function IntakeForm({
     formData: FormData,
   ) => Promise<IntakeFormState>;
   formKind: "free" | "paid";
+  isLoggedIn: boolean;
 }) {
   const t = useTranslations("Intake");
+  const pathname = usePathname();
   const [state, formAction, isPending] = useActionState<
     IntakeFormState,
     FormData
@@ -49,6 +53,60 @@ export function IntakeForm({
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const totalSteps = steps.length;
   const isLastStep = step === totalSteps - 1;
+  const storageKey = `pendingBooking:${pathname}`;
+
+  // If the user submitted while logged out, we stashed their answers and
+  // sent them to log in (see handleSubmit below). Once they're back here
+  // authenticated, refill the fields from that stash and submit for real —
+  // this is the only place the booking actually gets saved for the admin.
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const form = formRef.current;
+    if (!form) return;
+    const raw = sessionStorage.getItem(storageKey);
+    if (!raw) return;
+    sessionStorage.removeItem(storageKey);
+
+    let data: Record<string, string>;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      return;
+    }
+
+    for (const [key, value] of Object.entries(data)) {
+      const el = form.elements.namedItem(key);
+      if (el instanceof RadioNodeList) {
+        for (const item of Array.from(el)) {
+          if (item instanceof HTMLInputElement && item.value === value) {
+            item.checked = true;
+          }
+        }
+      } else if (
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLTextAreaElement ||
+        el instanceof HTMLSelectElement
+      ) {
+        el.value = value;
+      }
+    }
+    form.requestSubmit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- resume-from-stash runs once on mount only
+  }, []);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (isLoggedIn) return;
+    // Not logged in yet: don't let this reach the server action (and don't
+    // save anything) — stash the answers and send them to log in first.
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.currentTarget)) as Record<
+      string,
+      string
+    >;
+    sessionStorage.setItem(storageKey, JSON.stringify(data));
+    const nextPath = `/${locale}${pathname}`;
+    window.location.href = `/${locale}/login?next=${encodeURIComponent(nextPath)}`;
+  }
 
   function goNext() {
     const container = stepRefs.current[step];
@@ -76,7 +134,12 @@ export function IntakeForm({
   }
 
   return (
-    <form ref={formRef} action={formAction} className="flex flex-col gap-5">
+    <form
+      ref={formRef}
+      action={formAction}
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-5"
+    >
       {state.error && (
         <Alert variant="destructive">
           <AlertDescription>{t(`errors.${state.error}`)}</AlertDescription>

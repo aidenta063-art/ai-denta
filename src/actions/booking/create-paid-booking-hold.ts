@@ -35,11 +35,25 @@ export async function createPaidBookingHoldAction(
     return { error: "invalidInput" };
   }
 
+  // The slot picker and intake form are public now (see proxy.ts), so
+  // this is the actual enforcement point for "must be logged in to
+  // book" — not just a client-side nicety.
   const session = await auth();
+  if (!session?.user) {
+    redirect({
+      href: {
+        pathname: "/login",
+        query: { next: `/${locale}/booking/paid/${slotId}` },
+      },
+      locale,
+    });
+    return {};
+  }
+
   const result = await createPaidBookingHold({
     ...parsed.data,
     slotId,
-    userId: session?.user?.id,
+    userId: session.user.id,
   });
 
   if ("error" in result) {

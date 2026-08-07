@@ -175,7 +175,8 @@
       "forgotPassword": "نسيت كلمة المرور؟",
       "noAccount": "معندكش حساب؟",
       "registerLink": "أنشئ حساب",
-      "freePdfContext": "سجل دخول علشان تحصل على الكتاب"
+      "freePdfContext": "سجل دخول علشان تحصل على الكتاب",
+      "bookingConfirmContext": "سجل دخول علشان تأكد حجزك"
     },
     "register": {
       "title": "إنشاء حساب",
