@@ -25,7 +25,7 @@ export default async function MarketingLayout({
     <MotionProvider>
       <MarketingHeader locale={locale} />
       <main className="flex-1">{children}</main>
-      <MarketingFooter />
+      <MarketingFooter locale={locale} />
       <FaqChatWidget />
       <AnalyticsBeacon locale={locale} />
       <MetaPixel pixelId={pixelId} />

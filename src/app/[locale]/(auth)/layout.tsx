@@ -35,7 +35,7 @@ export default async function AuthLayout({
         />
         {children}
       </main>
-      <MarketingFooter />
+      <MarketingFooter locale={locale} />
       <FaqChatWidget />
       <AnalyticsBeacon locale={locale} />
       <MetaPixel pixelId={pixelId} />

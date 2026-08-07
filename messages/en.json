@@ -137,7 +137,8 @@
   },
   "Footer": {
     "tagline": "Marketing systems built for dental clinics that want predictable growth.",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "returnPolicy": "Return & Refund Policy"
   },
   "FaqChat": {
     "bubbleLabel": "Chat with us",
@@ -293,8 +294,14 @@
     },
     "fields": {
       "name": { "label": "Full Name", "placeholder": "Enter your full name" },
-      "phone": { "label": "Phone Number", "placeholder": "Enter your Phone number" },
-      "email": { "label": "Best Email Address", "placeholder": "Enter your best email address" },
+      "phone": {
+        "label": "Phone Number",
+        "placeholder": "Enter your Phone number"
+      },
+      "email": {
+        "label": "Best Email Address",
+        "placeholder": "Enter your best email address"
+      },
       "role": {
         "label": "Your Role",
         "options": {
@@ -422,7 +429,10 @@
     "formTitle": "Get your copy",
     "fields": {
       "name": { "label": "Full Name", "placeholder": "Enter your full name" },
-      "phone": { "label": "Phone Number", "placeholder": "Enter your phone number" },
+      "phone": {
+        "label": "Phone Number",
+        "placeholder": "Enter your phone number"
+      },
       "email": { "label": "Email", "placeholder": "Enter your email" }
     },
     "submit": "Buy the Ebook",

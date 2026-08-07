@@ -1,6 +1,8 @@
 import { Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
 
 const SOCIAL_LINKS = [
   { label: "Instagram", href: "https://www.instagram.com/ai_denta.agency" },
@@ -10,7 +12,7 @@ const SOCIAL_LINKS = [
   },
 ];
 
-export async function MarketingFooter() {
+export async function MarketingFooter({ locale }: { locale: Locale }) {
   const tFooter = await getTranslations("Footer");
 
   return (
@@ -57,8 +59,15 @@ export async function MarketingFooter() {
         </div>
       </div>
 
-      <div className="mx-auto mt-8 max-w-5xl border-t border-white/10 pt-6 text-xs text-white/50">
-        Ai Denta — {tFooter("rights")}
+      <div className="mx-auto mt-8 flex max-w-5xl flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/50">
+        <span>Ai Denta — {tFooter("rights")}</span>
+        <Link
+          href="/return-policy"
+          locale={locale}
+          className="transition-colors hover:text-white"
+        >
+          {tFooter("returnPolicy")}
+        </Link>
       </div>
     </footer>
   );

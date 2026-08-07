@@ -7,6 +7,8 @@ import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
+import { listConsultationTypes } from "@/services/content/cms.service";
+import { ConsultationKind } from "@/generated/prisma/enums";
 
 export async function generateMetadata({
   params,
@@ -30,6 +32,19 @@ export default async function BookingChoicePage({
   const t = await getTranslations("Booking.choice");
   const tNav = await getTranslations("Nav");
   const Arrow = locale === "ar" ? ArrowLeft : ArrowRight;
+
+  const consultationTypes = await listConsultationTypes();
+  const paidType = consultationTypes.find(
+    (c) => c.kind === ConsultationKind.PAID,
+  );
+  const paidPrice =
+    paidType?.priceCents != null
+      ? new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
+          style: "currency",
+          currency: paidType.currency,
+          maximumFractionDigits: 0,
+        }).format(paidType.priceCents / 100)
+      : null;
 
   return (
     <PurpleGlowSection className="py-24 sm:py-28">
@@ -60,6 +75,11 @@ export default async function BookingChoicePage({
               <p className="text-sm text-muted-foreground">
                 {t("paidDescription")}
               </p>
+              {paidPrice && (
+                <p className="mt-1 text-2xl font-bold text-[#7E00C9]">
+                  {paidPrice}
+                </p>
+              )}
             </div>
             <Button
               className="mt-auto h-11 w-full gap-2 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
