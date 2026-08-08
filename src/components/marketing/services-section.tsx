@@ -32,7 +32,7 @@ export async function ServicesSection({ locale }: { locale: Locale }) {
     <section className="bg-background px-6 py-20">
       <div className="mx-auto max-w-5xl">
         <ScrollReveal className="mb-12 flex flex-col gap-2 text-center">
-          <h2 className="text-3xl font-bold text-foreground">
+          <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
             {t("title")}
           </h2>
           <p className="text-muted-foreground">{t("subtitle")}</p>

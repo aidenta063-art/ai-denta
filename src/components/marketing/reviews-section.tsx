@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
+import { Eyebrow } from "@/components/marketing/eyebrow";
 import { StarRating } from "@/components/marketing/star-rating";
 import { ReviewForm } from "@/components/marketing/review-form";
 import { listApprovedReviews } from "@/services/reviews/review.service";
@@ -12,10 +13,8 @@ export async function ReviewsSection() {
     <section id="reviews" className="scroll-mt-24 bg-background px-6 py-20">
       <div className="mx-auto max-w-5xl">
         <ScrollReveal className="mb-12 flex flex-col items-center gap-3 text-center">
-          <span className="rounded-full border border-border bg-secondary px-4 py-1 text-sm font-medium text-primary">
-            {t("eyebrow")}
-          </span>
-          <h2 className="max-w-2xl text-3xl font-bold text-foreground">
+          <Eyebrow>{t("eyebrow")}</Eyebrow>
+          <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-foreground">
             {t("title")}
           </h2>
           <p className="max-w-2xl text-muted-foreground">{t("subtitle")}</p>

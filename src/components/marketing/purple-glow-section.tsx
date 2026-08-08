@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { ScheduleGridBackdrop } from "@/components/marketing/schedule-grid-backdrop";
 
 export function PurpleGlowSection({
   children,
@@ -14,15 +15,9 @@ export function PurpleGlowSection({
         className,
       )}
     >
-      <div
-        className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-[#7E00C9] opacity-40 blur-[110px]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute top-1/3 -right-24 size-96 rounded-full bg-[#B98AE8] opacity-30 blur-[110px]"
-        aria-hidden
-      />
-      <div className="relative w-full">{children}</div>
+      <ScheduleGridBackdrop className="pointer-events-none absolute -top-4 -left-6 hidden opacity-70 sm:grid" />
+      <ScheduleGridBackdrop className="pointer-events-none absolute -right-6 bottom-0 hidden opacity-50 sm:grid" />
+      <div className="relative z-10 w-full">{children}</div>
     </section>
   );
 }

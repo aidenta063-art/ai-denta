@@ -3,16 +3,24 @@ import { getTranslations } from "next-intl/server";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { getHomeVideoMedia } from "@/services/content/cms.service";
 import { VideoCarousel } from "@/components/marketing/video-carousel";
+import { ScheduleGridBackdrop } from "@/components/marketing/schedule-grid-backdrop";
 
 export async function VideoShowcase() {
   const t = await getTranslations("HomePage.videos");
   const videos = await getHomeVideoMedia();
 
   return (
-    <section id="work" className="scroll-mt-24 bg-[#251037] px-6 py-20">
-      <div className="mx-auto max-w-3xl">
+    <section
+      id="work"
+      className="relative scroll-mt-24 overflow-hidden bg-[#251037] px-6 py-20"
+    >
+      <ScheduleGridBackdrop className="pointer-events-none absolute top-1/2 -right-6 hidden -translate-y-1/2 opacity-40 sm:grid" />
+
+      <div className="relative z-10 mx-auto max-w-3xl">
         <ScrollReveal className="mb-12 flex flex-col gap-2 text-center">
-          <h2 className="text-3xl font-bold text-white">{t("title")}</h2>
+          <h2 className="text-3xl font-extrabold tracking-tight text-white">
+            {t("title")}
+          </h2>
           <p className="text-[#EDE3F5]/70">{t("subtitle")}</p>
         </ScrollReveal>
 

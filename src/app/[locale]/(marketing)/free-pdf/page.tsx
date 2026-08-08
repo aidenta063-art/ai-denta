@@ -6,6 +6,7 @@ import { Download, FileText } from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { redirect } from "@/i18n/navigation";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
+import { Eyebrow } from "@/components/marketing/eyebrow";
 import { getFreePdf } from "@/services/content/cms.service";
 import { auth } from "@/lib/auth";
 
@@ -49,12 +50,10 @@ export default async function FreePdfPage({
             aria-hidden
           />
           <div className="flex flex-col gap-4 p-6 sm:p-10">
-            <span className="w-fit rounded-full border border-border bg-secondary px-4 py-1 text-sm font-medium text-primary">
-              {t("eyebrow")}
-            </span>
+            <Eyebrow className="w-fit">{t("eyebrow")}</Eyebrow>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div className="flex flex-col gap-1.5">
-                <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
+                <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
                   {t("title")}
                 </h1>
                 <p className="text-lg text-muted-foreground">{t("subtitle")}</p>

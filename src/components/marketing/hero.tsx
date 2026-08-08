@@ -4,6 +4,8 @@ import { motion, type Variants } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { AutoplaySoundVideo } from "@/components/marketing/autoplay-sound-video";
+import { ScheduleGridBackdrop } from "@/components/marketing/schedule-grid-backdrop";
+import { Eyebrow } from "@/components/marketing/eyebrow";
 import type { Locale } from "@/i18n/routing";
 import { trackMetaCustomEvent } from "@/lib/meta-pixel";
 
@@ -36,27 +38,21 @@ export function Hero({
 }) {
   return (
     <section className="relative overflow-hidden bg-[#251037]">
-      <div
-        className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-[#7E00C9] opacity-40 blur-[110px]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute top-1/3 -right-24 size-96 rounded-full bg-[#B98AE8] opacity-30 blur-[110px]"
-        aria-hidden
-      />
+      <ScheduleGridBackdrop className="pointer-events-none absolute -top-4 -left-6 hidden opacity-70 sm:grid" />
+      <ScheduleGridBackdrop className="pointer-events-none absolute -right-6 bottom-0 hidden opacity-50 sm:grid" />
 
       <motion.div
         variants={container}
         initial={false}
         animate="show"
-        className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 py-20 text-center sm:py-28"
+        className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 py-20 text-center sm:py-28"
       >
-        <motion.span
-          variants={item}
-          className="rounded-full border border-white/15 bg-white/10 px-4 py-1 text-sm font-medium text-[#EDE3F5] backdrop-blur"
-        >
-          {eyebrow}
-        </motion.span>
+        <motion.div variants={item}>
+          <Eyebrow tone="dark">
+            <span className="motion-safe:animate-slot-pulse size-1.5 rounded-full bg-[#B98AE8]" />
+            {eyebrow}
+          </Eyebrow>
+        </motion.div>
 
         {videoUrl && (
           <motion.div variants={item} className="w-full">
@@ -69,7 +65,7 @@ export function Hero({
 
         <motion.h1
           variants={item}
-          className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-6xl"
+          className="max-w-3xl text-5xl leading-[1.05] font-black tracking-tight text-white sm:text-7xl"
         >
           {title}
         </motion.h1>

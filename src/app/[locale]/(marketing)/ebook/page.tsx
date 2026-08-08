@@ -6,6 +6,7 @@ import { CheckCircle2 } from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
+import { Eyebrow } from "@/components/marketing/eyebrow";
 import { BrandedCard } from "@/components/marketing/branded-card";
 import { Button } from "@/components/ui/button";
 import { EbookCover } from "@/components/marketing/ebook-cover";
@@ -73,10 +74,8 @@ export default async function EbookPage({
 
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
-                  <span className="w-fit rounded-full border border-border bg-secondary px-4 py-1 text-sm font-medium text-primary">
-                    {t("eyebrow")}
-                  </span>
-                  <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
+                  <Eyebrow className="w-fit">{t("eyebrow")}</Eyebrow>
+                  <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
                     {t("title")}
                   </h1>
                   <p className="text-lg text-muted-foreground">

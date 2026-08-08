@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { EbookCover } from "@/components/marketing/ebook-cover";
+import { Eyebrow } from "@/components/marketing/eyebrow";
 
 export async function EbookTeaser({ locale }: { locale: Locale }) {
   const t = await getTranslations("HomePage.ebookTeaser");
@@ -19,11 +20,11 @@ export async function EbookTeaser({ locale }: { locale: Locale }) {
           <EbookCover locale={locale} className="w-36 shrink-0 sm:w-44" />
 
           <div className="flex flex-col items-center gap-3 text-center sm:items-start sm:text-start">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-4 py-1 text-sm font-medium text-primary">
+            <Eyebrow>
               <BookOpen className="size-3.5" />
               {t("eyebrow")}
-            </span>
-            <h2 className="max-w-md text-2xl font-bold text-foreground sm:text-3xl">
+            </Eyebrow>
+            <h2 className="max-w-md text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
               {t("title")}
             </h2>
             <p className="max-w-md text-muted-foreground">{t("subtitle")}</p>

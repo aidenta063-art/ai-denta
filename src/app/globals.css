@@ -135,3 +135,26 @@
     @apply font-sans;
   }
 }
+
+@layer utilities {
+  @keyframes slot-pulse {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(0.92);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .animate-slot-pulse {
+    animation: slot-pulse 2.4s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slot-pulse {
+    animation: none;
+  }
+}
