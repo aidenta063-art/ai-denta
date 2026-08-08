@@ -65,7 +65,7 @@ export function Hero({
 
         <motion.h1
           variants={item}
-          className="max-w-3xl text-5xl leading-[1.05] font-black tracking-tight text-white sm:text-7xl"
+          className="max-w-3xl text-5xl leading-tight font-black tracking-tight text-white sm:text-7xl"
         >
           {title}
         </motion.h1>
