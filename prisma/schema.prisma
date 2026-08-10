@@ -230,6 +230,12 @@ model Booking {
 
   payment Payment?
 
+  /// Set once each WhatsApp touchpoint has actually been sent, so the
+  /// reminder cron doesn't re-send on its next pass.
+  confirmationSentAt DateTime?
+  reminder24hSentAt  DateTime?
+  reminder1hSentAt   DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

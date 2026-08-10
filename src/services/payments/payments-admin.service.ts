@@ -1,5 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { PaymentStatus, BookingStatus, SlotStatus } from "@/generated/prisma/enums";
+import {
+  sendWhatsAppTemplateSafe,
+  formatWhatsAppDate,
+  formatWhatsAppTime,
+} from "@/lib/whatsapp";
 
 export async function listPayments({ status }: { status?: PaymentStatus } = {}) {
   return prisma.payment.findMany({
@@ -22,12 +27,12 @@ export async function listPayments({ status }: { status?: PaymentStatus } = {}) 
 export async function markPaymentAsPaid(paymentId: string, adminUserId: string) {
   const payment = await prisma.payment.findUniqueOrThrow({
     where: { id: paymentId },
-    include: { booking: true },
+    include: { booking: { include: { slot: true, user: true } } },
   });
 
   // Payments only ever exist for paid (slotted) bookings — free consultations
   // never create one, so this should be impossible outside data corruption.
-  if (!payment.booking.slotId) {
+  if (!payment.booking.slotId || !payment.booking.slot) {
     throw new Error(`Payment ${paymentId} has no slotted booking`);
   }
 
@@ -49,6 +54,36 @@ export async function markPaymentAsPaid(paymentId: string, adminUserId: string) 
       data: { status: SlotStatus.BOOKED, holdExpiresAt: null },
     }),
   ]);
+
+  await sendBookingConfirmedWhatsApp(payment.bookingId);
+}
+
+async function sendBookingConfirmedWhatsApp(bookingId: string) {
+  const templateName = process.env.WHATSAPP_TEMPLATE_BOOKING_CONFIRMED;
+  if (!templateName) return;
+
+  const booking = await prisma.booking.findUniqueOrThrow({
+    where: { id: bookingId },
+    include: { slot: true, user: true },
+  });
+  const phone = booking.user?.phone ?? booking.guestPhone;
+  if (!phone || !booking.slot) return;
+
+  const sent = await sendWhatsAppTemplateSafe({
+    to: phone,
+    templateName,
+    bodyParams: [
+      formatWhatsAppDate(booking.slot.startAt),
+      formatWhatsAppTime(booking.slot.startAt),
+    ],
+  });
+
+  if (sent) {
+    await prisma.booking.update({
+      where: { id: bookingId },
+      data: { confirmationSentAt: new Date() },
+    });
+  }
 }
 
 export async function paymentsToCsv() {
