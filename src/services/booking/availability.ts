@@ -1,6 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { SlotStatus, BookingStatus, PaymentStatus } from "@/generated/prisma/enums";
 
+/** Paid consultations must be booked at least this far ahead, so staff
+ * always have a full day's notice to prepare for the meeting. */
+export const MIN_BOOKING_LEAD_TIME_MS = 24 * 60 * 60 * 1000;
+
+export function earliestBookableTime() {
+  return new Date(Date.now() + MIN_BOOKING_LEAD_TIME_MS);
+}
+
 /**
  * Reverts HELD slots whose hold has expired back to OPEN, and marks their
  * abandoned booking/payment as EXPIRED/FAILED. Called opportunistically
@@ -60,7 +68,7 @@ export async function findOpenSlotsForDate(dateStr: string) {
   return prisma.slot.findMany({
     where: {
       status: SlotStatus.OPEN,
-      startAt: { gte: start, lt: end, gt: new Date() },
+      startAt: { gte: start, lt: end, gt: earliestBookableTime() },
     },
     orderBy: { startAt: "asc" },
   });
@@ -74,14 +82,13 @@ export async function findOpenSlotsForDate(dateStr: string) {
 export async function findAvailableDates(days = 90) {
   await sweepExpiredHolds();
 
-  const now = new Date();
-  const horizonEnd = new Date(now);
+  const horizonEnd = new Date();
   horizonEnd.setDate(horizonEnd.getDate() + days);
 
   const slots = await prisma.slot.findMany({
     where: {
       status: SlotStatus.OPEN,
-      startAt: { gt: now, lt: horizonEnd },
+      startAt: { gt: earliestBookableTime(), lt: horizonEnd },
     },
     select: { startAt: true },
   });
@@ -102,7 +109,7 @@ export async function findEarliestAvailableDate() {
   await sweepExpiredHolds();
 
   const slot = await prisma.slot.findFirst({
-    where: { status: SlotStatus.OPEN, startAt: { gt: new Date() } },
+    where: { status: SlotStatus.OPEN, startAt: { gt: earliestBookableTime() } },
     orderBy: { startAt: "asc" },
   });
 

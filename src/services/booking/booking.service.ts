@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { SlotStatus, BookingStatus, ConsultationKind } from "@/generated/prisma/enums";
-import { sweepExpiredHolds } from "@/services/booking/availability";
+import { sweepExpiredHolds, earliestBookableTime } from "@/services/booking/availability";
 import { createPendingPayment } from "@/services/payments/payment.service";
 import type { IntakeInput } from "@/lib/validation/intake.schema";
 
@@ -87,7 +87,11 @@ export async function createPaidBookingHold(
 
   const booking = await prisma.$transaction(async (tx) => {
     const claimed = await tx.slot.updateMany({
-      where: { id: slotId, status: SlotStatus.OPEN },
+      where: {
+        id: slotId,
+        status: SlotStatus.OPEN,
+        startAt: { gt: earliestBookableTime() },
+      },
       data: { status: SlotStatus.HELD, holdExpiresAt },
     });
     if (claimed.count === 0) return null;
