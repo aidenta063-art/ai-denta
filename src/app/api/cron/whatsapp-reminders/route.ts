@@ -25,10 +25,12 @@ async function sendDueReminders({
   range,
   sentAtField,
   templateName,
+  buildBodyParams,
 }: {
   range: { min: number; max: number };
   sentAtField: "reminder24hSentAt" | "reminder1hSentAt";
   templateName: string;
+  buildBodyParams: (slotStartAt: Date) => string[];
 }) {
   const now = Date.now();
   const windowStart = new Date(now + range.min);
@@ -51,10 +53,7 @@ async function sendDueReminders({
     const sent = await sendWhatsAppTemplateSafe({
       to: phone,
       templateName,
-      bodyParams: [
-        formatWhatsAppDate(booking.slot.startAt),
-        formatWhatsAppTime(booking.slot.startAt),
-      ],
+      bodyParams: buildBodyParams(booking.slot.startAt),
     });
 
     if (sent) {
@@ -88,6 +87,11 @@ export async function GET(request: Request) {
           range: REMINDER_24H_RANGE_MS,
           sentAtField: "reminder24hSentAt",
           templateName: template24h,
+          // Template has 2 vars: {{1}} date, {{2}} time.
+          buildBodyParams: (slotStartAt) => [
+            formatWhatsAppDate(slotStartAt),
+            formatWhatsAppTime(slotStartAt),
+          ],
         })
       : Promise.resolve(0),
     template1h
@@ -95,6 +99,8 @@ export async function GET(request: Request) {
           range: REMINDER_1H_RANGE_MS,
           sentAtField: "reminder1hSentAt",
           templateName: template1h,
+          // Template has 1 var: {{1}} time only.
+          buildBodyParams: (slotStartAt) => [formatWhatsAppTime(slotStartAt)],
         })
       : Promise.resolve(0),
   ]);
