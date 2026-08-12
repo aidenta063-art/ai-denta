@@ -7,25 +7,32 @@ import {
   formatWhatsAppTime,
 } from "@/lib/whatsapp";
 
-const HOUR_MS = 60 * 60 * 1000;
-const REMINDER_24H_TARGET_MS = 24 * HOUR_MS;
-const REMINDER_1H_TARGET_MS = HOUR_MS;
-// Half-window on each side of the target offset — must cover the gap
-// between cron runs (~15 min) so a booking is never skipped or double-hit.
-const WINDOW_MS = 15 * 60 * 1000;
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
+
+// Catch windows are one-sided ranges, not a narrow band around the exact
+// target offset — a booking confirmed close to the edge of a target (e.g.
+// 62 minutes before its slot, just past the old "more than an hour" bar)
+// could end up with less than one cron interval of matching time in a
+// tight ±15min band and get skipped entirely depending on tick alignment.
+// A booking becomes eligible the moment it enters its range and stays
+// eligible (still unsent) until the range's lower bound, so any cron
+// cadence faster than the range width is guaranteed to catch it.
+const REMINDER_24H_RANGE_MS = { min: 75 * MINUTE_MS, max: 24 * HOUR_MS };
+const REMINDER_1H_RANGE_MS = { min: 5 * MINUTE_MS, max: 75 * MINUTE_MS };
 
 async function sendDueReminders({
-  targetOffsetMs,
+  range,
   sentAtField,
   templateName,
 }: {
-  targetOffsetMs: number;
+  range: { min: number; max: number };
   sentAtField: "reminder24hSentAt" | "reminder1hSentAt";
   templateName: string;
 }) {
   const now = Date.now();
-  const windowStart = new Date(now + targetOffsetMs - WINDOW_MS);
-  const windowEnd = new Date(now + targetOffsetMs + WINDOW_MS);
+  const windowStart = new Date(now + range.min);
+  const windowEnd = new Date(now + range.max);
 
   const bookings = await prisma.booking.findMany({
     where: {
@@ -78,14 +85,14 @@ export async function GET(request: Request) {
   const [reminder24hSent, reminder1hSent] = await Promise.all([
     template24h
       ? sendDueReminders({
-          targetOffsetMs: REMINDER_24H_TARGET_MS,
+          range: REMINDER_24H_RANGE_MS,
           sentAtField: "reminder24hSentAt",
           templateName: template24h,
         })
       : Promise.resolve(0),
     template1h
       ? sendDueReminders({
-          targetOffsetMs: REMINDER_1H_TARGET_MS,
+          range: REMINDER_1H_RANGE_MS,
           sentAtField: "reminder1hSentAt",
           templateName: template1h,
         })
