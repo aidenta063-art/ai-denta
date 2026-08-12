@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { SlotStatus, BookingStatus, ConsultationKind } from "@/generated/prisma/enums";
 import { sweepExpiredHolds, earliestBookableTime } from "@/services/booking/availability";
 import { createPendingPayment } from "@/services/payments/payment.service";
+import { sendWhatsAppTemplateSafe } from "@/lib/whatsapp";
 import type { IntakeInput } from "@/lib/validation/intake.schema";
 
 const HOLD_DURATION_MINUTES = 10;
@@ -56,6 +57,21 @@ export async function createFreeBooking(
       intakeAnswers,
     },
   });
+
+  const templateName = process.env.WHATSAPP_TEMPLATE_FREE_BOOKING_RECEIVED;
+  if (templateName && phone && name) {
+    const sent = await sendWhatsAppTemplateSafe({
+      to: phone,
+      templateName,
+      bodyParams: [name],
+    });
+    if (sent) {
+      await prisma.booking.update({
+        where: { id: booking.id },
+        data: { confirmationSentAt: new Date() },
+      });
+    }
+  }
 
   return { bookingId: booking.id };
 }
