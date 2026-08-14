@@ -27,6 +27,9 @@ export async function savePricingAction(
     descriptionAr: formData.get("descriptionAr"),
     priceEgp: formData.get("priceEgp"),
     durationMinutes: formData.get("durationMinutes"),
+    discountEnabled: formData.get("discountEnabled") === "on",
+    discountType: formData.get("discountType") || "PERCENTAGE",
+    discountValue: formData.get("discountValue") || 0,
   });
 
   if (!parsed.success) {

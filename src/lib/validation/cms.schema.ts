@@ -22,7 +22,15 @@ export const pricingFormSchema = z.object({
   descriptionAr: z.string().trim().max(400).optional().or(z.literal("")),
   priceEgp: z.coerce.number().min(0).optional(),
   durationMinutes: z.coerce.number().int().min(5).max(240),
-});
+  discountEnabled: z.boolean(),
+  discountType: z.enum(["PERCENTAGE", "FIXED"]),
+  // Whole-number percent (0-100) when discountType is PERCENTAGE, EGP
+  // amount (same unit as priceEgp) when FIXED.
+  discountValue: z.coerce.number().min(0),
+}).refine(
+  (data) => data.discountType !== "PERCENTAGE" || data.discountValue <= 100,
+  { path: ["discountValue"], message: "Percentage discount can't exceed 100" },
+);
 
 export const serviceFormSchema = z.object({
   nameEn: z.string().trim().min(1).max(100),

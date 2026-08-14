@@ -114,6 +114,14 @@ export async function updateConsultationTypePricing(
           ? Math.round((input.priceEgp ?? 0) * 100)
           : null,
       durationMinutes: input.durationMinutes,
+      discountEnabled: kind === ConsultationKind.PAID && input.discountEnabled,
+      discountType: input.discountType,
+      discountValue:
+        kind === ConsultationKind.PAID
+          ? input.discountType === "FIXED"
+            ? Math.round(input.discountValue * 100)
+            : Math.round(input.discountValue)
+          : 0,
     },
   });
 }

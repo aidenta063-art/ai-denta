@@ -23,6 +23,11 @@ enum ConsultationKind {
   PAID
 }
 
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
 enum ReviewStatus {
   PENDING
   APPROVED
@@ -166,6 +171,11 @@ model ConsultationType {
   descriptionAr   String?          @db.Text
   priceCents      Int?
   currency        String           @default("EGP")
+  /// Discount only ever applies to the PAID consultation's priceCents.
+  discountEnabled Boolean          @default(false)
+  discountType    DiscountType     @default(PERCENTAGE)
+  /// PERCENTAGE: whole-number percent (0-100). FIXED: cents, same unit as priceCents.
+  discountValue   Int              @default(0)
   durationMinutes Int              @default(30)
   isActive        Boolean          @default(true)
 

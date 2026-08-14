@@ -48,6 +48,9 @@ export default async function PricingContentPage({
                 descriptionAr: ct.descriptionAr ?? "",
                 priceCents: ct.priceCents,
                 durationMinutes: ct.durationMinutes,
+                discountEnabled: ct.discountEnabled,
+                discountType: ct.discountType,
+                discountValue: ct.discountValue,
               }}
             />
           </CardContent>
