@@ -3,6 +3,7 @@ import { SlotStatus, BookingStatus, ConsultationKind } from "@/generated/prisma/
 import { sweepExpiredHolds, earliestBookableTime } from "@/services/booking/availability";
 import { createPendingPayment } from "@/services/payments/payment.service";
 import { sendWhatsAppTemplateSafe } from "@/lib/whatsapp";
+import { computeFinalPriceCents } from "@/lib/pricing";
 import type { IntakeInput } from "@/lib/validation/intake.schema";
 
 const HOLD_DURATION_MINUTES = 10;
@@ -127,7 +128,12 @@ export async function createPaidBookingHold(
 
     await createPendingPayment(tx, {
       bookingId: created.id,
-      amountCents: paidType.priceCents ?? 0,
+      amountCents: computeFinalPriceCents({
+        priceCents: paidType.priceCents ?? 0,
+        discountEnabled: paidType.discountEnabled,
+        discountType: paidType.discountType,
+        discountValue: paidType.discountValue,
+      }),
       currency: paidType.currency,
     });
 

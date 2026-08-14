@@ -10,6 +10,7 @@ import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { listConsultationTypes } from "@/services/content/cms.service";
 import { ConsultationKind } from "@/generated/prisma/enums";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
+import { computeFinalPriceCents } from "@/lib/pricing";
 
 export async function generateMetadata({
   params,
@@ -44,7 +45,14 @@ export default async function BookingChoicePage({
           style: "currency",
           currency: paidType.currency,
           maximumFractionDigits: 0,
-        }).format(paidType.priceCents / 100)
+        }).format(
+          computeFinalPriceCents({
+            priceCents: paidType.priceCents,
+            discountEnabled: paidType.discountEnabled,
+            discountType: paidType.discountType,
+            discountValue: paidType.discountValue,
+          }) / 100,
+        )
       : null;
 
   return (
