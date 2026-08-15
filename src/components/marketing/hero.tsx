@@ -26,6 +26,7 @@ export function Hero({
   subtitle,
   ctaFree,
   ctaPaid,
+  paidPrice,
   videoUrl,
 }: {
   locale: Locale;
@@ -34,6 +35,7 @@ export function Hero({
   subtitle: string;
   ctaFree: string;
   ctaPaid: string;
+  paidPrice?: { finalLabel: string; originalLabel: string | null } | null;
   videoUrl?: string | null;
 }) {
   return (
@@ -79,23 +81,37 @@ export function Hero({
 
         <motion.div
           variants={item}
-          className="flex flex-wrap justify-center gap-4 pt-4"
+          className="flex flex-wrap items-start justify-center gap-4 pt-4"
         >
-          <Button
-            size="lg"
-            className="bg-white text-base text-[#251037] shadow-xl shadow-black/20 hover:bg-white/90"
-            render={
-              <Link
-                href="/booking/paid"
-                locale={locale}
-                onClick={() =>
-                  trackMetaCustomEvent("CTAClick", { cta: "hero_paid" })
-                }
-              />
-            }
-          >
-            {ctaPaid}
-          </Button>
+          <div className="flex flex-col items-center gap-1.5">
+            <Button
+              size="lg"
+              className="bg-white text-base text-[#251037] shadow-xl shadow-black/20 hover:bg-white/90"
+              render={
+                <Link
+                  href="/booking/paid"
+                  locale={locale}
+                  onClick={() =>
+                    trackMetaCustomEvent("CTAClick", { cta: "hero_paid" })
+                  }
+                />
+              }
+            >
+              {ctaPaid}
+            </Button>
+            {paidPrice && (
+              <p className="flex items-baseline gap-1.5 text-sm">
+                <span className="font-semibold text-white">
+                  {paidPrice.finalLabel}
+                </span>
+                {paidPrice.originalLabel && (
+                  <span className="text-xs text-[#EDE3F5]/50 line-through">
+                    {paidPrice.originalLabel}
+                  </span>
+                )}
+              </p>
+            )}
+          </div>
           <Button
             size="lg"
             variant="outline"

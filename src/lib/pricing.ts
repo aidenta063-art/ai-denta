@@ -23,3 +23,43 @@ export function computeFinalPriceCents({
 
   return Math.max(0, Math.round(discounted));
 }
+
+/** Formats a consultation's price for display: the final (possibly
+ * discounted) price, plus the original price only when a discount is
+ * actually knocking the price down — so callers can render the original
+ * struck through next to the final price. */
+export function formatConsultationPrice({
+  priceCents,
+  discountEnabled,
+  discountType,
+  discountValue,
+  currency,
+  locale,
+}: {
+  priceCents: number;
+  discountEnabled: boolean;
+  discountType: DiscountType;
+  discountValue: number;
+  currency: string;
+  locale: string;
+}): { finalLabel: string; originalLabel: string | null } {
+  const finalCents = computeFinalPriceCents({
+    priceCents,
+    discountEnabled,
+    discountType,
+    discountValue,
+  });
+  const formatter = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  });
+
+  return {
+    finalLabel: formatter.format(finalCents / 100),
+    originalLabel:
+      discountEnabled && finalCents < priceCents
+        ? formatter.format(priceCents / 100)
+        : null,
+  };
+}

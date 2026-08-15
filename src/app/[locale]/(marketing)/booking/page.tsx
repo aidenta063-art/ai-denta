@@ -10,7 +10,7 @@ import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { listConsultationTypes } from "@/services/content/cms.service";
 import { ConsultationKind } from "@/generated/prisma/enums";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
-import { computeFinalPriceCents } from "@/lib/pricing";
+import { formatConsultationPrice } from "@/lib/pricing";
 
 export async function generateMetadata({
   params,
@@ -41,18 +41,14 @@ export default async function BookingChoicePage({
   );
   const paidPrice =
     paidType?.priceCents != null
-      ? new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-          style: "currency",
+      ? formatConsultationPrice({
+          priceCents: paidType.priceCents,
+          discountEnabled: paidType.discountEnabled,
+          discountType: paidType.discountType,
+          discountValue: paidType.discountValue,
           currency: paidType.currency,
-          maximumFractionDigits: 0,
-        }).format(
-          computeFinalPriceCents({
-            priceCents: paidType.priceCents,
-            discountEnabled: paidType.discountEnabled,
-            discountType: paidType.discountType,
-            discountValue: paidType.discountValue,
-          }) / 100,
-        )
+          locale,
+        })
       : null;
 
   return (
@@ -89,8 +85,15 @@ export default async function BookingChoicePage({
                 {t("paidDescription")}
               </p>
               {paidPrice && (
-                <p className="mt-1 text-2xl font-bold text-[#7E00C9]">
-                  {paidPrice}
+                <p className="mt-1 flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-[#7E00C9]">
+                    {paidPrice.finalLabel}
+                  </span>
+                  {paidPrice.originalLabel && (
+                    <span className="text-sm text-muted-foreground line-through">
+                      {paidPrice.originalLabel}
+                    </span>
+                  )}
                 </p>
               )}
             </div>

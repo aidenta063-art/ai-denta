@@ -89,6 +89,26 @@
       "ctaFree": "Book Free Consultation",
       "ctaPaid": "Book Paid Consultation"
     },
+    "comparison": {
+      "eyebrow": "Compare your options",
+      "title": "Free vs. paid — what's the difference?",
+      "subtitle": "Both start a real conversation about your clinic. Here's exactly what each one gets you.",
+      "mostPopular": "Most popular",
+      "freeName": "Free Consultation",
+      "paidName": "Paid Consultation",
+      "featureLabel": "What you get",
+      "schedulingLabel": "Scheduling",
+      "schedulingFree": "Waitlist — we'll contact you",
+      "schedulingPaid": "Pick your own date & time",
+      "durationLabel": "Duration",
+      "durationValue": "{minutes} min",
+      "depthLabel": "Session depth",
+      "depthFree": "Quick overview call",
+      "depthPaid": "In-depth growth strategy session",
+      "priorityLabel": "Priority attention",
+      "priceLabel": "Price",
+      "freePrice": "Free"
+    },
     "whyUs": {
       "eyebrow": "What Sets Us Apart",
       "title": "Marketing built by people who've actually practiced dentistry",

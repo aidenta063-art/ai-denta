@@ -9,10 +9,17 @@ import { VideoShowcase } from "@/components/marketing/video-showcase";
 import { WhyUsSection } from "@/components/marketing/why-us-section";
 import { EbookTeaser } from "@/components/marketing/ebook-teaser";
 import { ConsultationCta } from "@/components/marketing/consultation-cta";
+import { FreeVsPaidSection } from "@/components/marketing/free-vs-paid-section";
 import { ScrollToHash } from "@/components/marketing/scroll-to-hash";
-import { getHeroContent, getHeroVideo } from "@/services/content/cms.service";
+import {
+  getHeroContent,
+  getHeroVideo,
+  listConsultationTypes,
+} from "@/services/content/cms.service";
 import { heroContentSchema } from "@/lib/validation/cms.schema";
 import { localized } from "@/lib/i18n-content";
+import { formatConsultationPrice } from "@/lib/pricing";
+import { ConsultationKind } from "@/generated/prisma/enums";
 
 export async function generateMetadata({
   params,
@@ -50,9 +57,10 @@ export default async function HomePage({
   setRequestLocale(locale);
 
   const t = await getTranslations("HomePage");
-  const [heroSection, heroVideo] = await Promise.all([
+  const [heroSection, heroVideo, consultationTypes] = await Promise.all([
     getHeroContent(),
     getHeroVideo(),
+    listConsultationTypes(),
   ]);
 
   const heroFromCms = heroSection
@@ -65,6 +73,22 @@ export default async function HomePage({
     ? heroFromCms.data
     : { eyebrow: t("eyebrow"), title: t("title"), subtitle: t("subtitle") };
 
+  const freeType =
+    consultationTypes.find((c) => c.kind === ConsultationKind.FREE) ?? null;
+  const paidType =
+    consultationTypes.find((c) => c.kind === ConsultationKind.PAID) ?? null;
+  const paidPrice =
+    paidType?.priceCents != null
+      ? formatConsultationPrice({
+          priceCents: paidType.priceCents,
+          discountEnabled: paidType.discountEnabled,
+          discountType: paidType.discountType,
+          discountValue: paidType.discountValue,
+          currency: paidType.currency,
+          locale,
+        })
+      : null;
+
   return (
     <>
       <ScrollToHash />
@@ -75,9 +99,15 @@ export default async function HomePage({
         subtitle={hero.subtitle}
         ctaFree={t("ctaFree")}
         ctaPaid={t("ctaPaid")}
+        paidPrice={paidPrice}
         videoUrl={heroVideo?.url}
       />
       <ServicesSection locale={locale} />
+      <FreeVsPaidSection
+        locale={locale}
+        freeType={freeType}
+        paidType={paidType}
+      />
       <VideoShowcase />
       <WhyUsSection />
       <EbookTeaser locale={locale} />
