@@ -40,6 +40,17 @@ export const serviceFormSchema = z.object({
   sortOrder: z.coerce.number().int().min(0).default(0),
 });
 
+export const comparisonRowFormSchema = z.object({
+  labelEn: z.string().trim().min(1).max(60),
+  labelAr: z.string().trim().min(1).max(60),
+  freeValueEn: z.string().trim().min(1).max(120),
+  freeValueAr: z.string().trim().min(1).max(120),
+  paidValueEn: z.string().trim().min(1).max(120),
+  paidValueAr: z.string().trim().min(1).max(120),
+  sortOrder: z.coerce.number().int().min(0).default(0),
+});
+
 export type HeroFormInput = z.infer<typeof heroFormSchema>;
 export type PricingFormInput = z.infer<typeof pricingFormSchema>;
 export type ServiceFormInput = z.infer<typeof serviceFormSchema>;
+export type ComparisonRowFormInput = z.infer<typeof comparisonRowFormSchema>;

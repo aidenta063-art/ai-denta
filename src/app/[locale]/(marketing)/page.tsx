@@ -73,8 +73,6 @@ export default async function HomePage({
     ? heroFromCms.data
     : { eyebrow: t("eyebrow"), title: t("title"), subtitle: t("subtitle") };
 
-  const freeType =
-    consultationTypes.find((c) => c.kind === ConsultationKind.FREE) ?? null;
   const paidType =
     consultationTypes.find((c) => c.kind === ConsultationKind.PAID) ?? null;
   const paidPrice =
@@ -102,12 +100,8 @@ export default async function HomePage({
         paidPrice={paidPrice}
         videoUrl={heroVideo?.url}
       />
+      <FreeVsPaidSection locale={locale} />
       <ServicesSection locale={locale} />
-      <FreeVsPaidSection
-        locale={locale}
-        freeType={freeType}
-        paidType={paidType}
-      />
       <VideoShowcase />
       <WhyUsSection />
       <EbookTeaser locale={locale} />

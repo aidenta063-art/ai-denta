@@ -3,19 +3,15 @@ import { Check, Minus } from "lucide-react";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { Eyebrow } from "@/components/marketing/eyebrow";
 import { formatConsultationPrice } from "@/lib/pricing";
+import {
+  listComparisonRows,
+  listConsultationTypes,
+} from "@/services/content/cms.service";
+import { ConsultationKind } from "@/generated/prisma/enums";
+import { localized } from "@/lib/i18n-content";
 import type { Locale } from "@/i18n/routing";
-import type { DiscountType } from "@/generated/prisma/enums";
 
-type ConsultationSummary = {
-  durationMinutes: number;
-  priceCents: number | null;
-  currency: string;
-  discountEnabled: boolean;
-  discountType: DiscountType;
-  discountValue: number;
-};
-
-function ComparisonRow({
+function Row({
   label,
   free,
   paid,
@@ -43,16 +39,17 @@ function ComparisonRow({
   );
 }
 
-export async function FreeVsPaidSection({
-  locale,
-  freeType,
-  paidType,
-}: {
-  locale: Locale;
-  freeType: ConsultationSummary | null;
-  paidType: ConsultationSummary | null;
-}) {
+export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
   const t = await getTranslations("HomePage.comparison");
+  const [customRows, consultationTypes] = await Promise.all([
+    listComparisonRows(),
+    listConsultationTypes(),
+  ]);
+
+  const freeType =
+    consultationTypes.find((c) => c.kind === ConsultationKind.FREE) ?? null;
+  const paidType =
+    consultationTypes.find((c) => c.kind === ConsultationKind.PAID) ?? null;
 
   const paidPrice =
     paidType?.priceCents != null
@@ -96,43 +93,63 @@ export async function FreeVsPaidSection({
               </div>
             </div>
 
-            <ComparisonRow
-              label={t("schedulingLabel")}
-              free={t("schedulingFree")}
-              paid={t("schedulingPaid")}
-            />
-            <ComparisonRow
-              label={t("durationLabel")}
-              free={t("durationValue", { minutes: freeType?.durationMinutes ?? 20 })}
-              paid={t("durationValue", { minutes: paidType?.durationMinutes ?? 45 })}
-            />
-            <ComparisonRow
-              label={t("depthLabel")}
-              free={t("depthFree")}
-              paid={t("depthPaid")}
-            />
-            <ComparisonRow
-              label={t("priorityLabel")}
-              free={<Minus className="mx-auto size-4 text-muted-foreground/60" />}
-              paid={<Check className="mx-auto size-4 text-[#7E00C9]" />}
-            />
-            <ComparisonRow
-              label={t("priceLabel")}
-              free={t("freePrice")}
-              paid={
-                paidPrice ? (
-                  <span className="flex items-baseline justify-center gap-2">
-                    <span>{paidPrice.finalLabel}</span>
-                    {paidPrice.originalLabel && (
-                      <span className="text-xs font-normal text-muted-foreground line-through">
-                        {paidPrice.originalLabel}
+            {customRows.length > 0 ? (
+              customRows.map((row, i) => (
+                <Row
+                  key={row.id}
+                  label={localized(locale, row.labelEn, row.labelAr)}
+                  free={localized(locale, row.freeValueEn, row.freeValueAr)}
+                  paid={localized(locale, row.paidValueEn, row.paidValueAr)}
+                  last={i === customRows.length - 1}
+                />
+              ))
+            ) : (
+              <>
+                <Row
+                  label={t("schedulingLabel")}
+                  free={t("schedulingFree")}
+                  paid={t("schedulingPaid")}
+                />
+                <Row
+                  label={t("durationLabel")}
+                  free={t("durationValue", {
+                    minutes: freeType?.durationMinutes ?? 20,
+                  })}
+                  paid={t("durationValue", {
+                    minutes: paidType?.durationMinutes ?? 45,
+                  })}
+                />
+                <Row
+                  label={t("depthLabel")}
+                  free={t("depthFree")}
+                  paid={t("depthPaid")}
+                />
+                <Row
+                  label={t("priorityLabel")}
+                  free={
+                    <Minus className="mx-auto size-4 text-muted-foreground/60" />
+                  }
+                  paid={<Check className="mx-auto size-4 text-[#7E00C9]" />}
+                />
+                <Row
+                  label={t("priceLabel")}
+                  free={t("freePrice")}
+                  paid={
+                    paidPrice ? (
+                      <span className="flex items-baseline justify-center gap-2">
+                        <span>{paidPrice.finalLabel}</span>
+                        {paidPrice.originalLabel && (
+                          <span className="text-xs font-normal text-muted-foreground line-through">
+                            {paidPrice.originalLabel}
+                          </span>
+                        )}
                       </span>
-                    )}
-                  </span>
-                ) : null
-              }
-              last
-            />
+                    ) : null
+                  }
+                  last
+                />
+              </>
+            )}
           </div>
         </ScrollReveal>
       </div>

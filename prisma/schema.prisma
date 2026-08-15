@@ -398,6 +398,19 @@ model Service {
   iconMedia     Media?  @relation(fields: [iconMediaId], references: [id])
 }
 
+/// One row of the homepage "Free vs. paid" comparison table — fully
+/// admin-authored, so there's no dynamic link to ConsultationType.
+model ComparisonRow {
+  id          String @id @default(cuid())
+  labelEn     String
+  labelAr     String
+  freeValueEn String
+  freeValueAr String
+  paidValueEn String
+  paidValueAr String
+  sortOrder   Int    @default(0)
+}
+
 /** One row per page load, from an anonymous client-side beacon (see
  * AnalyticsBeacon) — powers the admin Reports page's traffic charts. */
 model PageView {

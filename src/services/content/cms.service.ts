@@ -2,7 +2,12 @@ import crypto from "node:crypto";
 import { unstable_cache as nextCache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { CmsSectionType, ConsultationKind } from "@/generated/prisma/enums";
-import type { HeroFormInput, PricingFormInput, ServiceFormInput } from "@/lib/validation/cms.schema";
+import type {
+  HeroFormInput,
+  PricingFormInput,
+  ServiceFormInput,
+  ComparisonRowFormInput,
+} from "@/lib/validation/cms.schema";
 
 const HERO_SLUG = "home-hero";
 
@@ -17,6 +22,7 @@ export const CMS_TAGS = {
   heroVideo: "cms:hero-video",
   homeVideos: "cms:home-videos",
   services: "cms:services",
+  comparisonRows: "cms:comparison-rows",
   freeBookingIntro: "cms:free-booking-intro",
   freePdf: "cms:free-pdf",
 } as const;
@@ -177,6 +183,27 @@ export async function updateService(id: string, input: ServiceFormInput) {
 
 export async function deleteService(id: string) {
   await prisma.service.delete({ where: { id } });
+}
+
+export const listComparisonRows = nextCache(
+  async () => prisma.comparisonRow.findMany({ orderBy: { sortOrder: "asc" } }),
+  ["cms-comparison-rows"],
+  { tags: [CMS_TAGS.comparisonRows], revalidate: CACHE_SECONDS },
+);
+
+export async function createComparisonRow(input: ComparisonRowFormInput) {
+  return prisma.comparisonRow.create({ data: input });
+}
+
+export async function updateComparisonRow(
+  id: string,
+  input: ComparisonRowFormInput,
+) {
+  await prisma.comparisonRow.update({ where: { id }, data: input });
+}
+
+export async function deleteComparisonRow(id: string) {
+  await prisma.comparisonRow.delete({ where: { id } });
 }
 
 const HOME_VIDEOS_SLUG = "home-videos";

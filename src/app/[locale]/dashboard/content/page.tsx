@@ -28,6 +28,12 @@ const SECTIONS = [
     description: "The services list shown on the homepage.",
   },
   {
+    href: "/dashboard/content/comparison",
+    title: "Free vs. Paid Comparison",
+    description:
+      "The rows in the homepage table comparing the free and paid consultation.",
+  },
+  {
     href: "/dashboard/content/media",
     title: "Media Library",
     description: "Upload and manage images and videos.",
