@@ -32,7 +32,7 @@ function Row({
       <div className="p-4 text-center text-sm text-card-foreground sm:p-6">
         {free}
       </div>
-      <div className="bg-secondary/40 p-4 text-center text-sm font-medium text-card-foreground sm:p-6">
+      <div className="border-s-2 border-[#7E00C9]/20 bg-secondary/40 p-4 text-center text-sm font-medium text-card-foreground sm:p-6">
         {paid}
       </div>
     </div>
@@ -85,7 +85,7 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
               <div className="flex flex-col justify-center p-4 text-center sm:p-6">
                 <p className="font-semibold text-white">{t("freeName")}</p>
               </div>
-              <div className="relative flex flex-col items-center gap-1.5 bg-[#7E00C9] p-4 sm:p-6">
+              <div className="relative flex flex-col items-center gap-1.5 border-s-2 border-white/20 bg-[#7E00C9] p-4 sm:p-6">
                 <span className="rounded-full bg-white px-3 py-0.5 text-[10px] font-semibold text-[#7E00C9] uppercase">
                   {t("mostPopular")}
                 </span>
