@@ -2,11 +2,38 @@ import { prisma } from "@/lib/prisma";
 import { SlotStatus, BookingStatus, ConsultationKind } from "@/generated/prisma/enums";
 import { sweepExpiredHolds, earliestBookableTime } from "@/services/booking/availability";
 import { createPendingPayment } from "@/services/payments/payment.service";
-import { sendWhatsAppTemplateSafe } from "@/lib/whatsapp";
+import {
+  sendWhatsAppTemplateSafe,
+  formatWhatsAppDate,
+  formatWhatsAppTime,
+} from "@/lib/whatsapp";
 import { computeFinalPriceCents } from "@/lib/pricing";
+import { sendEmail } from "@/lib/email";
+import { logger } from "@/lib/logger";
 import type { IntakeInput } from "@/lib/validation/intake.schema";
 
 const HOLD_DURATION_MINUTES = 10;
+const ADMIN_NOTIFICATION_EMAIL = "Support@ai-denta.com";
+
+async function notifyAdminOfBooking({
+  name,
+  consultationLabel,
+  when,
+}: {
+  name: string;
+  consultationLabel: string;
+  when: Date;
+}) {
+  try {
+    await sendEmail({
+      to: ADMIN_NOTIFICATION_EMAIL,
+      subject: `New booking: ${name} (${consultationLabel})`,
+      text: `${name} just booked a ${consultationLabel.toLowerCase()}.\n\nTime: ${formatWhatsAppDate(when, "en")}, ${formatWhatsAppTime(when, "en")}`,
+    });
+  } catch (error) {
+    logger.error({ err: error, name }, "Failed to send admin booking notification email");
+  }
+}
 
 export type CreateFreeBookingResult =
   | { bookingId: string }
@@ -72,6 +99,14 @@ export async function createFreeBooking(
         data: { confirmationSentAt: new Date() },
       });
     }
+  }
+
+  if (name) {
+    await notifyAdminOfBooking({
+      name,
+      consultationLabel: "Free Consultation",
+      when: booking.createdAt,
+    });
   }
 
   return { bookingId: booking.id };
@@ -142,6 +177,20 @@ export async function createPaidBookingHold(
 
   if (!booking) {
     return { error: "slotNoLongerAvailable" };
+  }
+
+  if (name) {
+    const slot = await prisma.slot.findUnique({
+      where: { id: slotId },
+      select: { startAt: true },
+    });
+    if (slot) {
+      await notifyAdminOfBooking({
+        name,
+        consultationLabel: "Paid Consultation",
+        when: slot.startAt,
+      });
+    }
   }
 
   return { bookingId: booking.id };
