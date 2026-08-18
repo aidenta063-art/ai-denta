@@ -151,10 +151,23 @@
   .animate-slot-pulse {
     animation: slot-pulse 2.4s ease-in-out infinite;
   }
+
+  @keyframes card-shimmer {
+    0% {
+      transform: translateX(-120%) rotate(12deg);
+    }
+    100% {
+      transform: translateX(220%) rotate(12deg);
+    }
+  }
+  .animate-card-shimmer {
+    animation: card-shimmer 3.2s ease-in-out infinite;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-slot-pulse {
+  .animate-slot-pulse,
+  .animate-card-shimmer {
     animation: none;
   }
 }

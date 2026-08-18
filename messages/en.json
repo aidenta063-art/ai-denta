@@ -488,6 +488,9 @@
     "copied": "Copied",
     "instructions": "Choose either payment method above and transfer the amount due, then send us proof of the transfer.",
     "sendProofCta": "Send Payment Proof via WhatsApp",
+    "securedByKashier": "Payments secured by Kashier",
+    "backToCard": "Pay with card instead",
+    "payAnotherWay": "Pay another way",
     "booking": {
       "proofNotice": "After completing the transfer, please send a screenshot as proof of payment via WhatsApp so we can review it and confirm your booking.",
       "whatsappMessage": "Hello, I've completed the payment and attached a screenshot as proof. Please review and confirm my booking. (Ref: {reference})",

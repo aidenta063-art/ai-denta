@@ -7,13 +7,15 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
-import { PaymentPanel } from "@/components/payment/payment-panel";
+import { PaymentMethodSwitcher } from "@/components/payment/payment-method-switcher";
 import { prisma } from "@/lib/prisma";
 import { localized } from "@/lib/i18n-content";
 import { formatSlotTimeRange } from "@/lib/timezone";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 import { requireOwnerOrStaff } from "@/lib/authz";
 import { Role, BookingStatus } from "@/generated/prisma/enums";
+import { KashierProvider } from "@/services/payments/providers/kashier.provider";
+import { logger } from "@/lib/logger";
 
 export default async function PaymentPendingPage({
   params,
@@ -28,7 +30,7 @@ export default async function PaymentPendingPage({
 
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
-    include: { slot: true, consultationType: true, payment: true },
+    include: { slot: true, consultationType: true, payment: true, user: true },
   });
 
   if (!booking || !booking.slot) notFound();
@@ -50,6 +52,27 @@ export default async function PaymentPendingPage({
         currency: booking.payment.currency,
       }).format(booking.payment.amountCents / 100)
     : null;
+
+  let kashierSessionUrl: string | null = null;
+  if (!isConfirmed && booking.payment) {
+    try {
+      const session = await new KashierProvider().createSession({
+        referenceId: booking.payment.id,
+        referenceType: "booking",
+        amountCents: booking.payment.amountCents,
+        currency: booking.payment.currency,
+        customerName: booking.guestName ?? booking.user?.name ?? undefined,
+        customerEmail: booking.guestEmail ?? booking.user?.email ?? undefined,
+        redirectUrl: `${process.env.APP_URL}/${locale}/booking/paid/pending/${bookingId}`,
+      });
+      kashierSessionUrl = session.redirectUrl;
+    } catch (error) {
+      logger.error(
+        { err: error, bookingId },
+        "Failed to create Kashier session for booking payment",
+      );
+    }
+  }
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
@@ -125,10 +148,11 @@ export default async function PaymentPendingPage({
             </Button>
           ) : (
             formattedPrice && (
-              <PaymentPanel
+              <PaymentMethodSwitcher
                 kind="booking"
                 amountLabel={formattedPrice}
                 reference={booking.id.slice(-8)}
+                sessionUrl={kashierSessionUrl}
               />
             )
           )}

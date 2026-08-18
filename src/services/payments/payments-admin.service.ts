@@ -1,5 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { PaymentStatus, BookingStatus, SlotStatus } from "@/generated/prisma/enums";
+import {
+  PaymentStatus,
+  BookingStatus,
+  SlotStatus,
+  PaymentProviderName,
+} from "@/generated/prisma/enums";
 import {
   sendWhatsAppTemplateSafe,
   formatWhatsAppDate,
@@ -19,43 +24,95 @@ export async function listPayments({ status }: { status?: PaymentStatus } = {}) 
 }
 
 /**
- * Interim manual confirmation path while no real payment gateway is wired
- * in — staff confirm payment out-of-band (bank transfer, etc.) and flip
- * the status here. Cascades the booking to CONFIRMED and the slot to
- * BOOKED (in case it was still HELD).
+ * Shared core for confirming a booking's payment, however it was
+ * confirmed (staff clicking "Mark as Paid", or a gateway webhook). Uses
+ * an updateMany guarded on status=PENDING so it's safe to call more than
+ * once for the same payment — gateways like Kashier retry webhooks, and
+ * this must not double-cascade the booking or send a second WhatsApp
+ * message. Cascades the booking to CONFIRMED and the slot to BOOKED (in
+ * case it was still HELD).
  */
-export async function markPaymentAsPaid(paymentId: string, adminUserId: string) {
-  const payment = await prisma.payment.findUniqueOrThrow({
-    where: { id: paymentId },
-    include: { booking: { include: { slot: true, user: true } } },
-  });
-
-  // Payments only ever exist for paid (slotted) bookings — free consultations
-  // never create one, so this should be impossible outside data corruption.
-  if (!payment.booking.slotId || !payment.booking.slot) {
-    throw new Error(`Payment ${paymentId} has no slotted booking`);
-  }
-
-  await prisma.$transaction([
-    prisma.payment.update({
-      where: { id: paymentId },
+async function confirmBookingPayment(input: {
+  paymentId: string;
+  status: typeof PaymentStatus.PAID | typeof PaymentStatus.MANUALLY_MARKED_PAID;
+  manuallyMarkedByUserId?: string;
+  provider?: PaymentProviderName;
+  providerRefId?: string;
+  providerPayload?: unknown;
+}) {
+  const bookingId = await prisma.$transaction(async (tx) => {
+    const updated = await tx.payment.updateMany({
+      where: { id: input.paymentId, status: PaymentStatus.PENDING },
       data: {
-        status: PaymentStatus.MANUALLY_MARKED_PAID,
+        status: input.status,
         paidAt: new Date(),
-        manuallyMarkedByUserId: adminUserId,
+        ...(input.manuallyMarkedByUserId && {
+          manuallyMarkedByUserId: input.manuallyMarkedByUserId,
+        }),
+        ...(input.provider && { provider: input.provider }),
+        ...(input.providerRefId && { providerRefId: input.providerRefId }),
+        ...(input.providerPayload !== undefined && {
+          providerPayload: input.providerPayload as never,
+        }),
       },
-    }),
-    prisma.booking.update({
+    });
+    if (updated.count === 0) return null;
+
+    const payment = await tx.payment.findUniqueOrThrow({
+      where: { id: input.paymentId },
+      include: { booking: { include: { slot: true } } },
+    });
+    // Payments only ever exist for paid (slotted) bookings — free
+    // consultations never create one, so this should be impossible
+    // outside data corruption.
+    if (!payment.booking.slotId) {
+      throw new Error(`Payment ${input.paymentId} has no slotted booking`);
+    }
+
+    await tx.booking.update({
       where: { id: payment.bookingId },
       data: { status: BookingStatus.CONFIRMED },
-    }),
-    prisma.slot.update({
+    });
+    await tx.slot.update({
       where: { id: payment.booking.slotId },
       data: { status: SlotStatus.BOOKED, holdExpiresAt: null },
-    }),
-  ]);
+    });
 
-  await sendBookingConfirmedWhatsApp(payment.bookingId);
+    return payment.bookingId;
+  });
+
+  if (bookingId) {
+    await sendBookingConfirmedWhatsApp(bookingId);
+  }
+}
+
+/**
+ * Interim manual confirmation path — staff confirm payment out-of-band
+ * (bank transfer, etc.) and flip the status here.
+ */
+export async function markPaymentAsPaid(paymentId: string, adminUserId: string) {
+  await confirmBookingPayment({
+    paymentId,
+    status: PaymentStatus.MANUALLY_MARKED_PAID,
+    manuallyMarkedByUserId: adminUserId,
+  });
+}
+
+/** Called from the Kashier webhook once a card payment succeeds — no
+ * staff action required. */
+export async function confirmBookingPaymentFromGateway(input: {
+  paymentId: string;
+  provider: PaymentProviderName;
+  providerRefId: string;
+  providerPayload: unknown;
+}) {
+  await confirmBookingPayment({
+    paymentId: input.paymentId,
+    status: PaymentStatus.PAID,
+    provider: input.provider,
+    providerRefId: input.providerRefId,
+    providerPayload: input.providerPayload,
+  });
 }
 
 async function sendBookingConfirmedWhatsApp(bookingId: string) {

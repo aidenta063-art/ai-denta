@@ -6,11 +6,13 @@ import { routing } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
-import { PaymentPanel } from "@/components/payment/payment-panel";
+import { PaymentMethodSwitcher } from "@/components/payment/payment-method-switcher";
 import { getEbookOrder } from "@/services/ebook/ebook.service";
 import { EbookOrderStatus, Role } from "@/generated/prisma/enums";
 import { requireOwnerOrStaff } from "@/lib/authz";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
+import { KashierProvider } from "@/services/payments/providers/kashier.provider";
+import { logger } from "@/lib/logger";
 
 export default async function EbookOrderPage({
   params,
@@ -33,6 +35,27 @@ export default async function EbookOrderPage({
     locale === "ar" ? "ar-EG" : "en-US",
     { style: "currency", currency: order.currency },
   ).format(order.amountCents / 100);
+
+  let kashierSessionUrl: string | null = null;
+  if (!isPaid) {
+    try {
+      const session = await new KashierProvider().createSession({
+        referenceId: order.id,
+        referenceType: "ebook_order",
+        amountCents: order.amountCents,
+        currency: order.currency,
+        customerName: order.buyerName,
+        customerEmail: order.buyerEmail,
+        redirectUrl: `${process.env.APP_URL}/${locale}/ebook/order/${orderId}`,
+      });
+      kashierSessionUrl = session.redirectUrl;
+    } catch (error) {
+      logger.error(
+        { err: error, orderId },
+        "Failed to create Kashier session for ebook order",
+      );
+    }
+  }
 
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
@@ -97,10 +120,11 @@ export default async function EbookOrderPage({
               {t("downloadCta")}
             </Button>
           ) : (
-            <PaymentPanel
+            <PaymentMethodSwitcher
               kind="ebook"
               amountLabel={formattedPrice}
               reference={order.id.slice(-8)}
+              sessionUrl={kashierSessionUrl}
             />
           )}
         </div>

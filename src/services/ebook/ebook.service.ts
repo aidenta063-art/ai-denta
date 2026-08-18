@@ -1,6 +1,6 @@
 import { unstable_cache as nextCache } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { EbookOrderStatus } from "@/generated/prisma/enums";
+import { EbookOrderStatus, PaymentProviderName } from "@/generated/prisma/enums";
 import { PATIENT_FLOW_EBOOK } from "@/lib/ebook";
 import type { EbookOrderInput } from "@/lib/validation/ebook.schema";
 
@@ -71,6 +71,28 @@ export async function markEbookOrderAsPaid(
       manuallyMarkedByUserId: adminUserId,
     },
   });
+}
+
+/** Called from the Kashier webhook once a card payment succeeds — no
+ * staff action required. Guarded on status=PENDING so a retried webhook
+ * for an already-confirmed order is a safe no-op. */
+export async function confirmEbookOrderFromGateway(input: {
+  orderId: string;
+  provider: PaymentProviderName;
+  providerRefId: string;
+  providerPayload: unknown;
+}): Promise<boolean> {
+  const result = await prisma.ebookOrder.updateMany({
+    where: { id: input.orderId, status: EbookOrderStatus.PENDING },
+    data: {
+      status: EbookOrderStatus.PAID,
+      paidAt: new Date(),
+      provider: input.provider,
+      providerRefId: input.providerRefId,
+      providerPayload: input.providerPayload as never,
+    },
+  });
+  return result.count > 0;
 }
 
 export async function listUserEbookOrders(userId: string) {

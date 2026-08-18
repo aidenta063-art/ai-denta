@@ -307,6 +307,10 @@ model EbookOrder {
   currency    String           @default("EGP")
   status      EbookOrderStatus @default(PENDING)
 
+  provider        PaymentProviderName @default(MANUAL)
+  providerRefId   String?
+  providerPayload Json?
+
   paidAt                 DateTime?
   manuallyMarkedByUserId String?
   manuallyMarkedBy       User?     @relation("EbookOrderManuallyMarkedBy", fields: [manuallyMarkedByUserId], references: [id])
@@ -316,6 +320,7 @@ model EbookOrder {
 
   @@index([userId])
   @@index([status])
+  @@index([provider, providerRefId])
 }
 
 // ---------- CMS / Site Content ----------

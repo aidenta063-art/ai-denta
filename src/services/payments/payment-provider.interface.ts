@@ -1,7 +1,15 @@
 export interface CreateSessionInput {
-  bookingId: string;
+  /** The Payment or EbookOrder id this session is for — becomes the
+   * gateway's merchantOrderId so the webhook can route back to it. */
+  referenceId: string;
+  referenceType: "booking" | "ebook_order";
   amountCents: number;
   currency: string;
+  customerName?: string;
+  customerEmail?: string;
+  /** Where the customer lands back on our site after paying. Gateway
+   * providers require this; ManualProvider ignores it. */
+  redirectUrl?: string;
 }
 
 export interface CreateSessionResult {
@@ -20,8 +28,11 @@ export interface WebhookInput {
 
 export interface WebhookResult {
   providerRefId: string;
+  referenceId: string;
+  referenceType: "booking" | "ebook_order";
   status: "PENDING" | "PAID" | "FAILED";
   eventId: string;
+  payload: unknown;
 }
 
 /**

@@ -12,7 +12,8 @@ export async function createPendingPayment(
   input: { bookingId: string; amountCents: number; currency?: string },
 ) {
   const session = await manualProvider.createSession({
-    bookingId: input.bookingId,
+    referenceId: input.bookingId,
+    referenceType: "booking",
     amountCents: input.amountCents,
     currency: input.currency ?? "EGP",
   });
