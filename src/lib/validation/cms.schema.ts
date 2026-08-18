@@ -6,6 +6,16 @@ export const heroContentSchema = z.object({
   subtitle: z.string().trim().min(1).max(400),
 });
 
+export const comparisonHeaderContentSchema = z.object({
+  eyebrow: z.string().trim().min(1).max(80),
+  title: z.string().trim().min(1).max(150),
+  subtitle: z.string().trim().min(1).max(300),
+  featureLabel: z.string().trim().min(1).max(60),
+  freeName: z.string().trim().min(1).max(60),
+  paidName: z.string().trim().min(1).max(60),
+  mostPopular: z.string().trim().min(1).max(40),
+});
+
 export const heroFormSchema = z.object({
   eyebrowEn: z.string().trim().min(1).max(80),
   titleEn: z.string().trim().min(1).max(200),
@@ -50,7 +60,32 @@ export const comparisonRowFormSchema = z.object({
   sortOrder: z.coerce.number().int().min(0).default(0),
 });
 
+export const ebookPriceFormSchema = z.object({
+  priceEgp: z.coerce.number().min(0),
+});
+
+export const comparisonHeaderFormSchema = z.object({
+  eyebrowEn: z.string().trim().min(1).max(80),
+  titleEn: z.string().trim().min(1).max(150),
+  subtitleEn: z.string().trim().min(1).max(300),
+  featureLabelEn: z.string().trim().min(1).max(60),
+  freeNameEn: z.string().trim().min(1).max(60),
+  paidNameEn: z.string().trim().min(1).max(60),
+  mostPopularEn: z.string().trim().min(1).max(40),
+  eyebrowAr: z.string().trim().min(1).max(80),
+  titleAr: z.string().trim().min(1).max(150),
+  subtitleAr: z.string().trim().min(1).max(300),
+  featureLabelAr: z.string().trim().min(1).max(60),
+  freeNameAr: z.string().trim().min(1).max(60),
+  paidNameAr: z.string().trim().min(1).max(60),
+  mostPopularAr: z.string().trim().min(1).max(40),
+});
+
 export type HeroFormInput = z.infer<typeof heroFormSchema>;
 export type PricingFormInput = z.infer<typeof pricingFormSchema>;
 export type ServiceFormInput = z.infer<typeof serviceFormSchema>;
 export type ComparisonRowFormInput = z.infer<typeof comparisonRowFormSchema>;
+export type EbookPriceFormInput = z.infer<typeof ebookPriceFormSchema>;
+export type ComparisonHeaderFormInput = z.infer<
+  typeof comparisonHeaderFormSchema
+>;

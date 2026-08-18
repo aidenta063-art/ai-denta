@@ -284,6 +284,15 @@ model Payment {
  * sold through the same manual payment flow as consultations (no real
  * gateway yet): staff collect payment off-platform, then an admin marks
  * the order paid here, which unlocks the download link. */
+/// Singleton row (fixed id) holding the admin-editable price for the one
+/// digital product the site currently sells. See src/lib/ebook.ts for the
+/// rest of the (non-price) product info, which still lives in code.
+model EbookSettings {
+  id         String @id @default("patient-flow")
+  priceCents Int    @default(49900)
+  currency   String @default("EGP")
+}
+
 model EbookOrder {
   id String @id @default(cuid())
 

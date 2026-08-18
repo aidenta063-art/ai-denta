@@ -1,12 +1,16 @@
 import { getTranslations } from "next-intl/server";
 import { Check, Minus } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { Eyebrow } from "@/components/marketing/eyebrow";
 import { formatConsultationPrice } from "@/lib/pricing";
 import {
   listComparisonRows,
   listConsultationTypes,
+  getComparisonHeaderContent,
 } from "@/services/content/cms.service";
+import { comparisonHeaderContentSchema } from "@/lib/validation/cms.schema";
 import { ConsultationKind } from "@/generated/prisma/enums";
 import { localized } from "@/lib/i18n-content";
 import type { Locale } from "@/i18n/routing";
@@ -40,11 +44,31 @@ function Row({
 }
 
 export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
-  const t = await getTranslations("HomePage.comparison");
-  const [customRows, consultationTypes] = await Promise.all([
-    listComparisonRows(),
-    listConsultationTypes(),
-  ]);
+  const [t, tCta, customRows, consultationTypes, headerSection] =
+    await Promise.all([
+      getTranslations("HomePage.comparison"),
+      getTranslations("HomePage.cta"),
+      listComparisonRows(),
+      listConsultationTypes(),
+      getComparisonHeaderContent(),
+    ]);
+
+  const headerParsed = headerSection
+    ? comparisonHeaderContentSchema.safeParse(
+        localized(locale, headerSection.contentEn, headerSection.contentAr),
+      )
+    : null;
+  const header = headerParsed?.success
+    ? headerParsed.data
+    : {
+        eyebrow: t("eyebrow"),
+        title: t("title"),
+        subtitle: t("subtitle"),
+        featureLabel: t("featureLabel"),
+        freeName: t("freeName"),
+        paidName: t("paidName"),
+        mostPopular: t("mostPopular"),
+      };
 
   const freeType =
     consultationTypes.find((c) => c.kind === ConsultationKind.FREE) ?? null;
@@ -67,11 +91,11 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
     <section className="bg-background px-6 py-20">
       <div className="mx-auto max-w-4xl">
         <ScrollReveal className="mb-10 flex flex-col items-center gap-2 text-center">
-          <Eyebrow>{t("eyebrow")}</Eyebrow>
+          <Eyebrow>{header.eyebrow}</Eyebrow>
           <h2 className="max-w-xl text-3xl font-extrabold tracking-tight text-foreground">
-            {t("title")}
+            {header.title}
           </h2>
-          <p className="max-w-xl text-muted-foreground">{t("subtitle")}</p>
+          <p className="max-w-xl text-muted-foreground">{header.subtitle}</p>
         </ScrollReveal>
 
         <ScrollReveal>
@@ -79,17 +103,17 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
             <div className="grid grid-cols-3 bg-[#251037]">
               <div className="flex flex-col justify-center p-4 sm:p-6">
                 <p className="text-xs font-medium text-white/60 uppercase">
-                  {t("featureLabel")}
+                  {header.featureLabel}
                 </p>
               </div>
               <div className="flex flex-col justify-center p-4 text-center sm:p-6">
-                <p className="font-semibold text-white">{t("freeName")}</p>
+                <p className="font-semibold text-white">{header.freeName}</p>
               </div>
               <div className="relative flex flex-col items-center gap-1.5 border-s-2 border-white/20 bg-[#7E00C9] p-4 sm:p-6">
                 <span className="rounded-full bg-white px-3 py-0.5 text-[10px] font-semibold text-[#7E00C9] uppercase">
-                  {t("mostPopular")}
+                  {header.mostPopular}
                 </span>
-                <p className="font-semibold text-white">{t("paidName")}</p>
+                <p className="font-semibold text-white">{header.paidName}</p>
               </div>
             </div>
 
@@ -150,6 +174,39 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
                 />
               </>
             )}
+
+            <div className="grid grid-cols-3 border-t border-border bg-secondary/20 p-4 sm:p-6">
+              <div />
+              <div className="flex justify-center">
+                <Button
+                  variant="outline"
+                  className="h-10 w-full max-w-48"
+                  render={<Link href="/booking/free" locale={locale} />}
+                >
+                  {tCta("ctaFree")}
+                </Button>
+              </div>
+              <div className="flex flex-col items-center gap-1.5 border-s-2 border-[#7E00C9]/20 ps-4 sm:ps-6">
+                <Button
+                  className="h-10 w-full max-w-48 bg-[#7E00C9] hover:bg-[#7E00C9]/90"
+                  render={<Link href="/booking/paid" locale={locale} />}
+                >
+                  {tCta("ctaPaid")}
+                </Button>
+                {paidPrice && (
+                  <p className="flex items-baseline gap-1.5 text-xs">
+                    <span className="font-semibold text-foreground">
+                      {paidPrice.finalLabel}
+                    </span>
+                    {paidPrice.originalLabel && (
+                      <span className="text-muted-foreground line-through">
+                        {paidPrice.originalLabel}
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </ScrollReveal>
       </div>

@@ -34,6 +34,11 @@ const SECTIONS = [
       "The rows in the homepage table comparing the free and paid consultation.",
   },
   {
+    href: "/dashboard/content/ebook-pricing",
+    title: "Ebook Pricing",
+    description: "The price customers actually pay for the Patient Flow ebook.",
+  },
+  {
     href: "/dashboard/content/media",
     title: "Media Library",
     description: "Upload and manage images and videos.",

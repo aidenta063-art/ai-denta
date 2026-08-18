@@ -7,9 +7,11 @@ import type {
   PricingFormInput,
   ServiceFormInput,
   ComparisonRowFormInput,
+  ComparisonHeaderFormInput,
 } from "@/lib/validation/cms.schema";
 
 const HERO_SLUG = "home-hero";
+const COMPARISON_HEADER_SLUG = "comparison-header";
 
 // This CMS content changes rarely (admin-edited) but is read on every
 // marketing page load. unstable_cache keeps it out of Postgres across
@@ -23,6 +25,7 @@ export const CMS_TAGS = {
   homeVideos: "cms:home-videos",
   services: "cms:services",
   comparisonRows: "cms:comparison-rows",
+  comparisonHeader: "cms:comparison-header",
   freeBookingIntro: "cms:free-booking-intro",
   freePdf: "cms:free-pdf",
 } as const;
@@ -183,6 +186,49 @@ export async function updateService(id: string, input: ServiceFormInput) {
 
 export async function deleteService(id: string) {
   await prisma.service.delete({ where: { id } });
+}
+
+export const getComparisonHeaderContent = nextCache(
+  async () =>
+    prisma.cmsSection.findUnique({ where: { slug: COMPARISON_HEADER_SLUG } }),
+  ["cms-comparison-header"],
+  { tags: [CMS_TAGS.comparisonHeader], revalidate: CACHE_SECONDS },
+);
+
+export async function saveComparisonHeaderContent(
+  input: ComparisonHeaderFormInput,
+  updatedById: string,
+) {
+  const contentEn = {
+    eyebrow: input.eyebrowEn,
+    title: input.titleEn,
+    subtitle: input.subtitleEn,
+    featureLabel: input.featureLabelEn,
+    freeName: input.freeNameEn,
+    paidName: input.paidNameEn,
+    mostPopular: input.mostPopularEn,
+  };
+  const contentAr = {
+    eyebrow: input.eyebrowAr,
+    title: input.titleAr,
+    subtitle: input.subtitleAr,
+    featureLabel: input.featureLabelAr,
+    freeName: input.freeNameAr,
+    paidName: input.paidNameAr,
+    mostPopular: input.mostPopularAr,
+  };
+
+  await prisma.cmsSection.upsert({
+    where: { slug: COMPARISON_HEADER_SLUG },
+    update: { contentEn, contentAr, updatedById },
+    create: {
+      slug: COMPARISON_HEADER_SLUG,
+      type: CmsSectionType.CUSTOM,
+      contentEn,
+      contentAr,
+      updatedById,
+    },
+  });
 }
 
 export const listComparisonRows = nextCache(

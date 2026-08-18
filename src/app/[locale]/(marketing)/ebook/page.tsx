@@ -13,7 +13,7 @@ import { EbookCover } from "@/components/marketing/ebook-cover";
 import { EbookOrderForm } from "@/components/ebook/ebook-order-form";
 import { ReviewsSection } from "@/components/marketing/reviews-section";
 import { createEbookOrderAction } from "@/actions/ebook/create-ebook-order";
-import { PATIENT_FLOW_EBOOK } from "@/lib/ebook";
+import { getEbookPricing } from "@/services/ebook/ebook.service";
 import { auth } from "@/lib/auth";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
@@ -36,15 +36,18 @@ export default async function EbookPage({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  const session = await auth();
+  const [session, ebookPricing] = await Promise.all([
+    auth(),
+    getEbookPricing(),
+  ]);
   const t = await getTranslations("Ebook");
   const description = t.raw("description") as string[];
   const toc = t.raw("toc") as string[];
 
   const formattedPrice = new Intl.NumberFormat(
     locale === "ar" ? "ar-EG" : "en-US",
-    { style: "currency", currency: PATIENT_FLOW_EBOOK.currency },
-  ).format(PATIENT_FLOW_EBOOK.priceCents / 100);
+    { style: "currency", currency: ebookPricing.currency },
+  ).format(ebookPricing.priceCents / 100);
 
   return (
     <>
@@ -52,8 +55,8 @@ export default async function EbookPage({
         event="ViewContent"
         params={{
           content_name: "ebook",
-          value: PATIENT_FLOW_EBOOK.priceCents / 100,
-          currency: PATIENT_FLOW_EBOOK.currency,
+          value: ebookPricing.priceCents / 100,
+          currency: ebookPricing.currency,
         }}
       />
       <PurpleGlowSection className="px-4 py-24 sm:py-28">

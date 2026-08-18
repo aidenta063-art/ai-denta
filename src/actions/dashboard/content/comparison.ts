@@ -8,13 +8,58 @@ import {
   createComparisonRow,
   updateComparisonRow,
   deleteComparisonRow,
+  saveComparisonHeaderContent,
   CMS_TAGS,
 } from "@/services/content/cms.service";
-import { comparisonRowFormSchema } from "@/lib/validation/cms.schema";
+import {
+  comparisonRowFormSchema,
+  comparisonHeaderFormSchema,
+} from "@/lib/validation/cms.schema";
 
 export type ComparisonRowActionState = {
   error?: "invalidInput";
 };
+
+export type ComparisonHeaderActionState = {
+  error?: "invalidInput";
+  success?: boolean;
+};
+
+export async function saveComparisonHeaderAction(
+  locale: Locale,
+  _prevState: ComparisonHeaderActionState,
+  formData: FormData,
+): Promise<ComparisonHeaderActionState> {
+  const session = await requireRole([Role.ADMIN, Role.STAFF], locale);
+
+  const parsed = comparisonHeaderFormSchema.safeParse({
+    eyebrowEn: formData.get("eyebrowEn"),
+    titleEn: formData.get("titleEn"),
+    subtitleEn: formData.get("subtitleEn"),
+    featureLabelEn: formData.get("featureLabelEn"),
+    freeNameEn: formData.get("freeNameEn"),
+    paidNameEn: formData.get("paidNameEn"),
+    mostPopularEn: formData.get("mostPopularEn"),
+    eyebrowAr: formData.get("eyebrowAr"),
+    titleAr: formData.get("titleAr"),
+    subtitleAr: formData.get("subtitleAr"),
+    featureLabelAr: formData.get("featureLabelAr"),
+    freeNameAr: formData.get("freeNameAr"),
+    paidNameAr: formData.get("paidNameAr"),
+    mostPopularAr: formData.get("mostPopularAr"),
+  });
+
+  if (!parsed.success) {
+    return { error: "invalidInput" };
+  }
+
+  await saveComparisonHeaderContent(parsed.data, session.user.id);
+  updateTag(CMS_TAGS.comparisonHeader);
+  revalidatePath("/ar");
+  revalidatePath("/en");
+  revalidatePath(`/${locale}/dashboard/content/comparison`);
+  return { success: true };
+}
 
 async function revalidateHomepage(locale: Locale) {
   updateTag(CMS_TAGS.comparisonRows);

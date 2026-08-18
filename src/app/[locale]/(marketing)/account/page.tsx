@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import {
   CalendarClock,
   Mail,
-  Phone,
   User as UserIcon,
   BookOpen,
   Download,
@@ -20,6 +19,7 @@ import { localized } from "@/lib/i18n-content";
 import { formatSlotTimeRange } from "@/lib/timezone";
 import { listUserEbookOrders } from "@/services/ebook/ebook.service";
 import { EbookOrderStatus } from "@/generated/prisma/enums";
+import { ProfileEditForm } from "@/components/account/profile-edit-form";
 
 export async function generateMetadata({
   params,
@@ -80,17 +80,20 @@ export default async function AccountPage({
             </div>
           </div>
 
-          <div className="mt-6 grid gap-3 border-t border-border pt-6 sm:grid-cols-2">
-            <div className="flex items-center gap-3 rounded-xl bg-secondary/50 px-4 py-3">
-              <Mail className="size-4 shrink-0 text-primary" />
-              <span className="truncate text-sm text-foreground">{user.email}</span>
-            </div>
-            <div className="flex items-center gap-3 rounded-xl bg-secondary/50 px-4 py-3">
-              <Phone className="size-4 shrink-0 text-primary" />
-              <span className="text-sm text-foreground">
-                {user.phone ?? t("noPhone")}
-              </span>
-            </div>
+          <div className="mt-6 flex items-center gap-3 rounded-xl bg-secondary/50 px-4 py-3">
+            <Mail className="size-4 shrink-0 text-primary" />
+            <span className="truncate text-sm text-foreground">{user.email}</span>
+          </div>
+
+          <div className="mt-4 border-t border-border pt-6">
+            <h2 className="mb-3 text-sm font-semibold text-foreground">
+              {t("editTitle")}
+            </h2>
+            <ProfileEditForm
+              locale={locale}
+              name={user.name ?? ""}
+              phone={user.phone ?? ""}
+            />
           </div>
         </div>
 

@@ -1,19 +1,48 @@
+import { unstable_cache as nextCache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { EbookOrderStatus } from "@/generated/prisma/enums";
 import { PATIENT_FLOW_EBOOK } from "@/lib/ebook";
 import type { EbookOrderInput } from "@/lib/validation/ebook.schema";
 
+export const EBOOK_PRICE_CACHE_TAG = "cms:ebook-price";
+
+export const getEbookPricing = nextCache(
+  async () => {
+    const settings = await prisma.ebookSettings.findUnique({
+      where: { id: PATIENT_FLOW_EBOOK.slug },
+    });
+    return {
+      priceCents: settings?.priceCents ?? PATIENT_FLOW_EBOOK.priceCents,
+      currency: settings?.currency ?? PATIENT_FLOW_EBOOK.currency,
+    };
+  },
+  ["cms-ebook-price"],
+  { tags: [EBOOK_PRICE_CACHE_TAG], revalidate: 60 },
+);
+
+export async function updateEbookPriceEgp(priceEgp: number) {
+  await prisma.ebookSettings.upsert({
+    where: { id: PATIENT_FLOW_EBOOK.slug },
+    update: { priceCents: Math.round(priceEgp * 100) },
+    create: {
+      id: PATIENT_FLOW_EBOOK.slug,
+      priceCents: Math.round(priceEgp * 100),
+    },
+  });
+}
+
 export async function createEbookOrder(
   input: EbookOrderInput & { userId?: string },
 ) {
+  const { priceCents, currency } = await getEbookPricing();
   return prisma.ebookOrder.create({
     data: {
       userId: input.userId,
       buyerName: input.name,
       buyerEmail: input.email,
       buyerPhone: input.phone,
-      amountCents: PATIENT_FLOW_EBOOK.priceCents,
-      currency: PATIENT_FLOW_EBOOK.currency,
+      amountCents: priceCents,
+      currency,
     },
   });
 }
