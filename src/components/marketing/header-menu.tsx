@@ -9,6 +9,7 @@ import {
   Home,
   Info,
   CalendarDays,
+  CalendarClock,
   Stethoscope,
   BookOpen,
   FileText,
@@ -125,6 +126,15 @@ export function HeaderMenu({
                 >
                   <UserRound className="size-4.5 shrink-0" />
                   {tNav("myAccount")}
+                </Link>
+                <Link
+                  href="/bookings"
+                  locale={locale}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-base font-medium text-white/90 transition-colors hover:bg-white/10"
+                >
+                  <CalendarClock className="size-4.5 shrink-0" />
+                  {tNav("myBookings")}
                 </Link>
                 {session.isStaff && (
                   <Link

@@ -2,21 +2,13 @@ import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import {
-  CalendarClock,
-  Mail,
-  User as UserIcon,
-  BookOpen,
-  Download,
-} from "lucide-react";
+import { Mail, User as UserIcon, BookOpen, Download } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { redirect, Link } from "@/i18n/navigation";
+import { redirect } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { localized } from "@/lib/i18n-content";
-import { formatSlotTimeRange } from "@/lib/timezone";
 import { listUserEbookOrders } from "@/services/ebook/ebook.service";
 import { EbookOrderStatus } from "@/generated/prisma/enums";
 import { ProfileEditForm } from "@/components/account/profile-edit-form";
@@ -48,13 +40,8 @@ export default async function AccountPage({
 
   const t = await getTranslations("Account");
 
-  const [user, bookings, ebookOrders] = await Promise.all([
+  const [user, ebookOrders] = await Promise.all([
     prisma.user.findUniqueOrThrow({ where: { id: session.user.id } }),
-    prisma.booking.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-      include: { slot: true, consultationType: true },
-    }),
     listUserEbookOrders(session.user.id),
   ]);
 
@@ -95,64 +82,6 @@ export default async function AccountPage({
               phone={user.phone ?? ""}
             />
           </div>
-        </div>
-
-        <div className="rounded-3xl border border-white/60 bg-white/95 p-6 shadow-2xl shadow-black/30 backdrop-blur sm:p-8">
-          <h2 className="mb-4 text-lg font-bold text-foreground">
-            {t("bookingsTitle")}
-          </h2>
-
-          {bookings.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 rounded-xl bg-secondary/50 px-6 py-10 text-center">
-              <CalendarClock className="size-8 text-primary" />
-              <p className="text-sm text-muted-foreground">{t("noBookings")}</p>
-              <div className="flex flex-wrap justify-center gap-3">
-                <Button
-                  className="h-10 bg-[#7E00C9] hover:bg-[#7E00C9]/90"
-                  render={<Link href="/booking/free" locale={locale} />}
-                >
-                  {t("bookFree")}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-10"
-                  render={<Link href="/booking" locale={locale} />}
-                >
-                  {t("bookPaid")}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {bookings.map((booking) => (
-                <div
-                  key={booking.id}
-                  className="flex flex-col gap-2 rounded-xl border border-border bg-secondary/30 p-4 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <p className="font-medium text-foreground">
-                      {localized(
-                        locale,
-                        booking.consultationType.nameEn,
-                        booking.consultationType.nameAr,
-                      )}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {booking.slot
-                        ? formatSlotTimeRange(
-                            booking.slot.startAt,
-                            booking.slot.endAt,
-                            locale,
-                            { dateStyle: "medium" },
-                          )
-                        : t("waitlist")}
-                    </p>
-                  </div>
-                  <BookingStatusPill status={booking.status} label={t(`status.${booking.status}`)} />
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {ebookOrders.length > 0 && (

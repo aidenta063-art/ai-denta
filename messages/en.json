@@ -16,6 +16,7 @@
     "switchAccount": "Switch account",
     "adminPanel": "Admin panel",
     "myAccount": "My Account",
+    "myBookings": "My Bookings",
     "menu": "Menu",
     "close": "Close"
   },
@@ -29,7 +30,17 @@
     "saveButton": "Save changes",
     "saved": "Saved.",
     "editError": "Please check your input and try again.",
-    "bookingsTitle": "My Bookings",
+    "ebookOrdersTitle": "My Ebook Orders",
+    "noEbookOrders": "You haven't ordered the ebook yet.",
+    "getEbook": "Get the Patient Flow Ebook",
+    "download": "Download PDF",
+    "ebookStatus": {
+      "PENDING": "Awaiting Payment",
+      "PAID": "Paid"
+    }
+  },
+  "MyBookings": {
+    "title": "My Bookings",
     "noBookings": "You haven't made any bookings yet.",
     "waitlist": "Waitlist — we'll contact you",
     "bookFree": "Book a Free Consultation",
@@ -39,14 +50,6 @@
       "PENDING_PAYMENT": "Pending Payment",
       "CANCELLED": "Cancelled",
       "EXPIRED": "Expired"
-    },
-    "ebookOrdersTitle": "My Ebook Orders",
-    "noEbookOrders": "You haven't ordered the ebook yet.",
-    "getEbook": "Get the Patient Flow Ebook",
-    "download": "Download PDF",
-    "ebookStatus": {
-      "PENDING": "Awaiting Payment",
-      "PAID": "Paid"
     }
   },
   "HomePage": {

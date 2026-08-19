@@ -16,6 +16,7 @@
     "switchAccount": "تبديل الحساب",
     "adminPanel": "لوحة الإدارة",
     "myAccount": "حسابي",
+    "myBookings": "حجوزاتي",
     "menu": "القائمة",
     "close": "إغلاق"
   },
@@ -29,7 +30,17 @@
     "saveButton": "احفظ التعديلات",
     "saved": "تم الحفظ.",
     "editError": "من فضلك راجع البيانات وحاول تاني.",
-    "bookingsTitle": "حجوزاتي",
+    "ebookOrdersTitle": "طلبات الكتاب",
+    "noEbookOrders": "لسه ماطلبتش كتاب تدفق المرضى.",
+    "getEbook": "اطلب كتاب تدفق المرضى",
+    "download": "تحميل الـ PDF",
+    "ebookStatus": {
+      "PENDING": "في انتظار الدفع",
+      "PAID": "تم الدفع"
+    }
+  },
+  "MyBookings": {
+    "title": "حجوزاتي",
     "noBookings": "لسه ماعملتش أي حجز.",
     "waitlist": "قائمة الانتظار — هنتواصل معاك",
     "bookFree": "احجز استشارة مجانية",
@@ -39,14 +50,6 @@
       "PENDING_PAYMENT": "في انتظار الدفع",
       "CANCELLED": "ملغي",
       "EXPIRED": "منتهي"
-    },
-    "ebookOrdersTitle": "طلبات الكتاب",
-    "noEbookOrders": "لسه ماطلبتش كتاب تدفق المرضى.",
-    "getEbook": "اطلب كتاب تدفق المرضى",
-    "download": "تحميل الـ PDF",
-    "ebookStatus": {
-      "PENDING": "في انتظار الدفع",
-      "PAID": "تم الدفع"
     }
   },
   "HomePage": {
