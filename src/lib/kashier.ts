@@ -44,23 +44,36 @@ export async function createKashierSession({
       amount: (amountCents / 100).toFixed(2),
       currency,
       order: merchantOrderId,
+      orderId: merchantOrderId,
       type: "one-time",
       merchantRedirect: redirectUrl,
       serverWebhook: webhookUrl,
       display: "en",
-      // Not strictly required by Kashier's own docs (a minimal request
-      // already works), but included to match their documented example
-      // field-for-field, per their support team's request while
-      // diagnosing the WAF block on this account.
+      // Every field below (down to `notes`) is included only to match
+      // Kashier's documented example field-for-field, per their support
+      // team's explicit request while diagnosing the WAF block on this
+      // account — none of it is required by a working request.
+      mode: "test",
       expireAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
       maxFailureAttempts: 3,
       paymentType: "credit",
       allowedMethods: "card,wallet",
+      redirectMethod: null,
+      iframeBackgroundColor: "#FFFFFF",
+      metaData: {
+        customKey: "customValue",
+        displayNotes: { key: "value" },
+      },
       failureRedirect: false,
+      brandColor: "#7E00C9",
+      defaultMethod: "card",
       manualCapture: false,
+      saveCard: "optional",
+      retrieveSavedCard: true,
       interactionSource: "ECOMMERCE",
       enable3DS: true,
       description: `Ai Denta order ${merchantOrderId}`,
+      notes: "Ai Denta order",
       // Kashier requires a customer object with a reference even for
       // guest checkout — the order id is a stable, unique stand-in when
       // we don't have a real customer identity to reference.
