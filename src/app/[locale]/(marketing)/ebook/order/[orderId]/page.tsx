@@ -1,8 +1,9 @@
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { Clock, CheckCircle2, Download } from "lucide-react";
+import { Clock, Download, Gift, ArrowRight } from "lucide-react";
 import { routing } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
@@ -88,7 +89,7 @@ export default async function EbookOrderPage({
             }`}
           >
             {isPaid ? (
-              <CheckCircle2 className="size-6" />
+              <Gift className="size-6" />
             ) : (
               <Clock className="size-6" />
             )}
@@ -112,13 +113,32 @@ export default async function EbookOrderPage({
           </div>
 
           {isPaid ? (
-            <Button
-              className="h-11 gap-2 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
-              render={<a href={`/api/ebook/download/${order.id}`} />}
-            >
-              <Download className="size-4" />
-              {t("downloadCta")}
-            </Button>
+            <>
+              <Button
+                className="h-11 gap-2 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+                render={<a href={`/api/ebook/download/${order.id}`} />}
+              >
+                <Download className="size-4" />
+                {t("downloadCta")}
+              </Button>
+
+              <div className="flex flex-col gap-3 rounded-2xl border border-[#7E00C9]/20 bg-gradient-to-br from-[#7E00C9]/5 to-transparent p-4">
+                <p className="text-sm font-semibold text-[#7E00C9]">
+                  {t("upsell.title")}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {t("upsell.description")}
+                </p>
+                <Button
+                  variant="outline"
+                  className="h-10 w-fit gap-2 border-[#7E00C9]/40 text-[#7E00C9] hover:bg-[#7E00C9]/10"
+                  render={<Link href="/booking/paid" locale={locale} />}
+                >
+                  {t("upsell.cta")}
+                  <ArrowRight className="size-4 rtl:rotate-180" />
+                </Button>
+              </div>
+            </>
           ) : (
             <PaymentMethodSwitcher
               kind="ebook"

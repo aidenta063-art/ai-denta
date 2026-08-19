@@ -471,12 +471,17 @@
     "order": {
       "pendingTitle": "Complete your payment",
       "pendingDescription": "Complete the payment below and your download link will appear right here once it's confirmed.",
-      "paidTitle": "You're all set!",
+      "paidTitle": "Your gift is ready!",
       "paidDescription": "Payment confirmed — your copy is ready to download.",
       "orderLabel": "Order",
       "priceLabel": "Price",
       "downloadCta": "Download the PDF",
-      "backHome": "Back to homepage"
+      "backHome": "Back to homepage",
+      "upsell": {
+        "title": "Ready to go further?",
+        "description": "Book a paid consultation and get 30% extra content in your first month, plus a customized WhatsApp plan built around your clinic.",
+        "cta": "Book a Paid Consultation"
+      }
     }
   },
   "Payment": {
