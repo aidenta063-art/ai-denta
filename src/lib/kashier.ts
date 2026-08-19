@@ -65,15 +65,15 @@ export async function createKashierSession({
         displayNotes: { key: "value" },
       },
       failureRedirect: false,
-      brandColor: "#7E00C9",
+      brandColor: "#FF5733",
       defaultMethod: "card",
       manualCapture: false,
       saveCard: "optional",
       retrieveSavedCard: true,
       interactionSource: "ECOMMERCE",
       enable3DS: true,
-      description: `Ai Denta order ${merchantOrderId}`,
-      notes: "Ai Denta order",
+      description: `Payment for order ${merchantOrderId}`,
+      notes: "Special handling required",
       // Kashier requires a customer object with a reference even for
       // guest checkout — the order id is a stable, unique stand-in when
       // we don't have a real customer identity to reference.
