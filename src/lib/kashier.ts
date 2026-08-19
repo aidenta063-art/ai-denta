@@ -85,10 +85,26 @@ export async function createKashierSession({
     }),
   });
 
-  const data = await response.json().catch(() => null);
+  const rawBody = await response.text();
+  const data = (() => {
+    try {
+      return JSON.parse(rawBody);
+    } catch {
+      return null;
+    }
+  })();
+
   if (!response.ok || !data?.sessionUrl) {
+    // Logged before throwing so the raw response — including a non-JSON
+    // body like a WAF/security-page block — is always visible in server
+    // logs, not just "data: null" when JSON parsing fails.
     logger.error(
-      { status: response.status, data },
+      {
+        status: response.status,
+        contentType: response.headers.get("content-type"),
+        rawBody: rawBody.slice(0, 2000),
+        data,
+      },
       "Failed to create Kashier payment session",
     );
     throw new KashierError(
