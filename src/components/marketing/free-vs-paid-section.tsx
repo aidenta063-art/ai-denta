@@ -175,9 +175,9 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
               </>
             )}
 
-            <div className="grid grid-cols-3 border-t border-border bg-secondary/20 p-4 sm:p-6">
+            <div className="grid grid-cols-3 items-start border-t border-border bg-secondary/20 p-4 sm:p-6">
               <div />
-              <div className="min-w-0 flex justify-center">
+              <div className="min-w-0 flex flex-col items-center gap-1.5">
                 <Button
                   variant="outline"
                   className="h-auto min-h-10 w-full max-w-48 px-2 py-2 text-xs whitespace-normal sm:text-sm"
@@ -185,8 +185,11 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
                 >
                   {tCta("ctaFree")}
                 </Button>
+                <p className="text-xs font-semibold text-foreground">
+                  {t("freePrice")}
+                </p>
               </div>
-              <div className="min-w-0 flex flex-col items-center gap-1.5 border-s-2 border-[#7E00C9]/20 ps-4 sm:ps-6">
+              <div className="min-w-0 flex flex-col items-center gap-1.5 border-s-2 border-[#7E00C9]/20 px-2 sm:ps-6">
                 <Button
                   className="h-auto min-h-10 w-full max-w-48 bg-[#7E00C9] px-2 py-2 text-xs whitespace-normal hover:bg-[#7E00C9]/90 sm:text-sm"
                   render={<Link href="/booking/paid" locale={locale} />}
@@ -194,7 +197,7 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
                   {tCta("ctaPaid")}
                 </Button>
                 {paidPrice && (
-                  <p className="flex items-baseline gap-1.5 text-xs">
+                  <p className="flex flex-wrap items-baseline justify-center gap-1.5 text-xs">
                     <span className="font-semibold text-foreground">
                       {paidPrice.finalLabel}
                     </span>
