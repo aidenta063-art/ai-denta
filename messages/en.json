@@ -501,6 +501,7 @@
     "securedByKashier": "Payments secured by Kashier",
     "backToCard": "Pay with card instead",
     "payAnotherWay": "Pay another way",
+    "payWithCardCta": "Pay Securely with Card",
     "booking": {
       "proofNotice": "After completing the transfer, please send a screenshot as proof of payment via WhatsApp so we can review it and confirm your booking.",
       "whatsappMessage": "Hello, I've completed the payment and attached a screenshot as proof. Please review and confirm my booking. (Ref: {reference})",

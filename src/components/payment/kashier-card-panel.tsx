@@ -3,15 +3,14 @@
 import { useRef, type MouseEvent } from "react";
 import { useTranslations } from "next-intl";
 import { motion, useSpring } from "framer-motion";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 /**
- * The card mockup is decorative — Kashier's iframe (a separate origin) is
- * where card details actually get typed, so this can't sync to real
- * keystrokes without breaking the security boundary that keeps raw card
- * data off our server. It still earns its keep: an on-load flip reveal,
- * a shimmer sweep, and a mouse-tilt make the surrounding page feel alive
- * while the real, secure form sits in the iframe below.
+ * The card mockup is decorative. Card capture itself happens on Kashier's
+ * own hosted page — this sends the customer there via a full-page
+ * navigation (not an iframe embed), since Kashier's session URL supports
+ * both and a top-level redirect is the simpler, more compatible path.
  */
 export function KashierCardPanel({
   sessionUrl,
@@ -88,13 +87,13 @@ export function KashierCardPanel({
         {t("securedByKashier")}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border">
-        <iframe
-          src={sessionUrl}
-          title="Kashier secure payment"
-          className="h-[560px] w-full"
-        />
-      </div>
+      <Button
+        className="h-12 gap-2 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+        render={<a href={sessionUrl} />}
+      >
+        <Lock className="size-4" />
+        {t("payWithCardCta")}
+      </Button>
     </div>
   );
 }
