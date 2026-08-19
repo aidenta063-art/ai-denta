@@ -30,13 +30,13 @@ function Row({
     <div
       className={`grid grid-cols-3 items-center ${last ? "" : "border-b border-border"}`}
     >
-      <div className="p-4 text-sm font-medium text-muted-foreground sm:p-6">
+      <div className="min-w-0 p-4 text-sm font-medium text-muted-foreground sm:p-6">
         {label}
       </div>
-      <div className="p-4 text-center text-sm text-card-foreground sm:p-6">
+      <div className="min-w-0 p-4 text-center text-sm text-card-foreground sm:p-6">
         {free}
       </div>
-      <div className="border-s-2 border-[#7E00C9]/20 bg-secondary/40 p-4 text-center text-sm font-medium text-card-foreground sm:p-6">
+      <div className="min-w-0 border-s-2 border-[#7E00C9]/20 bg-secondary/40 p-4 text-center text-sm font-medium text-card-foreground sm:p-6">
         {paid}
       </div>
     </div>
@@ -101,15 +101,15 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
         <ScrollReveal>
           <div className="overflow-hidden rounded-3xl border border-border">
             <div className="grid grid-cols-3 bg-[#251037]">
-              <div className="flex flex-col justify-center p-4 sm:p-6">
+              <div className="min-w-0 flex flex-col justify-center p-4 sm:p-6">
                 <p className="text-xs font-medium text-white/60 uppercase">
                   {header.featureLabel}
                 </p>
               </div>
-              <div className="flex flex-col justify-center p-4 text-center sm:p-6">
+              <div className="min-w-0 flex flex-col justify-center p-4 text-center sm:p-6">
                 <p className="font-semibold text-white">{header.freeName}</p>
               </div>
-              <div className="relative flex flex-col items-center gap-1.5 border-s-2 border-white/20 bg-[#7E00C9] p-4 sm:p-6">
+              <div className="min-w-0 relative flex flex-col items-center gap-1.5 border-s-2 border-white/20 bg-[#7E00C9] p-4 sm:p-6">
                 <span className="rounded-full bg-white px-3 py-0.5 text-[10px] font-semibold text-[#7E00C9] uppercase">
                   {header.mostPopular}
                 </span>
@@ -177,18 +177,18 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
 
             <div className="grid grid-cols-3 border-t border-border bg-secondary/20 p-4 sm:p-6">
               <div />
-              <div className="flex justify-center">
+              <div className="min-w-0 flex justify-center">
                 <Button
                   variant="outline"
-                  className="h-10 w-full max-w-48"
+                  className="h-auto min-h-10 w-full max-w-48 px-2 py-2 text-xs whitespace-normal sm:text-sm"
                   render={<Link href="/booking/free" locale={locale} />}
                 >
                   {tCta("ctaFree")}
                 </Button>
               </div>
-              <div className="flex flex-col items-center gap-1.5 border-s-2 border-[#7E00C9]/20 ps-4 sm:ps-6">
+              <div className="min-w-0 flex flex-col items-center gap-1.5 border-s-2 border-[#7E00C9]/20 ps-4 sm:ps-6">
                 <Button
-                  className="h-10 w-full max-w-48 bg-[#7E00C9] hover:bg-[#7E00C9]/90"
+                  className="h-auto min-h-10 w-full max-w-48 bg-[#7E00C9] px-2 py-2 text-xs whitespace-normal hover:bg-[#7E00C9]/90 sm:text-sm"
                   render={<Link href="/booking/paid" locale={locale} />}
                 >
                   {tCta("ctaPaid")}
