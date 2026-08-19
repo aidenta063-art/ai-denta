@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { EbookOrderStatus, PaymentProviderName } from "@/generated/prisma/enums";
 import { PATIENT_FLOW_EBOOK } from "@/lib/ebook";
 import type { EbookOrderInput } from "@/lib/validation/ebook.schema";
+import { logger } from "@/lib/logger";
 
 export const EBOOK_PRICE_CACHE_TAG = "cms:ebook-price";
 
@@ -81,7 +82,23 @@ export async function confirmEbookOrderFromGateway(input: {
   provider: PaymentProviderName;
   providerRefId: string;
   providerPayload: unknown;
+  amountCents: number;
 }): Promise<boolean> {
+  const existing = await prisma.ebookOrder.findUnique({
+    where: { id: input.orderId },
+  });
+  if (existing && existing.amountCents !== input.amountCents) {
+    logger.error(
+      {
+        orderId: input.orderId,
+        expectedAmountCents: existing.amountCents,
+        webhookAmountCents: input.amountCents,
+      },
+      "Kashier webhook amount mismatch — refusing to confirm ebook order",
+    );
+    return false;
+  }
+
   const result = await prisma.ebookOrder.updateMany({
     where: { id: input.orderId, status: EbookOrderStatus.PENDING },
     data: {

@@ -31,6 +31,10 @@ export interface WebhookResult {
   referenceId: string;
   referenceType: "booking" | "ebook_order";
   status: "PENDING" | "PAID" | "FAILED";
+  /** The amount the gateway says was actually paid, in cents — checked
+   * against the stored order/payment before confirming, so a tampered or
+   * mismatched webhook can't confirm the wrong amount. */
+  amountCents: number;
   eventId: string;
   payload: unknown;
 }

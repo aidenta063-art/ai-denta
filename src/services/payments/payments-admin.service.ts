@@ -10,6 +10,7 @@ import {
   formatWhatsAppDate,
   formatWhatsAppTime,
 } from "@/lib/whatsapp";
+import { logger } from "@/lib/logger";
 
 export async function listPayments({ status }: { status?: PaymentStatus } = {}) {
   return prisma.payment.findMany({
@@ -39,8 +40,29 @@ async function confirmBookingPayment(input: {
   provider?: PaymentProviderName;
   providerRefId?: string;
   providerPayload?: unknown;
+  /** When set (gateway confirmations only), the payment must still be
+   * PENDING for this amount — refuses to confirm a webhook whose amount
+   * doesn't match what we charged for. */
+  expectedAmountCents?: number;
 }) {
   const bookingId = await prisma.$transaction(async (tx) => {
+    if (input.expectedAmountCents !== undefined) {
+      const existing = await tx.payment.findUnique({
+        where: { id: input.paymentId },
+      });
+      if (existing && existing.amountCents !== input.expectedAmountCents) {
+        logger.error(
+          {
+            paymentId: input.paymentId,
+            expectedAmountCents: existing.amountCents,
+            webhookAmountCents: input.expectedAmountCents,
+          },
+          "Kashier webhook amount mismatch — refusing to confirm payment",
+        );
+        return null;
+      }
+    }
+
     const updated = await tx.payment.updateMany({
       where: { id: input.paymentId, status: PaymentStatus.PENDING },
       data: {
@@ -105,6 +127,7 @@ export async function confirmBookingPaymentFromGateway(input: {
   provider: PaymentProviderName;
   providerRefId: string;
   providerPayload: unknown;
+  amountCents: number;
 }) {
   await confirmBookingPayment({
     paymentId: input.paymentId,
@@ -112,6 +135,19 @@ export async function confirmBookingPaymentFromGateway(input: {
     provider: input.provider,
     providerRefId: input.providerRefId,
     providerPayload: input.providerPayload,
+    expectedAmountCents: input.amountCents,
+  });
+}
+
+/** Called from the Kashier webhook when a card payment fails — leaves the
+ * booking/slot untouched (still held) so the customer can retry, but marks
+ * the payment so staff can see the failed attempt instead of it looking
+ * like it's still awaiting one. Guarded on status=PENDING like the success
+ * path, so it's safe if the webhook retries. */
+export async function markBookingPaymentFailedFromGateway(paymentId: string) {
+  await prisma.payment.updateMany({
+    where: { id: paymentId, status: PaymentStatus.PENDING },
+    data: { status: PaymentStatus.FAILED },
   });
 }
 

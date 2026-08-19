@@ -75,6 +75,7 @@ export class KashierProvider implements PaymentProvider {
         merchantOrderId?: string;
         transactionId?: string;
         status?: string;
+        amount?: string | number;
       };
     };
 
@@ -103,11 +104,14 @@ export class KashierProvider implements PaymentProvider {
           ? "FAILED"
           : "PENDING";
 
+    const amountCents = Math.round(Number(body.data.amount ?? 0) * 100);
+
     return {
       providerRefId: String(body.data.transactionId ?? merchantOrderId),
       referenceId: parsed.referenceId,
       referenceType: parsed.referenceType,
       status,
+      amountCents,
       eventId: String(body.data.transactionId ?? merchantOrderId),
       payload: body,
     };
