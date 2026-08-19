@@ -17,15 +17,23 @@ export function earliestBookableTime() {
 export async function sweepExpiredHolds() {
   const expired = await prisma.slot.findMany({
     where: { status: SlotStatus.HELD, holdExpiresAt: { lt: new Date() } },
-    include: { booking: { include: { payment: true } } },
+    // A slot can accumulate past bookings once it's reused (see the
+    // Booking.slotId comment) — only the still-PENDING_PAYMENT one is the
+    // active claim that just expired.
+    include: {
+      bookings: {
+        where: { status: BookingStatus.PENDING_PAYMENT },
+        include: { payment: true },
+      },
+    },
   });
 
   if (expired.length === 0) return;
 
   const slotIds = expired.map((slot) => slot.id);
-  const bookingIds = expired.flatMap((slot) => (slot.booking ? [slot.booking.id] : []));
+  const bookingIds = expired.flatMap((slot) => slot.bookings.map((b) => b.id));
   const paymentIds = expired.flatMap((slot) =>
-    slot.booking?.payment ? [slot.booking.payment.id] : [],
+    slot.bookings.flatMap((b) => (b.payment ? [b.payment.id] : [])),
   );
 
   await prisma.$transaction([

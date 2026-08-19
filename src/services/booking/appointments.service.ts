@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { SlotStatus, ConsultationKind } from "@/generated/prisma/enums";
+import { SlotStatus, ConsultationKind, BookingStatus } from "@/generated/prisma/enums";
 import { generateSlots } from "@/services/booking/slot-generation";
 import type {
   WorkingHoursRuleInput,
@@ -117,11 +117,23 @@ export async function deleteHolidayByDate(dateStr: string) {
 
 export async function listSlotsForDate(dateStr: string) {
   const { start, end } = dayBounds(dateStr);
-  return prisma.slot.findMany({
+  const slots = await prisma.slot.findMany({
     where: { startAt: { gte: start, lt: end } },
     orderBy: { startAt: "asc" },
-    include: { booking: true },
+    // A slot can carry past (expired/cancelled) bookings alongside its
+    // current one — only the active claim matters for display here.
+    include: {
+      bookings: {
+        where: {
+          status: { in: [BookingStatus.PENDING_PAYMENT, BookingStatus.CONFIRMED] },
+        },
+      },
+    },
   });
+  return slots.map(({ bookings, ...slot }) => ({
+    ...slot,
+    booking: bookings[0] ?? null,
+  }));
 }
 
 /** Per-day open/booked/blocked counts for the next `days` days, for the overview list. */

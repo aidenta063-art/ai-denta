@@ -212,7 +212,12 @@ model Slot {
   sourceRuleId  String?
   createdAt     DateTime   @default(now())
 
-  booking Booking?
+  // A slot's booking history can span multiple rows: an abandoned/expired
+  // hold leaves its Booking row in place (status EXPIRED) so the slot can
+  // be claimed again later — see sweepExpiredHolds. Exclusivity while a
+  // slot is actually claimed is enforced by Slot.status, not by a DB
+  // constraint here.
+  bookings Booking[]
 
   @@unique([startAt, endAt])
   @@index([status, startAt])
@@ -223,7 +228,7 @@ model Booking {
   consultationTypeId String
   consultationType   ConsultationType @relation(fields: [consultationTypeId], references: [id])
 
-  slotId String? @unique
+  slotId String?
   slot   Slot?   @relation(fields: [slotId], references: [id])
 
   userId     String?
@@ -251,6 +256,7 @@ model Booking {
 
   @@index([userId])
   @@index([status])
+  @@index([slotId])
 }
 
 // ---------- Payments ----------
