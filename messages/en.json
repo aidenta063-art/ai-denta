@@ -29,15 +29,7 @@
     "phoneLabel": "Phone number",
     "saveButton": "Save changes",
     "saved": "Saved.",
-    "editError": "Please check your input and try again.",
-    "ebookOrdersTitle": "My Ebook Orders",
-    "noEbookOrders": "You haven't ordered the ebook yet.",
-    "getEbook": "Get the Patient Flow Ebook",
-    "download": "Download PDF",
-    "ebookStatus": {
-      "PENDING": "Awaiting Payment",
-      "PAID": "Paid"
-    }
+    "editError": "Please check your input and try again."
   },
   "MyBookings": {
     "title": "My Bookings",
@@ -470,6 +462,16 @@
     "errors": {
       "invalidInput": "Please check your input and try again.",
       "rateLimited": "Too many attempts. Please wait a bit and try again."
+    },
+    "alreadyOwned": {
+      "title": "You already have this book",
+      "description": "Payment confirmed — download your copy anytime.",
+      "cta": "Download the PDF"
+    },
+    "pendingOrder": {
+      "title": "Order awaiting confirmation",
+      "description": "You already have an order in progress. Check its status below.",
+      "cta": "View order status"
     },
     "order": {
       "pendingTitle": "Complete your payment",

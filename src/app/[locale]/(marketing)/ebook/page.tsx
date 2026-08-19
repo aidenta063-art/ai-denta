@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Download, Clock } from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
@@ -13,7 +13,8 @@ import { EbookCover } from "@/components/marketing/ebook-cover";
 import { EbookOrderForm } from "@/components/ebook/ebook-order-form";
 import { ReviewsSection } from "@/components/marketing/reviews-section";
 import { createEbookOrderAction } from "@/actions/ebook/create-ebook-order";
-import { getEbookPricing } from "@/services/ebook/ebook.service";
+import { getEbookPricing, listUserEbookOrders } from "@/services/ebook/ebook.service";
+import { EbookOrderStatus } from "@/generated/prisma/enums";
 import { auth } from "@/lib/auth";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 
@@ -40,6 +41,12 @@ export default async function EbookPage({
     auth(),
     getEbookPricing(),
   ]);
+  const orders = session?.user
+    ? await listUserEbookOrders(session.user.id)
+    : [];
+  const paidOrder = orders.find((o) => o.status === EbookOrderStatus.PAID);
+  const pendingOrder = orders.find((o) => o.status === EbookOrderStatus.PENDING);
+
   const t = await getTranslations("Ebook");
   const description = t.raw("description") as string[];
   const toc = t.raw("toc") as string[];
@@ -118,33 +125,70 @@ export default async function EbookPage({
           </div>
 
           <div className="mx-auto w-full max-w-md">
-            <BrandedCard title={t("formTitle")}>
-              {session?.user ? (
-                <EbookOrderForm
-                  action={createEbookOrderAction.bind(null, locale)}
-                />
-              ) : (
+            {paidOrder ? (
+              <BrandedCard title={t("alreadyOwned.title")}>
                 <div className="flex flex-col gap-3">
                   <p className="text-sm text-muted-foreground">
-                    {t("loginToBuyDescription")}
+                    {t("alreadyOwned.description")}
                   </p>
                   <Button
-                    className="h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+                    className="h-11 gap-2 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+                    render={<a href={`/api/ebook/download/${paidOrder.id}`} />}
+                  >
+                    <Download className="size-4" />
+                    {t("alreadyOwned.cta")}
+                  </Button>
+                </div>
+              </BrandedCard>
+            ) : pendingOrder ? (
+              <BrandedCard title={t("pendingOrder.title")}>
+                <div className="flex flex-col gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    {t("pendingOrder.description")}
+                  </p>
+                  <Button
+                    className="h-11 gap-2 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
                     render={
                       <Link
-                        href={{
-                          pathname: "/login",
-                          query: { next: `/${locale}/ebook` },
-                        }}
+                        href={`/ebook/order/${pendingOrder.id}`}
                         locale={locale}
                       />
                     }
                   >
-                    {t("submit")}
+                    <Clock className="size-4" />
+                    {t("pendingOrder.cta")}
                   </Button>
                 </div>
-              )}
-            </BrandedCard>
+              </BrandedCard>
+            ) : (
+              <BrandedCard title={t("formTitle")}>
+                {session?.user ? (
+                  <EbookOrderForm
+                    action={createEbookOrderAction.bind(null, locale)}
+                  />
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    <p className="text-sm text-muted-foreground">
+                      {t("loginToBuyDescription")}
+                    </p>
+                    <Button
+                      className="h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
+                      render={
+                        <Link
+                          href={{
+                            pathname: "/login",
+                            query: { next: `/${locale}/ebook` },
+                          }}
+                          locale={locale}
+                        />
+                      }
+                    >
+                      {t("submit")}
+                    </Button>
+                  </div>
+                )}
+              </BrandedCard>
+            )}
           </div>
         </div>
       </PurpleGlowSection>
