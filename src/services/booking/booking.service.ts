@@ -12,7 +12,11 @@ import { sendEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import type { IntakeInput } from "@/lib/validation/intake.schema";
 
-const HOLD_DURATION_MINUTES = 10;
+// Long enough to cover a real card payment (entering card details, 3D
+// Secure/OTP verification can easily take several minutes) — too short
+// and the hold expires before Kashier's webhook confirms the payment,
+// even though the charge succeeded.
+const HOLD_DURATION_MINUTES = 30;
 const ADMIN_NOTIFICATION_EMAIL = "Support@ai-denta.com";
 
 async function notifyAdminOfBooking({
