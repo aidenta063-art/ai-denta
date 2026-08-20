@@ -64,7 +64,14 @@ async function confirmBookingPayment(input: {
     }
 
     const updated = await tx.payment.updateMany({
-      where: { id: input.paymentId, status: PaymentStatus.PENDING },
+      // Also recoverable from FAILED: if our own hold-expiry sweep marked
+      // a payment FAILED before Kashier's webhook (or an admin) could
+      // confirm it actually succeeded, this still lets it be confirmed
+      // rather than leaving a genuinely-paid customer stuck unconfirmed.
+      where: {
+        id: input.paymentId,
+        status: { in: [PaymentStatus.PENDING, PaymentStatus.FAILED] },
+      },
       data: {
         status: input.status,
         paidAt: new Date(),

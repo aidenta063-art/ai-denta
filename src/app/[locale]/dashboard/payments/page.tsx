@@ -98,7 +98,8 @@ export default async function PaymentsPage({
                       intakeAnswers={payment.booking.intakeAnswers}
                       steps={steps}
                     />
-                    {payment.status === PaymentStatus.PENDING && (
+                    {(payment.status === PaymentStatus.PENDING ||
+                      payment.status === PaymentStatus.FAILED) && (
                       <form action={markPaid.bind(null, payment.id)}>
                         <Button size="sm" type="submit">
                           Mark as Paid
