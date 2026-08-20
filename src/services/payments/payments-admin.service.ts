@@ -11,6 +11,7 @@ import {
   formatWhatsAppTime,
 } from "@/lib/whatsapp";
 import { logger } from "@/lib/logger";
+import { grantFreeEbookForBooking } from "@/services/ebook/ebook.service";
 
 export async function listPayments({ status }: { status?: PaymentStatus } = {}) {
   return prisma.payment.findMany({
@@ -45,7 +46,7 @@ async function confirmBookingPayment(input: {
    * doesn't match what we charged for. */
   expectedAmountCents?: number;
 }) {
-  const bookingId = await prisma.$transaction(async (tx) => {
+  const confirmed = await prisma.$transaction(async (tx) => {
     if (input.expectedAmountCents !== undefined) {
       const existing = await tx.payment.findUnique({
         where: { id: input.paymentId },
@@ -89,7 +90,7 @@ async function confirmBookingPayment(input: {
 
     const payment = await tx.payment.findUniqueOrThrow({
       where: { id: input.paymentId },
-      include: { booking: { include: { slot: true } } },
+      include: { booking: { include: { slot: true, user: true } } },
     });
     // Payments only ever exist for paid (slotted) bookings — free
     // consultations never create one, so this should be impossible
@@ -107,11 +108,26 @@ async function confirmBookingPayment(input: {
       data: { status: SlotStatus.BOOKED, holdExpiresAt: null },
     });
 
-    return payment.bookingId;
+    return {
+      bookingId: payment.bookingId,
+      userId: payment.booking.userId ?? undefined,
+      name: payment.booking.user?.name ?? payment.booking.guestName ?? "Guest",
+      email: payment.booking.user?.email ?? payment.booking.guestEmail ?? "",
+      phone: payment.booking.user?.phone ?? payment.booking.guestPhone ?? "",
+    };
   });
 
-  if (bookingId) {
-    await sendBookingConfirmedWhatsApp(bookingId);
+  if (confirmed) {
+    await sendBookingConfirmedWhatsApp(confirmed.bookingId);
+    // Booking a paid consultation includes the Patient Flow ebook as a
+    // free gift (per the marketing site) — grant it automatically
+    // instead of making the customer buy it separately.
+    await grantFreeEbookForBooking({
+      userId: confirmed.userId,
+      name: confirmed.name,
+      email: confirmed.email,
+      phone: confirmed.phone,
+    });
   }
 }
 

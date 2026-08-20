@@ -298,9 +298,10 @@
       "priceLabel": "Price",
       "backHome": "Back to homepage",
       "upsell": {
-        "title": "Get ready before your call",
-        "description": "Grab the Patient Flow ebook — a practical guide to the internal system your clinic needs so you get the most out of your consultation.",
-        "cta": "Get the Ebook"
+        "badge": "Included with your consultation",
+        "title": "Your free gift is ready",
+        "description": "The Patient Flow ebook is included free with your consultation — a practical guide to the internal system your clinic needs, ready to download right now.",
+        "cta": "Download Your Free Gift"
       }
     }
   },
@@ -470,7 +471,7 @@
     },
     "alreadyOwned": {
       "title": "You already have this book",
-      "description": "Payment confirmed — download your copy anytime.",
+      "description": "Your copy is ready — download it anytime.",
       "cta": "Download the PDF"
     },
     "pendingOrder": {

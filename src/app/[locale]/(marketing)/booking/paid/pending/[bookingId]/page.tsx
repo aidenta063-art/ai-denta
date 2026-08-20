@@ -1,7 +1,7 @@
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { PartyPopper, Clock, ArrowRight } from "lucide-react";
+import { PartyPopper, Clock, Gift, ArrowRight } from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -183,6 +183,10 @@ export default async function PaymentPendingPage({
               </Button>
 
               <div className="flex flex-col gap-3 rounded-2xl border border-[#7E00C9]/20 bg-gradient-to-br from-[#7E00C9]/5 to-transparent p-4">
+                <span className="flex w-fit items-center gap-1.5 rounded-full bg-[#7E00C9]/10 px-3 py-1 text-xs font-semibold text-[#7E00C9]">
+                  <Gift className="size-3.5" />
+                  {t("upsell.badge")}
+                </span>
                 <p className="text-sm font-semibold text-[#7E00C9]">
                   {t("upsell.title")}
                 </p>

@@ -118,3 +118,39 @@ export async function listUserEbookOrders(userId: string) {
     orderBy: { createdAt: "desc" },
   });
 }
+
+/** Booking a paid consultation includes the Patient Flow ebook as a free
+ * gift (per the marketing site) — called once that booking is confirmed
+ * so the customer already owns it, no purchase needed. A no-op if they
+ * already have a paid order (bought it separately, or already granted
+ * one from an earlier booking). */
+export async function grantFreeEbookForBooking({
+  userId,
+  name,
+  email,
+  phone,
+}: {
+  userId?: string;
+  name: string;
+  email: string;
+  phone: string;
+}): Promise<void> {
+  if (userId) {
+    const existing = await prisma.ebookOrder.findFirst({
+      where: { userId, status: EbookOrderStatus.PAID },
+    });
+    if (existing) return;
+  }
+
+  await prisma.ebookOrder.create({
+    data: {
+      userId,
+      buyerName: name,
+      buyerEmail: email,
+      buyerPhone: phone,
+      amountCents: 0,
+      status: EbookOrderStatus.PAID,
+      paidAt: new Date(),
+    },
+  });
+}
