@@ -21,7 +21,7 @@ export class ManualProvider implements PaymentProvider {
   }
 
   async verify(_providerRefId: string): Promise<VerifyResult> {
-    return { status: "PENDING" };
+    return { status: "PENDING", amountCents: null };
   }
 
   async handleWebhook(_input: WebhookInput): Promise<WebhookResult> {

@@ -13,8 +13,9 @@ import { localized } from "@/lib/i18n-content";
 import { formatSlotTimeRange } from "@/lib/timezone";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 import { requireOwnerOrStaff } from "@/lib/authz";
-import { Role, BookingStatus } from "@/generated/prisma/enums";
+import { Role, BookingStatus, PaymentProviderName } from "@/generated/prisma/enums";
 import { KashierProvider } from "@/services/payments/providers/kashier.provider";
+import { confirmBookingPaymentFromGateway } from "@/services/payments/payments-admin.service";
 import { logger } from "@/lib/logger";
 
 export default async function PaymentPendingPage({
@@ -37,7 +38,34 @@ export default async function PaymentPendingPage({
 
   await requireOwnerOrStaff(booking.userId, [Role.ADMIN, Role.STAFF], locale);
 
-  const isConfirmed = booking.status === BookingStatus.CONFIRMED;
+  let isConfirmed = booking.status === BookingStatus.CONFIRMED;
+
+  // Fallback for a delayed or lost webhook: if we already have a Kashier
+  // session on file for this payment, check its real status directly
+  // before assuming it's still pending — this is what catches a charge
+  // that actually succeeded but whose webhook never arrived.
+  if (!isConfirmed && booking.payment?.providerRefId) {
+    try {
+      const result = await new KashierProvider().verify(
+        booking.payment.providerRefId,
+      );
+      if (result.status === "PAID") {
+        await confirmBookingPaymentFromGateway({
+          paymentId: booking.payment.id,
+          provider: PaymentProviderName.KASHIER,
+          providerRefId: booking.payment.providerRefId,
+          providerPayload: { source: "redirect-verify" },
+          amountCents: result.amountCents ?? booking.payment.amountCents,
+        });
+        isConfirmed = true;
+      }
+    } catch (error) {
+      logger.error(
+        { err: error, bookingId },
+        "Failed to verify Kashier session status on redirect",
+      );
+    }
+  }
 
   const formattedDate = formatSlotTimeRange(
     booking.slot.startAt,
@@ -66,6 +94,12 @@ export default async function PaymentPendingPage({
         redirectUrl: `${process.env.APP_URL}/${locale}/booking/paid/pending/${bookingId}`,
       });
       kashierSessionUrl = session.redirectUrl;
+      if (session.providerRefId) {
+        await prisma.payment.update({
+          where: { id: booking.payment.id },
+          data: { providerRefId: session.providerRefId },
+        });
+      }
     } catch (error) {
       logger.error(
         { err: error, bookingId },

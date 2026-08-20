@@ -19,6 +19,9 @@ export interface CreateSessionResult {
 
 export interface VerifyResult {
   status: "PENDING" | "PAID" | "FAILED";
+  /** In cents, when the provider reports one — used the same way as
+   * WebhookResult.amountCents, to refuse confirming a mismatched amount. */
+  amountCents: number | null;
 }
 
 export interface WebhookInput {

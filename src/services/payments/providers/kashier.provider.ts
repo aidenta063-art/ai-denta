@@ -1,5 +1,6 @@
 import {
   createKashierSession,
+  getKashierSessionStatus,
   verifyKashierWebhookSignature,
 } from "@/lib/kashier";
 import type {
@@ -63,9 +64,11 @@ export class KashierProvider implements PaymentProvider {
     return { providerRefId: session.sessionId, redirectUrl: session.sessionUrl };
   }
 
-  async verify(): Promise<VerifyResult> {
-    // Status is driven by the webhook, not polled — see the webhook route.
-    return { status: "PENDING" };
+  /** Fallback for when Kashier's webhook is delayed or never arrives —
+   * called from the redirect-back page so a real charge doesn't leave
+   * the customer stuck on a "pending" screen. */
+  async verify(providerRefId: string): Promise<VerifyResult> {
+    return getKashierSessionStatus(providerRefId);
   }
 
   async handleWebhook({ rawBody, headers }: WebhookInput): Promise<WebhookResult> {

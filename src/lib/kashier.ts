@@ -102,6 +102,59 @@ export async function createKashierSession({
   return { sessionId: data._id, sessionUrl: data.sessionUrl };
 }
 
+/** Actively checks a session's real status with Kashier, instead of only
+ * waiting on their webhook — webhooks can be delayed or lost (this is
+ * what surfaced the need: a real charge succeeded but no webhook ever
+ * arrived), so the redirect-back page uses this as a fallback check. */
+export async function getKashierSessionStatus(sessionId: string): Promise<{
+  status: "PENDING" | "PAID" | "FAILED";
+  amountCents: number | null;
+}> {
+  const secretKey = getKashierSecretKey();
+  if (!secretKey) {
+    throw new KashierError("Kashier credentials are not configured");
+  }
+
+  const response = await fetch(
+    `${KASHIER_API_BASE}/v3/payment/sessions/${sessionId}/payment`,
+    {
+      method: "GET",
+      headers: { Authorization: secretKey },
+    },
+  );
+
+  const rawBody = await response.text();
+  const data = (() => {
+    try {
+      return JSON.parse(rawBody);
+    } catch {
+      return null;
+    }
+  })();
+
+  if (!response.ok || !data) {
+    logger.error(
+      { status: response.status, rawBody: rawBody.slice(0, 2000) },
+      "Failed to fetch Kashier session status",
+    );
+    return { status: "PENDING", amountCents: null };
+  }
+
+  const rawStatus: unknown = data.status ?? data.data?.status;
+  const status =
+    rawStatus === "SUCCESS"
+      ? "PAID"
+      : rawStatus === "FAILED"
+        ? "FAILED"
+        : "PENDING";
+
+  const rawAmount: unknown = data.amount ?? data.data?.amount;
+  const amountCents =
+    rawAmount != null ? Math.round(Number(rawAmount) * 100) : null;
+
+  return { status, amountCents };
+}
+
 /** Verifies an inbound webhook's `x-kashier-signature` header: sort the
  * event's own `data.signatureKeys` alphabetically, build a `key=value&...`
  * query string from those fields, and HMAC-SHA256 it with the Payment API

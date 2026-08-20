@@ -8,11 +8,15 @@ import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
 import { PaymentMethodSwitcher } from "@/components/payment/payment-method-switcher";
-import { getEbookOrder } from "@/services/ebook/ebook.service";
-import { EbookOrderStatus, Role } from "@/generated/prisma/enums";
+import {
+  getEbookOrder,
+  confirmEbookOrderFromGateway,
+} from "@/services/ebook/ebook.service";
+import { EbookOrderStatus, PaymentProviderName, Role } from "@/generated/prisma/enums";
 import { requireOwnerOrStaff } from "@/lib/authz";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 import { KashierProvider } from "@/services/payments/providers/kashier.provider";
+import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 
 export default async function EbookOrderPage({
@@ -30,7 +34,31 @@ export default async function EbookOrderPage({
 
   await requireOwnerOrStaff(order.userId, [Role.ADMIN, Role.STAFF], locale);
 
-  const isPaid = order.status === EbookOrderStatus.PAID;
+  let isPaid = order.status === EbookOrderStatus.PAID;
+
+  // Fallback for a delayed or lost webhook: if we already have a Kashier
+  // session on file for this order, check its real status directly
+  // before assuming it's still pending.
+  if (!isPaid && order.providerRefId) {
+    try {
+      const result = await new KashierProvider().verify(order.providerRefId);
+      if (result.status === "PAID") {
+        await confirmEbookOrderFromGateway({
+          orderId: order.id,
+          provider: PaymentProviderName.KASHIER,
+          providerRefId: order.providerRefId,
+          providerPayload: { source: "redirect-verify" },
+          amountCents: result.amountCents ?? order.amountCents,
+        });
+        isPaid = true;
+      }
+    } catch (error) {
+      logger.error(
+        { err: error, orderId },
+        "Failed to verify Kashier session status on redirect",
+      );
+    }
+  }
 
   const formattedPrice = new Intl.NumberFormat(
     locale === "ar" ? "ar-EG" : "en-US",
@@ -50,6 +78,12 @@ export default async function EbookOrderPage({
         redirectUrl: `${process.env.APP_URL}/${locale}/ebook/order/${orderId}`,
       });
       kashierSessionUrl = session.redirectUrl;
+      if (session.providerRefId) {
+        await prisma.ebookOrder.update({
+          where: { id: order.id },
+          data: { providerRefId: session.providerRefId },
+        });
+      }
     } catch (error) {
       logger.error(
         { err: error, orderId },
