@@ -140,9 +140,12 @@ export async function getKashierSessionStatus(sessionId: string): Promise<{
     return { status: "PENDING", amountCents: null };
   }
 
+  // This endpoint reports "PAID"/"FAILED" directly (unlike the webhook
+  // payload, which uses "SUCCESS"/"FAILED") — confirmed against a real
+  // completed payment, where this returned {"status":"PAID",...}.
   const rawStatus: unknown = data.status ?? data.data?.status;
   const status =
-    rawStatus === "SUCCESS"
+    rawStatus === "PAID" || rawStatus === "SUCCESS"
       ? "PAID"
       : rawStatus === "FAILED"
         ? "FAILED"
