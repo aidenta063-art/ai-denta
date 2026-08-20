@@ -296,7 +296,12 @@
       "confirmedDescription": "Your payment is confirmed and your appointment is booked.",
       "consultationLabel": "Consultation",
       "priceLabel": "Price",
-      "backHome": "Back to homepage"
+      "backHome": "Back to homepage",
+      "upsell": {
+        "title": "Get ready before your call",
+        "description": "Grab the Patient Flow ebook — a practical guide to the internal system your clinic needs so you get the most out of your consultation.",
+        "cta": "Get the Ebook"
+      }
     }
   },
   "Intake": {
