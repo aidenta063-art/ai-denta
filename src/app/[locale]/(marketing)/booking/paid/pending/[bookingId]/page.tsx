@@ -193,6 +193,9 @@ export default async function PaymentPendingPage({
                 <p className="text-sm text-muted-foreground">
                   {t("upsell.description")}
                 </p>
+                <p className="text-sm font-medium text-[#7E00C9]">
+                  {t("upsell.bonus")}
+                </p>
                 <Button
                   variant="outline"
                   className="h-10 w-fit gap-2 border-[#7E00C9]/40 text-[#7E00C9] hover:bg-[#7E00C9]/10"
