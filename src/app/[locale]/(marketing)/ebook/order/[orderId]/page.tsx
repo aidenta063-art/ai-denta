@@ -61,14 +61,21 @@ export default async function EbookOrderPage({
   return (
     <PurpleGlowSection className="flex items-center justify-center py-24 sm:py-28">
       {isPaid ? (
-        <TrackMetaEvent
-          event="Purchase"
-          params={{
-            value: order.amountCents / 100,
-            currency: order.currency,
-            content_name: "ebook",
-          }}
-        />
+        <>
+          <TrackMetaEvent
+            event="Purchase"
+            params={{
+              value: order.amountCents / 100,
+              currency: order.currency,
+              content_name: "ebook",
+            }}
+          />
+          <TrackMetaEvent
+            event="EbookGiftClaimed"
+            custom
+            params={{ content_name: "ebook" }}
+          />
+        </>
       ) : (
         <TrackMetaEvent
           event="InitiateCheckout"
@@ -95,6 +102,13 @@ export default async function EbookOrderPage({
             )}
           </div>
 
+          {isPaid && (
+            <span className="mx-auto flex w-fit items-center gap-1.5 rounded-full bg-[#7E00C9]/10 px-3 py-1 text-xs font-semibold text-[#7E00C9]">
+              <Gift className="size-3.5" />
+              {t("giftBadge")}
+            </span>
+          )}
+
           <div className="flex flex-col gap-3 rounded-2xl bg-secondary/50 p-4">
             <div>
               <p className="text-sm text-muted-foreground">{t("orderLabel")}</p>
@@ -107,7 +121,14 @@ export default async function EbookOrderPage({
                 <p className="text-sm text-muted-foreground">
                   {t("priceLabel")}
                 </p>
-                <p className="font-medium text-foreground">{formattedPrice}</p>
+                <p className="flex items-baseline gap-2">
+                  <span className="text-sm text-muted-foreground line-through">
+                    {formattedPrice}
+                  </span>
+                  <span className="font-semibold text-[#7E00C9]">
+                    {t("freeGiftLabel")}
+                  </span>
+                </p>
               </div>
             )}
           </div>

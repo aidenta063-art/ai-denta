@@ -485,11 +485,13 @@
       "paidDescription": "Payment confirmed — your copy is ready to download.",
       "orderLabel": "Order",
       "priceLabel": "Price",
+      "giftBadge": "A gift from us",
+      "freeGiftLabel": "FREE — our gift to you",
       "downloadCta": "Download the PDF",
       "backHome": "Back to homepage",
       "upsell": {
         "title": "Ready to go further?",
-        "description": "Book a paid consultation and get 30% extra content in your first month, plus a customized WhatsApp plan built around your clinic.",
+        "description": "Book a paid consultation and get 30% extra video and design content in your first month, plus a customized WhatsApp plan built around your clinic.",
         "cta": "Book a Paid Consultation"
       }
     }
