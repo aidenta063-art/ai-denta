@@ -5,6 +5,19 @@ const KASHIER_API_BASE = "https://api.kashier.io";
 
 export class KashierError extends Error {}
 
+/** Kashier's secret key contains a literal "$", and Vercel's own env var
+ * injection (not @next/env, not our shell — confirmed by testing all
+ * three independently) treats "$word" inside a stored value as a
+ * variable reference and silently truncates it, regardless of escaping.
+ * Storing the key split across two vars with no "$" in either one, then
+ * rejoining it here, sidesteps that entirely. */
+function getKashierSecretKey(): string | undefined {
+  const part1 = process.env.KASHIER_SECRET_KEY_PART1;
+  const part2 = process.env.KASHIER_SECRET_KEY_PART2;
+  if (!part1 || !part2) return undefined;
+  return `${part1}$${part2}`;
+}
+
 /** Creates a Kashier Payment Session (v3) and returns the iframe URL to
  * embed. Card capture happens entirely inside that iframe on Kashier's own
  * origin — raw card data never reaches our server, keeping PCI scope low. */
@@ -27,7 +40,7 @@ export async function createKashierSession({
 }): Promise<{ sessionId: string; sessionUrl: string }> {
   const merchantId = process.env.KASHIER_MERCHANT_ID;
   const apiKey = process.env.KASHIER_API_KEY;
-  const secretKey = process.env.KASHIER_SECRET_KEY;
+  const secretKey = getKashierSecretKey();
   if (!merchantId || !apiKey || !secretKey) {
     throw new KashierError("Kashier credentials are not configured");
   }
