@@ -26,6 +26,7 @@ export function Hero({
   subtitle,
   ctaFree,
   ctaPaid,
+  showFree = true,
   paidPrice,
   videoUrl,
 }: {
@@ -35,6 +36,7 @@ export function Hero({
   subtitle: string;
   ctaFree: string;
   ctaPaid: string;
+  showFree?: boolean;
   paidPrice?: { finalLabel: string; originalLabel: string | null } | null;
   videoUrl?: string | null;
 }) {
@@ -112,22 +114,24 @@ export function Hero({
               </p>
             )}
           </div>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-white/30 bg-transparent text-white hover:bg-white/10"
-            render={
-              <Link
-                href="/booking/free"
-                locale={locale}
-                onClick={() =>
-                  trackMetaCustomEvent("CTAClick", { cta: "hero_free" })
-                }
-              />
-            }
-          >
-            {ctaFree}
-          </Button>
+          {showFree && (
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white/30 bg-transparent text-white hover:bg-white/10"
+              render={
+                <Link
+                  href="/booking/free"
+                  locale={locale}
+                  onClick={() =>
+                    trackMetaCustomEvent("CTAClick", { cta: "hero_free" })
+                  }
+                />
+              }
+            >
+              {ctaFree}
+            </Button>
+          )}
         </motion.div>
       </motion.div>
     </section>

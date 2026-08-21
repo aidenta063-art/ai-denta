@@ -34,6 +34,12 @@ const SECTIONS = [
       "The rows in the homepage table comparing the free and paid consultation.",
   },
   {
+    href: "/dashboard/content/booking-paid-thankyou",
+    title: "Paid Booking Thank-You Page",
+    description:
+      "The title, description, and free-gift card shown after a paid consultation is booked.",
+  },
+  {
     href: "/dashboard/content/ebook-pricing",
     title: "Ebook Pricing",
     description: "The price customers actually pay for the Patient Flow ebook.",

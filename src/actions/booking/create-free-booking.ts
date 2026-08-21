@@ -6,6 +6,7 @@ import type { Locale } from "@/i18n/routing";
 import { createFreeBooking } from "@/services/booking/booking.service";
 import { buildIntakeSchema } from "@/lib/validation/intake.schema";
 import { getIntakeFormSteps } from "@/services/content/intake-form.service";
+import { isFreeConsultationActive } from "@/services/content/cms.service";
 import { ConsultationKind } from "@/generated/prisma/enums";
 import { checkActionRateLimit } from "@/lib/rate-limit";
 import type { IntakeFormState } from "@/components/booking/intake-form";
@@ -17,6 +18,14 @@ export async function createFreeBookingAction(
   _prevState: FreeBookingState,
   formData: FormData,
 ): Promise<FreeBookingState> {
+  // Defense in depth: the /booking/free page itself already redirects
+  // away when this is off, but a submission racing that toggle (or a
+  // direct POST) must not slip a booking through either.
+  if (!(await isFreeConsultationActive())) {
+    redirect({ href: "/booking/paid", locale });
+    return {};
+  }
+
   const { allowed } = await checkActionRateLimit("create-free-booking", {
     limit: 5,
     windowMs: 60 * 60_000,

@@ -30,6 +30,7 @@ export async function savePricingAction(
     discountEnabled: formData.get("discountEnabled") === "on",
     discountType: formData.get("discountType") || "PERCENTAGE",
     discountValue: formData.get("discountValue") || 0,
+    isActive: formData.get("isActive") === "on",
   });
 
   if (!parsed.success) {

@@ -97,6 +97,10 @@ export default async function HomePage({
         subtitle={hero.subtitle}
         ctaFree={t("ctaFree")}
         ctaPaid={t("ctaPaid")}
+        showFree={
+          consultationTypes.find((c) => c.kind === ConsultationKind.FREE)
+            ?.isActive ?? true
+        }
         paidPrice={paidPrice}
         videoUrl={heroVideo?.url}
       />

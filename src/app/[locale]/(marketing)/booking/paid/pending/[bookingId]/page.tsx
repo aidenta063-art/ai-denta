@@ -17,6 +17,8 @@ import { Role, BookingStatus, PaymentProviderName } from "@/generated/prisma/enu
 import { KashierProvider } from "@/services/payments/providers/kashier.provider";
 import { confirmBookingPaymentFromGateway } from "@/services/payments/payments-admin.service";
 import { getLatestPaidEbookOrderForUser } from "@/services/ebook/ebook.service";
+import { getBookingPaidThankYouContent } from "@/services/content/cms.service";
+import { bookingPaidThankYouContentSchema } from "@/lib/validation/cms.schema";
 import { logger } from "@/lib/logger";
 
 export default async function PaymentPendingPage({
@@ -29,6 +31,31 @@ export default async function PaymentPendingPage({
   setRequestLocale(locale);
 
   const t = await getTranslations("Booking.paid");
+  const thankYouSection = await getBookingPaidThankYouContent();
+  const thankYouParsed = thankYouSection
+    ? bookingPaidThankYouContentSchema.safeParse(
+        localized(locale, thankYouSection.contentEn, thankYouSection.contentAr),
+      )
+    : null;
+  const content = thankYouParsed?.success
+    ? thankYouParsed.data
+    : {
+        pendingTitle: t("pendingTitle"),
+        pendingDescription: t("pendingDescription"),
+        confirmedTitle: t("confirmedTitle"),
+        confirmedDescription: t("confirmedDescription"),
+        consultationLabel: t("consultationLabel"),
+        dateLabel: t("dateLabel"),
+        priceLabel: t("priceLabel"),
+        backHome: t("backHome"),
+        upsell: {
+          badge: t("upsell.badge"),
+          title: t("upsell.title"),
+          description: t("upsell.description"),
+          bonus: t("upsell.bonus"),
+          cta: t("upsell.cta"),
+        },
+      };
 
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
@@ -137,9 +164,9 @@ export default async function PaymentPendingPage({
         />
       )}
       <BrandedCard
-        title={isConfirmed ? t("confirmedTitle") : t("pendingTitle")}
+        title={isConfirmed ? content.confirmedTitle : content.pendingTitle}
         description={
-          isConfirmed ? t("confirmedDescription") : t("pendingDescription")
+          isConfirmed ? content.confirmedDescription : content.pendingDescription
         }
         className={isConfirmed ? undefined : "max-w-xl lg:max-w-2xl"}
       >
@@ -155,7 +182,7 @@ export default async function PaymentPendingPage({
           <div className="flex flex-col gap-3 rounded-2xl bg-secondary/50 p-4">
             <div>
               <p className="text-sm text-muted-foreground">
-                {t("consultationLabel")}
+                {content.consultationLabel}
               </p>
               <p className="font-medium text-foreground">
                 {localized(
@@ -166,13 +193,13 @@ export default async function PaymentPendingPage({
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">{t("dateLabel")}</p>
+              <p className="text-sm text-muted-foreground">{content.dateLabel}</p>
               <p className="font-medium text-foreground">{formattedDate}</p>
             </div>
             {isConfirmed && formattedPrice && (
               <div>
                 <p className="text-sm text-muted-foreground">
-                  {t("priceLabel")}
+                  {content.priceLabel}
                 </p>
                 <p className="font-medium text-foreground">{formattedPrice}</p>
               </div>
@@ -185,22 +212,22 @@ export default async function PaymentPendingPage({
                 className="h-11 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
                 render={<Link href="/" locale={locale} />}
               >
-                {t("backHome")}
+                {content.backHome}
               </Button>
 
               <div className="flex flex-col gap-3 rounded-2xl border border-[#7E00C9]/20 bg-gradient-to-br from-[#7E00C9]/5 to-transparent p-4">
                 <span className="flex w-fit items-center gap-1.5 rounded-full bg-[#7E00C9]/10 px-3 py-1 text-xs font-semibold text-[#7E00C9]">
                   <Gift className="size-3.5" />
-                  {t("upsell.badge")}
+                  {content.upsell.badge}
                 </span>
                 <p className="text-sm font-semibold text-[#7E00C9]">
-                  {t("upsell.title")}
+                  {content.upsell.title}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {t("upsell.description")}
+                  {content.upsell.description}
                 </p>
                 <p className="text-sm font-medium text-[#7E00C9]">
-                  {t("upsell.bonus")}
+                  {content.upsell.bonus}
                 </p>
                 <Button
                   variant="outline"
@@ -214,7 +241,7 @@ export default async function PaymentPendingPage({
                   }
                 >
                   <Download className="size-4" />
-                  {t("upsell.cta")}
+                  {content.upsell.cta}
                 </Button>
               </div>
             </>

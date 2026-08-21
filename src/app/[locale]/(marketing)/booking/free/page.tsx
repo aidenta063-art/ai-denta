@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { BrandedCard } from "@/components/marketing/branded-card";
@@ -12,7 +12,10 @@ import { FreeBookingGate } from "@/components/booking/free-booking-gate";
 import { createFreeBookingAction } from "@/actions/booking/create-free-booking";
 import { auth } from "@/lib/auth";
 import { hasUsedFreeConsultation } from "@/services/booking/booking.service";
-import { getFreeBookingIntroVideo } from "@/services/content/cms.service";
+import {
+  getFreeBookingIntroVideo,
+  isFreeConsultationActive,
+} from "@/services/content/cms.service";
 import { getIntakeFormSteps } from "@/services/content/intake-form.service";
 import { ConsultationKind } from "@/generated/prisma/enums";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
@@ -35,6 +38,10 @@ export default async function FreeBookingPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+
+  if (!(await isFreeConsultationActive())) {
+    redirect({ href: "/booking/paid", locale });
+  }
 
   const t = await getTranslations("Booking.free");
 

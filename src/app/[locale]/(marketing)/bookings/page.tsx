@@ -11,6 +11,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { localized } from "@/lib/i18n-content";
 import { formatSlotTimeRange } from "@/lib/timezone";
+import { isFreeConsultationActive } from "@/services/content/cms.service";
 
 export async function generateMetadata({
   params,
@@ -39,11 +40,14 @@ export default async function MyBookingsPage({
 
   const t = await getTranslations("MyBookings");
 
-  const bookings = await prisma.booking.findMany({
-    where: { userId: session.user.id },
-    orderBy: { createdAt: "desc" },
-    include: { slot: true, consultationType: true },
-  });
+  const [bookings, showFree] = await Promise.all([
+    prisma.booking.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+      include: { slot: true, consultationType: true },
+    }),
+    isFreeConsultationActive(),
+  ]);
 
   return (
     <PurpleGlowSection className="px-4 py-24 sm:py-28">
@@ -58,15 +62,17 @@ export default async function MyBookingsPage({
               <CalendarClock className="size-8 text-primary" />
               <p className="text-sm text-muted-foreground">{t("noBookings")}</p>
               <div className="flex flex-wrap justify-center gap-3">
+                {showFree && (
+                  <Button
+                    className="h-10 bg-[#7E00C9] hover:bg-[#7E00C9]/90"
+                    render={<Link href="/booking/free" locale={locale} />}
+                  >
+                    {t("bookFree")}
+                  </Button>
+                )}
                 <Button
-                  className="h-10 bg-[#7E00C9] hover:bg-[#7E00C9]/90"
-                  render={<Link href="/booking/free" locale={locale} />}
-                >
-                  {t("bookFree")}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-10"
+                  variant={showFree ? "outline" : "default"}
+                  className={showFree ? "h-10" : "h-10 bg-[#7E00C9] hover:bg-[#7E00C9]/90"}
                   render={<Link href="/booking" locale={locale} />}
                 >
                   {t("bookPaid")}

@@ -51,6 +51,7 @@ export default async function PricingContentPage({
                 discountEnabled: ct.discountEnabled,
                 discountType: ct.discountType,
                 discountValue: ct.discountValue,
+                isActive: ct.isActive,
               }}
             />
           </CardContent>

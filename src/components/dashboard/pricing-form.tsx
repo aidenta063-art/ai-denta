@@ -29,6 +29,7 @@ export function PricingForm({
     discountEnabled: boolean;
     discountType: DiscountType;
     discountValue: number;
+    isActive: boolean;
   };
 }) {
   const action = savePricingAction.bind(null, locale, kind);
@@ -36,6 +37,8 @@ export function PricingForm({
     PricingActionState,
     FormData
   >(action, {});
+
+  const [isActive, setIsActive] = useState(defaults.isActive);
 
   const [priceEgp, setPriceEgp] = useState(
     defaults.priceCents !== null ? defaults.priceCents / 100 : 0,
@@ -144,6 +147,27 @@ export function PricingForm({
           />
         </div>
       </div>
+
+      {kind === "FREE" && (
+        <div className="flex flex-col gap-2 rounded-lg border border-border p-4">
+          <label className="flex items-center gap-2 text-sm font-medium text-card-foreground">
+            <input
+              type="checkbox"
+              name="isActive"
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+              className="size-4"
+            />
+            Show the free consultation option site-wide
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Turn this off to hide every &quot;book a free consultation&quot;
+            button and link across the site — the free booking page itself
+            will also stop accepting bookings. The paid consultation is
+            never affected and always stays bookable.
+          </p>
+        </div>
+      )}
 
       {kind === "PAID" && (
         <div className="flex flex-col gap-4 rounded-lg border border-border p-4">

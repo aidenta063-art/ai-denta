@@ -14,6 +14,9 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
   const paidType = consultationTypes.find(
     (c) => c.kind === ConsultationKind.PAID,
   );
+  const showFree =
+    consultationTypes.find((c) => c.kind === ConsultationKind.FREE)
+      ?.isActive ?? true;
   const paidPrice =
     paidType?.priceCents != null
       ? formatConsultationPrice({
@@ -58,14 +61,16 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
               </p>
             )}
           </div>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-white/30 bg-transparent text-white hover:bg-white/10"
-            render={<Link href="/booking/free" locale={locale} />}
-          >
-            {t("ctaFree")}
-          </Button>
+          {showFree && (
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white/30 bg-transparent text-white hover:bg-white/10"
+              render={<Link href="/booking/free" locale={locale} />}
+            >
+              {t("ctaFree")}
+            </Button>
+          )}
         </div>
       </ScrollReveal>
     </section>

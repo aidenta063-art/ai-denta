@@ -8,10 +8,12 @@ import type {
   ServiceFormInput,
   ComparisonRowFormInput,
   ComparisonHeaderFormInput,
+  BookingPaidThankYouFormInput,
 } from "@/lib/validation/cms.schema";
 
 const HERO_SLUG = "home-hero";
 const COMPARISON_HEADER_SLUG = "comparison-header";
+const BOOKING_PAID_THANKYOU_SLUG = "booking-paid-thankyou";
 
 // This CMS content changes rarely (admin-edited) but is read on every
 // marketing page load. unstable_cache keeps it out of Postgres across
@@ -28,6 +30,7 @@ export const CMS_TAGS = {
   comparisonHeader: "cms:comparison-header",
   freeBookingIntro: "cms:free-booking-intro",
   freePdf: "cms:free-pdf",
+  bookingPaidThankYou: "cms:booking-paid-thankyou",
 } as const;
 
 export const getHeroContent = nextCache(
@@ -107,6 +110,9 @@ export async function listConsultationTypes() {
   return prisma.consultationType.findMany({ orderBy: { kind: "asc" } });
 }
 
+/** The paid consultation must always stay bookable — only the free one can
+ * ever be hidden — so this is forced true for PAID regardless of what the
+ * form submitted, as a backend guarantee independent of the dashboard UI. */
 export async function updateConsultationTypePricing(
   kind: ConsultationKind,
   input: PricingFormInput,
@@ -131,8 +137,19 @@ export async function updateConsultationTypePricing(
             ? Math.round(input.discountValue * 100)
             : Math.round(input.discountValue)
           : 0,
+      isActive: kind === ConsultationKind.PAID ? true : input.isActive,
     },
   });
+}
+
+/** Whether the free consultation option should be shown/bookable anywhere
+ * on the site. Defaults to true if the row is somehow missing. */
+export async function isFreeConsultationActive() {
+  const freeType = await prisma.consultationType.findUnique({
+    where: { kind: ConsultationKind.FREE },
+    select: { isActive: true },
+  });
+  return freeType?.isActive ?? true;
 }
 
 export const listServices = nextCache(
@@ -399,4 +416,63 @@ export async function clearFreePdf() {
   const section = await prisma.cmsSection.findUnique({ where: { slug: FREE_PDF_SLUG } });
   if (!section) return;
   await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+}
+
+export const getBookingPaidThankYouContent = nextCache(
+  async () =>
+    prisma.cmsSection.findUnique({ where: { slug: BOOKING_PAID_THANKYOU_SLUG } }),
+  ["cms-booking-paid-thankyou"],
+  { tags: [CMS_TAGS.bookingPaidThankYou], revalidate: CACHE_SECONDS },
+);
+
+export async function saveBookingPaidThankYouContent(
+  input: BookingPaidThankYouFormInput,
+  updatedById: string,
+) {
+  const contentEn = {
+    pendingTitle: input.pendingTitleEn,
+    pendingDescription: input.pendingDescriptionEn,
+    confirmedTitle: input.confirmedTitleEn,
+    confirmedDescription: input.confirmedDescriptionEn,
+    consultationLabel: input.consultationLabelEn,
+    dateLabel: input.dateLabelEn,
+    priceLabel: input.priceLabelEn,
+    backHome: input.backHomeEn,
+    upsell: {
+      badge: input.upsellBadgeEn,
+      title: input.upsellTitleEn,
+      description: input.upsellDescriptionEn,
+      bonus: input.upsellBonusEn,
+      cta: input.upsellCtaEn,
+    },
+  };
+  const contentAr = {
+    pendingTitle: input.pendingTitleAr,
+    pendingDescription: input.pendingDescriptionAr,
+    confirmedTitle: input.confirmedTitleAr,
+    confirmedDescription: input.confirmedDescriptionAr,
+    consultationLabel: input.consultationLabelAr,
+    dateLabel: input.dateLabelAr,
+    priceLabel: input.priceLabelAr,
+    backHome: input.backHomeAr,
+    upsell: {
+      badge: input.upsellBadgeAr,
+      title: input.upsellTitleAr,
+      description: input.upsellDescriptionAr,
+      bonus: input.upsellBonusAr,
+      cta: input.upsellCtaAr,
+    },
+  };
+
+  await prisma.cmsSection.upsert({
+    where: { slug: BOOKING_PAID_THANKYOU_SLUG },
+    update: { contentEn, contentAr, updatedById },
+    create: {
+      slug: BOOKING_PAID_THANKYOU_SLUG,
+      type: CmsSectionType.CUSTOM,
+      contentEn,
+      contentAr,
+      updatedById,
+    },
+  });
 }
