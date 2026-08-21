@@ -44,10 +44,9 @@ function Row({
 }
 
 export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
-  const [t, tCta, customRows, consultationTypes, headerSection] =
+  const [t, customRows, consultationTypes, headerSection] =
     await Promise.all([
       getTranslations("HomePage.comparison"),
-      getTranslations("HomePage.cta"),
       listComparisonRows(),
       listConsultationTypes(),
       getComparisonHeaderContent(),
@@ -183,7 +182,7 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
                   className="h-auto min-h-10 w-full max-w-48 px-2 py-2 text-xs whitespace-normal sm:text-sm"
                   render={<Link href="/booking/free" locale={locale} />}
                 >
-                  {tCta("ctaFree")}
+                  {t("ctaFree")}
                 </Button>
                 <p className="text-xs font-semibold text-foreground">
                   {t("freePrice")}
@@ -194,7 +193,7 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
                   className="h-auto min-h-10 w-full max-w-48 bg-[#7E00C9] px-2 py-2 text-xs whitespace-normal hover:bg-[#7E00C9]/90 sm:text-sm"
                   render={<Link href="/booking/paid" locale={locale} />}
                 >
-                  {tCta("ctaPaid")}
+                  {t("ctaPaid")}
                 </Button>
                 {paidPrice && (
                   <p className="flex flex-wrap items-baseline justify-center gap-1.5 text-xs">

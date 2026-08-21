@@ -1,7 +1,7 @@
 import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { PartyPopper, Clock, Gift, ArrowRight } from "lucide-react";
+import { PartyPopper, Clock, Gift, Download } from "lucide-react";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { requireOwnerOrStaff } from "@/lib/authz";
 import { Role, BookingStatus, PaymentProviderName } from "@/generated/prisma/enums";
 import { KashierProvider } from "@/services/payments/providers/kashier.provider";
 import { confirmBookingPaymentFromGateway } from "@/services/payments/payments-admin.service";
+import { getLatestPaidEbookOrderForUser } from "@/services/ebook/ebook.service";
 import { logger } from "@/lib/logger";
 
 export default async function PaymentPendingPage({
@@ -66,6 +67,11 @@ export default async function PaymentPendingPage({
       );
     }
   }
+
+  const ebookOrder =
+    isConfirmed && booking.userId
+      ? await getLatestPaidEbookOrderForUser(booking.userId)
+      : null;
 
   const formattedDate = formatSlotTimeRange(
     booking.slot.startAt,
@@ -199,10 +205,16 @@ export default async function PaymentPendingPage({
                 <Button
                   variant="outline"
                   className="h-10 w-fit gap-2 border-[#7E00C9]/40 text-[#7E00C9] hover:bg-[#7E00C9]/10"
-                  render={<Link href="/ebook" locale={locale} />}
+                  render={
+                    ebookOrder ? (
+                      <a href={`/api/ebook/download/${ebookOrder.id}`} />
+                    ) : (
+                      <Link href="/ebook" locale={locale} />
+                    )
+                  }
                 >
+                  <Download className="size-4" />
                   {t("upsell.cta")}
-                  <ArrowRight className="size-4 rtl:rotate-180" />
                 </Button>
               </div>
             </>

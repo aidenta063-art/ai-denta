@@ -17,6 +17,7 @@
     "adminPanel": "Admin panel",
     "myAccount": "My Account",
     "myBookings": "My Bookings",
+    "myPurchases": "My Purchases",
     "menu": "Menu",
     "close": "Close"
   },
@@ -43,6 +44,13 @@
       "CANCELLED": "Cancelled",
       "EXPIRED": "Expired"
     }
+  },
+  "Purchases": {
+    "title": "My Purchases",
+    "empty": "You haven't purchased anything yet.",
+    "browseEbook": "Get the Patient Flow Ebook",
+    "downloadCta": "Download the PDF",
+    "freeGift": "Free gift"
   },
   "HomePage": {
     "eyebrow": "Dental Marketing Agency",
@@ -108,7 +116,9 @@
       "depthPaid": "In-depth growth strategy session",
       "priorityLabel": "Priority attention",
       "priceLabel": "Price",
-      "freePrice": "Free"
+      "freePrice": "Free",
+      "ctaFree": "Book Now",
+      "ctaPaid": "Book Now"
     },
     "whyUs": {
       "eyebrow": "What Sets Us Apart",

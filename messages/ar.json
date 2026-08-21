@@ -17,6 +17,7 @@
     "adminPanel": "لوحة الإدارة",
     "myAccount": "حسابي",
     "myBookings": "حجوزاتي",
+    "myPurchases": "مشترياتي",
     "menu": "القائمة",
     "close": "إغلاق"
   },
@@ -43,6 +44,13 @@
       "CANCELLED": "ملغي",
       "EXPIRED": "منتهي"
     }
+  },
+  "Purchases": {
+    "title": "مشترياتي",
+    "empty": "لسه ماشتريتش أي حاجة.",
+    "browseEbook": "احصل على كتاب Patient Flow",
+    "downloadCta": "حمّل الـ PDF",
+    "freeGift": "هدية مننا"
   },
   "HomePage": {
     "eyebrow": "وكالة تسويق لعيادات الأسنان",
@@ -108,7 +116,9 @@
       "depthPaid": "جلسة استراتيجية متعمقة",
       "priorityLabel": "أولوية في الاهتمام",
       "priceLabel": "السعر",
-      "freePrice": "مجانًا"
+      "freePrice": "مجانًا",
+      "ctaFree": "احجز الآن",
+      "ctaPaid": "احجز الآن"
     },
     "whyUs": {
       "eyebrow": "إيه اللي بيميزنا",

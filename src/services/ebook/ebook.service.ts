@@ -112,6 +112,20 @@ export async function confirmEbookOrderFromGateway(input: {
   return result.count > 0;
 }
 
+export async function getLatestPaidEbookOrderForUser(userId: string) {
+  return prisma.ebookOrder.findFirst({
+    where: { userId, status: EbookOrderStatus.PAID },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function listUserPaidEbookOrders(userId: string) {
+  return prisma.ebookOrder.findMany({
+    where: { userId, status: EbookOrderStatus.PAID },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 export async function listUserEbookOrders(userId: string) {
   return prisma.ebookOrder.findMany({
     where: { userId },

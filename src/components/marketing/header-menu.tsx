@@ -10,6 +10,7 @@ import {
   Info,
   CalendarDays,
   CalendarClock,
+  ShoppingBag,
   Stethoscope,
   BookOpen,
   FileText,
@@ -135,6 +136,15 @@ export function HeaderMenu({
                 >
                   <CalendarClock className="size-4.5 shrink-0" />
                   {tNav("myBookings")}
+                </Link>
+                <Link
+                  href="/purchases"
+                  locale={locale}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-base font-medium text-white/90 transition-colors hover:bg-white/10"
+                >
+                  <ShoppingBag className="size-4.5 shrink-0" />
+                  {tNav("myPurchases")}
                 </Link>
                 {session.isStaff && (
                   <Link
