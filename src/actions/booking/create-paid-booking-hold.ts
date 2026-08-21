@@ -6,9 +6,11 @@ import type { Locale } from "@/i18n/routing";
 import { createPaidBookingHold } from "@/services/booking/booking.service";
 import { buildIntakeSchema } from "@/lib/validation/intake.schema";
 import { getIntakeFormSteps } from "@/services/content/intake-form.service";
-import { ConsultationKind } from "@/generated/prisma/enums";
+import { ConsultationKind, PaymentProviderName } from "@/generated/prisma/enums";
 import { checkActionRateLimit } from "@/lib/rate-limit";
 import type { IntakeFormState } from "@/components/booking/intake-form";
+import { prisma } from "@/lib/prisma";
+import { confirmBookingPaymentFromGateway } from "@/services/payments/payments-admin.service";
 
 export type PaidBookingHoldState = IntakeFormState;
 
@@ -58,6 +60,24 @@ export async function createPaidBookingHoldAction(
 
   if ("error" in result) {
     return { error: result.error };
+  }
+
+  // A 100%-discounted (or admin-priced-at-zero) paid consultation has
+  // nothing to actually charge — confirm it immediately instead of
+  // sending the customer through a card/Instapay/Vodafone Cash flow for
+  // EGP 0. Only ever fires when the computed final price is exactly
+  // zero; any real amount still goes through the normal payment step.
+  const payment = await prisma.payment.findUnique({
+    where: { bookingId: result.bookingId },
+  });
+  if (payment && payment.amountCents === 0) {
+    await confirmBookingPaymentFromGateway({
+      paymentId: payment.id,
+      provider: PaymentProviderName.MANUAL,
+      providerRefId: `zero-price-${payment.id}`,
+      providerPayload: { source: "zero-price-auto-confirm" },
+      amountCents: 0,
+    });
   }
 
   redirect({
