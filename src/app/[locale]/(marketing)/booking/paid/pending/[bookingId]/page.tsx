@@ -234,7 +234,11 @@ export default async function PaymentPendingPage({
                   className="h-10 w-fit gap-2 border-[#7E00C9]/40 text-[#7E00C9] hover:bg-[#7E00C9]/10"
                   render={
                     ebookOrder ? (
-                      <a href={`/api/ebook/download/${ebookOrder.id}`} />
+                      <a
+                        href={`/api/ebook/download/${ebookOrder.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
                     ) : (
                       <Link href="/ebook" locale={locale} />
                     )

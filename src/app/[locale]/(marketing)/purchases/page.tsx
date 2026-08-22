@@ -86,7 +86,13 @@ export default async function PurchasesPage({
                   </div>
                   <Button
                     className="h-10 w-fit gap-2 bg-[#7E00C9] hover:bg-[#7E00C9]/90"
-                    render={<a href={`/api/ebook/download/${order.id}`} />}
+                    render={
+                      <a
+                        href={`/api/ebook/download/${order.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    }
                   >
                     <Download className="size-4" />
                     {t("downloadCta")}

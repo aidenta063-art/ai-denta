@@ -171,7 +171,13 @@ export default async function EbookOrderPage({
             <>
               <Button
                 className="h-11 gap-2 bg-[#7E00C9] text-base hover:bg-[#7E00C9]/90"
-                render={<a href={`/api/ebook/download/${order.id}`} />}
+                render={
+                  <a
+                    href={`/api/ebook/download/${order.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
               >
                 <Download className="size-4" />
                 {t("downloadCta")}
