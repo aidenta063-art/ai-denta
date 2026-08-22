@@ -294,9 +294,12 @@ model Payment {
 /// digital product the site currently sells. See src/lib/ebook.ts for the
 /// rest of the (non-price) product info, which still lives in code.
 model EbookSettings {
-  id         String @id @default("patient-flow")
-  priceCents Int    @default(49900)
-  currency   String @default("EGP")
+  id              String       @id @default("patient-flow")
+  priceCents      Int          @default(49900)
+  currency        String       @default("EGP")
+  discountEnabled Boolean      @default(false)
+  discountType    DiscountType @default(PERCENTAGE)
+  discountValue   Int          @default(0)
 }
 
 model EbookOrder {

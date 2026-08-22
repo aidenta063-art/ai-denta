@@ -14,6 +14,7 @@ import { EbookOrderForm } from "@/components/ebook/ebook-order-form";
 import { ReviewsSection } from "@/components/marketing/reviews-section";
 import { createEbookOrderAction } from "@/actions/ebook/create-ebook-order";
 import { getEbookPricing, listUserEbookOrders } from "@/services/ebook/ebook.service";
+import { formatDiscountedPrice, computeFinalPriceCents } from "@/lib/pricing";
 import { EbookOrderStatus } from "@/generated/prisma/enums";
 import { auth } from "@/lib/auth";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
@@ -51,10 +52,20 @@ export default async function EbookPage({
   const description = t.raw("description") as string[];
   const toc = t.raw("toc") as string[];
 
-  const formattedPrice = new Intl.NumberFormat(
-    locale === "ar" ? "ar-EG" : "en-US",
-    { style: "currency", currency: ebookPricing.currency },
-  ).format(ebookPricing.priceCents / 100);
+  const formattedPrice = formatDiscountedPrice({
+    priceCents: ebookPricing.priceCents,
+    discountEnabled: ebookPricing.discountEnabled,
+    discountType: ebookPricing.discountType,
+    discountValue: ebookPricing.discountValue,
+    currency: ebookPricing.currency,
+    locale,
+  });
+  const finalPriceCents = computeFinalPriceCents({
+    priceCents: ebookPricing.priceCents,
+    discountEnabled: ebookPricing.discountEnabled,
+    discountType: ebookPricing.discountType,
+    discountValue: ebookPricing.discountValue,
+  });
 
   return (
     <>
@@ -62,7 +73,7 @@ export default async function EbookPage({
         event="ViewContent"
         params={{
           content_name: "ebook",
-          value: ebookPricing.priceCents / 100,
+          value: finalPriceCents / 100,
           currency: ebookPricing.currency,
         }}
       />
@@ -76,8 +87,15 @@ export default async function EbookPage({
                   <span className="text-sm text-muted-foreground">
                     {t("priceLabel")}
                   </span>
-                  <span className="text-lg font-bold text-foreground">
-                    {formattedPrice}
+                  <span className="flex items-baseline gap-1.5">
+                    <span className="text-lg font-bold text-foreground">
+                      {formattedPrice.finalLabel}
+                    </span>
+                    {formattedPrice.originalLabel && (
+                      <span className="text-xs text-muted-foreground line-through">
+                        {formattedPrice.originalLabel}
+                      </span>
+                    )}
                   </span>
                 </div>
               </div>

@@ -24,11 +24,12 @@ export function computeFinalPriceCents({
   return Math.max(0, Math.round(discounted));
 }
 
-/** Formats a consultation's price for display: the final (possibly
- * discounted) price, plus the original price only when a discount is
- * actually knocking the price down — so callers can render the original
- * struck through next to the final price. */
-export function formatConsultationPrice({
+/** Formats a discountable product's price for display (consultations,
+ * the ebook, ...): the final (possibly discounted) price, plus the
+ * original price only when a discount is actually knocking the price
+ * down — so callers can render the original struck through next to the
+ * final price. */
+export function formatDiscountedPrice({
   priceCents,
   discountEnabled,
   discountType,

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { ScheduleGridBackdrop } from "@/components/marketing/schedule-grid-backdrop";
 import { listConsultationTypes } from "@/services/content/cms.service";
-import { formatConsultationPrice } from "@/lib/pricing";
+import { formatDiscountedPrice } from "@/lib/pricing";
 import { ConsultationKind } from "@/generated/prisma/enums";
 import type { Locale } from "@/i18n/routing";
 
@@ -19,7 +19,7 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
       ?.isActive ?? true;
   const paidPrice =
     paidType?.priceCents != null
-      ? formatConsultationPrice({
+      ? formatDiscountedPrice({
           priceCents: paidType.priceCents,
           discountEnabled: paidType.discountEnabled,
           discountType: paidType.discountType,

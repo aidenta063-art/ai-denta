@@ -15,7 +15,8 @@ export default async function EbookPricingContentPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
-  const { priceCents } = await getEbookPricing();
+  const { priceCents, discountEnabled, discountType, discountValue } =
+    await getEbookPricing();
 
   return (
     <div className="flex flex-col gap-6">
@@ -37,7 +38,13 @@ export default async function EbookPricingContentPage({
           <CardTitle className="text-base">Patient Flow</CardTitle>
         </CardHeader>
         <CardContent>
-          <EbookPriceForm locale={locale} priceEgp={priceCents / 100} />
+          <EbookPriceForm
+            locale={locale}
+            priceEgp={priceCents / 100}
+            discountEnabled={discountEnabled}
+            discountType={discountType}
+            discountValue={discountValue}
+          />
         </CardContent>
       </Card>
     </div>

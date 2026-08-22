@@ -18,7 +18,7 @@ import {
 } from "@/services/content/cms.service";
 import { heroContentSchema } from "@/lib/validation/cms.schema";
 import { localized } from "@/lib/i18n-content";
-import { formatConsultationPrice } from "@/lib/pricing";
+import { formatDiscountedPrice } from "@/lib/pricing";
 import { ConsultationKind } from "@/generated/prisma/enums";
 
 export async function generateMetadata({
@@ -77,7 +77,7 @@ export default async function HomePage({
     consultationTypes.find((c) => c.kind === ConsultationKind.PAID) ?? null;
   const paidPrice =
     paidType?.priceCents != null
-      ? formatConsultationPrice({
+      ? formatDiscountedPrice({
           priceCents: paidType.priceCents,
           discountEnabled: paidType.discountEnabled,
           discountType: paidType.discountType,

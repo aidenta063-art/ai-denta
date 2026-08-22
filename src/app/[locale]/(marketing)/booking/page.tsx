@@ -10,7 +10,7 @@ import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { listConsultationTypes } from "@/services/content/cms.service";
 import { ConsultationKind } from "@/generated/prisma/enums";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
-import { formatConsultationPrice } from "@/lib/pricing";
+import { formatDiscountedPrice } from "@/lib/pricing";
 
 export async function generateMetadata({
   params,
@@ -44,7 +44,7 @@ export default async function BookingChoicePage({
       ?.isActive ?? true;
   const paidPrice =
     paidType?.priceCents != null
-      ? formatConsultationPrice({
+      ? formatDiscountedPrice({
           priceCents: paidType.priceCents,
           discountEnabled: paidType.discountEnabled,
           discountType: paidType.discountType,

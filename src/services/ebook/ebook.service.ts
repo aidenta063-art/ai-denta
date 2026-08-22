@@ -1,8 +1,14 @@
 import { unstable_cache as nextCache } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { EbookOrderStatus, PaymentProviderName } from "@/generated/prisma/enums";
+import {
+  EbookOrderStatus,
+  PaymentProviderName,
+  DiscountType,
+} from "@/generated/prisma/enums";
 import { PATIENT_FLOW_EBOOK } from "@/lib/ebook";
+import { computeFinalPriceCents } from "@/lib/pricing";
 import type { EbookOrderInput } from "@/lib/validation/ebook.schema";
+import type { EbookPriceFormInput } from "@/lib/validation/cms.schema";
 import { logger } from "@/lib/logger";
 
 export const EBOOK_PRICE_CACHE_TAG = "cms:ebook-price";
@@ -15,35 +21,50 @@ export const getEbookPricing = nextCache(
     return {
       priceCents: settings?.priceCents ?? PATIENT_FLOW_EBOOK.priceCents,
       currency: settings?.currency ?? PATIENT_FLOW_EBOOK.currency,
+      discountEnabled: settings?.discountEnabled ?? false,
+      discountType: settings?.discountType ?? DiscountType.PERCENTAGE,
+      discountValue: settings?.discountValue ?? 0,
     };
   },
   ["cms-ebook-price"],
   { tags: [EBOOK_PRICE_CACHE_TAG], revalidate: 60 },
 );
 
-export async function updateEbookPriceEgp(priceEgp: number) {
+export async function updateEbookPricing(input: EbookPriceFormInput) {
+  const data = {
+    priceCents: Math.round(input.priceEgp * 100),
+    discountEnabled: input.discountEnabled,
+    discountType: input.discountType,
+    discountValue:
+      input.discountType === "FIXED"
+        ? Math.round(input.discountValue * 100)
+        : Math.round(input.discountValue),
+  };
   await prisma.ebookSettings.upsert({
     where: { id: PATIENT_FLOW_EBOOK.slug },
-    update: { priceCents: Math.round(priceEgp * 100) },
-    create: {
-      id: PATIENT_FLOW_EBOOK.slug,
-      priceCents: Math.round(priceEgp * 100),
-    },
+    update: data,
+    create: { id: PATIENT_FLOW_EBOOK.slug, ...data },
   });
 }
 
 export async function createEbookOrder(
   input: EbookOrderInput & { userId?: string },
 ) {
-  const { priceCents, currency } = await getEbookPricing();
+  const pricing = await getEbookPricing();
+  const amountCents = computeFinalPriceCents({
+    priceCents: pricing.priceCents,
+    discountEnabled: pricing.discountEnabled,
+    discountType: pricing.discountType,
+    discountValue: pricing.discountValue,
+  });
   return prisma.ebookOrder.create({
     data: {
       userId: input.userId,
       buyerName: input.name,
       buyerEmail: input.email,
       buyerPhone: input.phone,
-      amountCents: priceCents,
-      currency,
+      amountCents,
+      currency: pricing.currency,
     },
   });
 }

@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { Eyebrow } from "@/components/marketing/eyebrow";
-import { formatConsultationPrice } from "@/lib/pricing";
+import { formatDiscountedPrice } from "@/lib/pricing";
 import {
   listComparisonRows,
   listConsultationTypes,
@@ -76,7 +76,7 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
 
   const paidPrice =
     paidType?.priceCents != null
-      ? formatConsultationPrice({
+      ? formatDiscountedPrice({
           priceCents: paidType.priceCents,
           discountEnabled: paidType.discountEnabled,
           discountType: paidType.discountType,

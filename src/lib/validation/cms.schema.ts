@@ -66,7 +66,15 @@ export const comparisonRowFormSchema = z.object({
 
 export const ebookPriceFormSchema = z.object({
   priceEgp: z.coerce.number().min(0),
-});
+  discountEnabled: z.boolean(),
+  discountType: z.enum(["PERCENTAGE", "FIXED"]),
+  // Whole-number percent (0-100) when discountType is PERCENTAGE, EGP
+  // amount (same unit as priceEgp) when FIXED.
+  discountValue: z.coerce.number().min(0),
+}).refine(
+  (data) => data.discountType !== "PERCENTAGE" || data.discountValue <= 100,
+  { path: ["discountValue"], message: "Percentage discount can't exceed 100" },
+);
 
 export const comparisonHeaderFormSchema = z.object({
   eyebrowEn: z.string().trim().min(1).max(80),
