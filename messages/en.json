@@ -56,8 +56,6 @@
     "eyebrow": "Dental Marketing Agency",
     "title": "Grow your dental clinic with a system, not guesswork",
     "subtitle": "Content, paid ads, and a real booking pipeline — built for dental clinics that want predictable growth.",
-    "ctaFree": "Book a {name}",
-    "ctaPaid": "Book a {name}",
     "tapForSound": "Tap for sound",
     "services": {
       "title": "What we do",
@@ -94,9 +92,7 @@
     },
     "cta": {
       "title": "Ready to grow your clinic?",
-      "subtitle": "Book a free or paid consultation and let's talk about your growth plan.",
-      "ctaFree": "Book {name}",
-      "ctaPaid": "Book {name}"
+      "subtitle": "Book a free or paid consultation and let's talk about your growth plan."
     },
     "comparison": {
       "eyebrow": "Compare your options",

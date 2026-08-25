@@ -58,7 +58,7 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
               className="bg-white text-base text-[#251037] shadow-xl shadow-black/20 hover:bg-white/90"
               render={<Link href="/booking/paid" locale={locale} />}
             >
-              {t("ctaPaid", { name: paidName })}
+              {paidName}
             </Button>
             {paidPrice && (
               <p className="flex items-baseline gap-1.5 text-sm">
@@ -80,7 +80,7 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
               className="border-white/30 bg-transparent text-white hover:bg-white/10"
               render={<Link href="/booking/free" locale={locale} />}
             >
-              {t("ctaFree", { name: freeName })}
+              {freeName}
             </Button>
           )}
         </div>

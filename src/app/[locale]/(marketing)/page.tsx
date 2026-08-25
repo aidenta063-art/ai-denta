@@ -107,8 +107,8 @@ export default async function HomePage({
         eyebrow={hero.eyebrow}
         title={hero.title}
         subtitle={hero.subtitle}
-        ctaFree={t("ctaFree", { name: freeName })}
-        ctaPaid={t("ctaPaid", { name: paidName })}
+        ctaFree={freeName}
+        ctaPaid={paidName}
         showFree={
           consultationTypes.find((c) => c.kind === ConsultationKind.FREE)
             ?.isActive ?? true
