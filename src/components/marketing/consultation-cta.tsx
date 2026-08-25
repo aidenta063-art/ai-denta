@@ -6,6 +6,7 @@ import { ScheduleGridBackdrop } from "@/components/marketing/schedule-grid-backd
 import { listConsultationTypes } from "@/services/content/cms.service";
 import { formatDiscountedPrice } from "@/lib/pricing";
 import { ConsultationKind } from "@/generated/prisma/enums";
+import { localized } from "@/lib/i18n-content";
 import type { Locale } from "@/i18n/routing";
 
 export async function ConsultationCta({ locale }: { locale: Locale }) {
@@ -14,9 +15,20 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
   const paidType = consultationTypes.find(
     (c) => c.kind === ConsultationKind.PAID,
   );
-  const showFree =
-    consultationTypes.find((c) => c.kind === ConsultationKind.FREE)
-      ?.isActive ?? true;
+  const freeType = consultationTypes.find(
+    (c) => c.kind === ConsultationKind.FREE,
+  );
+  const showFree = freeType?.isActive ?? true;
+  const paidName = paidType
+    ? localized(locale, paidType.nameEn, paidType.nameAr)
+    : locale === "ar"
+      ? "استشارة مدفوعة"
+      : "Paid Consultation";
+  const freeName = freeType
+    ? localized(locale, freeType.nameEn, freeType.nameAr)
+    : locale === "ar"
+      ? "استشارة مجانية"
+      : "Free Consultation";
   const paidPrice =
     paidType?.priceCents != null
       ? formatDiscountedPrice({
@@ -46,7 +58,7 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
               className="bg-white text-base text-[#251037] shadow-xl shadow-black/20 hover:bg-white/90"
               render={<Link href="/booking/paid" locale={locale} />}
             >
-              {t("ctaPaid")}
+              {t("ctaPaid", { name: paidName })}
             </Button>
             {paidPrice && (
               <p className="flex items-baseline gap-1.5 text-sm">
@@ -68,7 +80,7 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
               className="border-white/30 bg-transparent text-white hover:bg-white/10"
               render={<Link href="/booking/free" locale={locale} />}
             >
-              {t("ctaFree")}
+              {t("ctaFree", { name: freeName })}
             </Button>
           )}
         </div>

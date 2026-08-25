@@ -75,6 +75,18 @@ export default async function HomePage({
 
   const paidType =
     consultationTypes.find((c) => c.kind === ConsultationKind.PAID) ?? null;
+  const freeType =
+    consultationTypes.find((c) => c.kind === ConsultationKind.FREE) ?? null;
+  const paidName = paidType
+    ? localized(locale, paidType.nameEn, paidType.nameAr)
+    : locale === "ar"
+      ? "استشارة مدفوعة"
+      : "Paid Consultation";
+  const freeName = freeType
+    ? localized(locale, freeType.nameEn, freeType.nameAr)
+    : locale === "ar"
+      ? "استشارة مجانية"
+      : "Free Consultation";
   const paidPrice =
     paidType?.priceCents != null
       ? formatDiscountedPrice({
@@ -95,8 +107,8 @@ export default async function HomePage({
         eyebrow={hero.eyebrow}
         title={hero.title}
         subtitle={hero.subtitle}
-        ctaFree={t("ctaFree")}
-        ctaPaid={t("ctaPaid")}
+        ctaFree={t("ctaFree", { name: freeName })}
+        ctaPaid={t("ctaPaid", { name: paidName })}
         showFree={
           consultationTypes.find((c) => c.kind === ConsultationKind.FREE)
             ?.isActive ?? true
