@@ -11,6 +11,7 @@ import { listConsultationTypes } from "@/services/content/cms.service";
 import { ConsultationKind } from "@/generated/prisma/enums";
 import { TrackMetaEvent } from "@/components/marketing/track-meta-event";
 import { formatDiscountedPrice } from "@/lib/pricing";
+import { localized } from "@/lib/i18n-content";
 
 export async function generateMetadata({
   params,
@@ -39,9 +40,24 @@ export default async function BookingChoicePage({
   const paidType = consultationTypes.find(
     (c) => c.kind === ConsultationKind.PAID,
   );
-  const showFree =
-    consultationTypes.find((c) => c.kind === ConsultationKind.FREE)
-      ?.isActive ?? true;
+  const freeType = consultationTypes.find(
+    (c) => c.kind === ConsultationKind.FREE,
+  );
+  const showFree = freeType?.isActive ?? true;
+
+  const paidTitle = paidType
+    ? localized(locale, paidType.nameEn, paidType.nameAr)
+    : t("paidTitle");
+  const paidDescription =
+    (paidType && localized(locale, paidType.descriptionEn, paidType.descriptionAr)) ||
+    t("paidDescription");
+  const freeTitle = freeType
+    ? localized(locale, freeType.nameEn, freeType.nameAr)
+    : t("freeTitle");
+  const freeDescription =
+    (freeType && localized(locale, freeType.descriptionEn, freeType.descriptionAr)) ||
+    t("freeDescription");
+
   const paidPrice =
     paidType?.priceCents != null
       ? formatDiscountedPrice({
@@ -86,10 +102,10 @@ export default async function BookingChoicePage({
             </div>
             <div className="flex flex-col gap-1.5">
               <h2 className="text-xl font-semibold text-[#251037]">
-                {t("paidTitle")}
+                {paidTitle}
               </h2>
               <p className="text-sm text-muted-foreground">
-                {t("paidDescription")}
+                {paidDescription}
               </p>
               {paidPrice && (
                 <p className="mt-1 flex items-baseline gap-2">
@@ -126,10 +142,10 @@ export default async function BookingChoicePage({
               </div>
               <div className="flex flex-col gap-1.5">
                 <h2 className="text-xl font-semibold text-[#251037]">
-                  {t("freeTitle")}
+                  {freeTitle}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  {t("freeDescription")}
+                  {freeDescription}
                 </p>
               </div>
               <Button

@@ -40,6 +40,8 @@ export async function savePricingAction(
   await updateConsultationTypePricing(kind, parsed.data);
   revalidatePath("/ar");
   revalidatePath("/en");
+  revalidatePath("/ar/booking");
+  revalidatePath("/en/booking");
   revalidatePath(`/${locale}/dashboard/content/pricing`);
   return { success: true };
 }
