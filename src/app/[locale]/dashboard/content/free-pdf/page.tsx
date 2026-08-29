@@ -47,7 +47,11 @@ export default async function FreePdfContentPage({
           </p>
         </div>
         <PdfUploader
-          files={pdfs.map((pdf) => ({ id: pdf.id, url: pdf.url }))}
+          files={pdfs.map((pdf) => ({
+            id: pdf.id,
+            url: pdf.url,
+            fileName: pdf.fileName,
+          }))}
           maxFiles={MAX_FREE_PDFS}
           addAction={addAction}
           removeAction={removeAction}

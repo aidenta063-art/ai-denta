@@ -30,6 +30,7 @@ export async function POST(request: Request) {
   const contentType = body?.contentType;
   const sizeBytes = Number(body?.sizeBytes);
   const partKeys = body?.partKeys;
+  const filename = body?.filename;
 
   if (
     typeof finalKey !== "string" ||
@@ -37,7 +38,8 @@ export async function POST(request: Request) {
     !Number.isFinite(sizeBytes) ||
     !Array.isArray(partKeys) ||
     partKeys.length === 0 ||
-    !partKeys.every((k) => typeof k === "string")
+    !partKeys.every((k) => typeof k === "string") ||
+    typeof filename !== "string"
   ) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -64,6 +66,7 @@ export async function POST(request: Request) {
     publicUrl: completed.url,
     contentType,
     sizeBytes,
+    originalName: filename,
     uploadedById: session.user.id,
   });
 

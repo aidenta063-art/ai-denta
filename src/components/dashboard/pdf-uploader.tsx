@@ -13,7 +13,7 @@ export function PdfUploader({
   addAction,
   removeAction,
 }: {
-  files: { id: string; url: string }[];
+  files: { id: string; url: string; fileName: string | null }[];
   maxFiles: number;
   addAction: (mediaId: string) => Promise<void>;
   removeAction: (mediaId: string) => Promise<void>;
@@ -92,7 +92,7 @@ export function PdfUploader({
                 className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground hover:underline"
               >
                 <FileText className="size-4 shrink-0" />
-                <span className="truncate">PDF {i + 1}</span>
+                <span className="truncate">{file.fileName ?? `PDF ${i + 1}`}</span>
               </a>
               <Button
                 size="sm"

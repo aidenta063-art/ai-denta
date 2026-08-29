@@ -55,11 +55,11 @@ export default async function FreePdfPage({
                     key={pdf.id}
                     className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-secondary/40 px-5 py-4"
                   >
-                    <span className="flex items-center gap-2 text-sm font-medium text-foreground sm:text-base">
+                    <span className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground sm:text-base">
                       <FileText className="size-4 shrink-0" />
-                      {pdfs.length > 1
-                        ? t("guideLabel", { index: i + 1 })
-                        : t("title")}
+                      <span className="truncate">
+                        {pdf.fileName ?? t("guideLabel", { index: i + 1 })}
+                      </span>
                     </span>
                     <Link
                       href={`/free-pdf/download/${pdf.id}`}

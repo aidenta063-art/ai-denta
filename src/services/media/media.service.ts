@@ -27,6 +27,7 @@ export async function createMedia(input: {
       key,
       url,
       type,
+      fileName: input.originalName,
       sizeBytes: input.body.byteLength,
       uploadedById: input.uploadedById,
     },
@@ -40,6 +41,7 @@ export async function recordMedia(input: {
   publicUrl: string;
   contentType: string;
   sizeBytes: number;
+  originalName: string;
   uploadedById: string;
 }) {
   const type = mediaTypeForContentType(input.contentType);
@@ -49,6 +51,7 @@ export async function recordMedia(input: {
       key: input.key,
       url: input.publicUrl,
       type,
+      fileName: input.originalName,
       sizeBytes: input.sizeBytes,
       uploadedById: input.uploadedById,
     },

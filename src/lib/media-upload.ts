@@ -3,6 +3,7 @@ export type UploadedMedia = {
   key: string;
   url: string;
   type: "IMAGE" | "VIDEO" | "DOCUMENT";
+  fileName: string | null;
 };
 
 type UploadResult = { media: UploadedMedia } | { error: string };
@@ -87,6 +88,7 @@ async function tryChunkedUpload(file: File): Promise<UploadResult | null> {
         partKeys: parts.map((p) => p.key),
         contentType: file.type,
         sizeBytes: file.size,
+        filename: file.name,
       }),
     });
 
@@ -142,6 +144,7 @@ async function uploadViaSinglePresign(file: File): Promise<UploadResult> {
       publicUrl: presigned.publicUrl,
       contentType: file.type,
       sizeBytes: file.size,
+      filename: file.name,
     }),
   });
   if (!confirmRes.ok) {

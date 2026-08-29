@@ -381,6 +381,7 @@ model Media {
   key          String    @unique
   url          String
   type         MediaType
+  fileName     String?
   altTextEn    String?
   altTextAr    String?
   sizeBytes    Int?

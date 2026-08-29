@@ -25,6 +25,7 @@ export async function POST(request: Request) {
   const publicUrl = body?.publicUrl;
   const contentType = body?.contentType;
   const sizeBytes = Number(body?.sizeBytes);
+  const filename = body?.filename;
 
   if (
     typeof key !== "string" ||
@@ -32,7 +33,8 @@ export async function POST(request: Request) {
     typeof contentType !== "string" ||
     !Number.isFinite(sizeBytes) ||
     !isAllowedUploadType(contentType) ||
-    !isWithinUploadSizeLimit(sizeBytes)
+    !isWithinUploadSizeLimit(sizeBytes) ||
+    typeof filename !== "string"
   ) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -42,6 +44,7 @@ export async function POST(request: Request) {
     publicUrl,
     contentType,
     sizeBytes,
+    originalName: filename,
     uploadedById: session.user.id,
   });
 
