@@ -535,6 +535,8 @@
     "title": "Your Free Guide",
     "subtitle": "A quick, practical read — no cost, no catch.",
     "downloadCta": "Download PDF",
+    "guideLabel": "Guide {index}",
+    "loginNotice": "You'll need to log in before downloading.",
     "comingSoon": "Our free guide is being prepared — check back soon."
   }
 }

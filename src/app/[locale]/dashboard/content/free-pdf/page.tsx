@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { getFreePdf } from "@/services/content/cms.service";
+import { getFreePdfs, MAX_FREE_PDFS } from "@/services/content/cms.service";
 import { PdfUploader } from "@/components/dashboard/pdf-uploader";
 import {
-  setFreePdfAction,
-  clearFreePdfAction,
+  addFreePdfAction,
+  removeFreePdfAction,
 } from "@/actions/dashboard/content/free-pdf";
 
 export default async function FreePdfContentPage({
@@ -18,9 +18,9 @@ export default async function FreePdfContentPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
-  const pdf = await getFreePdf();
-  const setAction = setFreePdfAction.bind(null, locale);
-  const clearAction = clearFreePdfAction.bind(null, locale);
+  const pdfs = await getFreePdfs();
+  const addAction = addFreePdfAction.bind(null, locale);
+  const removeAction = removeFreePdfAction.bind(null, locale);
 
   return (
     <div className="flex flex-col gap-6">
@@ -39,17 +39,18 @@ export default async function FreePdfContentPage({
 
       <div className="flex max-w-3xl flex-col gap-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div>
-          <h2 className="text-sm font-medium text-foreground">PDF file</h2>
+          <h2 className="text-sm font-medium text-foreground">PDF files</h2>
           <p className="text-sm text-muted-foreground">
-            The free downloadable guide, reachable from the site menu at
-            &quot;Free Guide&quot;. Upload a new file to replace the current
-            one.
+            The free downloadable guides, reachable from the site menu at
+            &quot;Free Guide&quot;. Visitors must log in before downloading
+            any of them. Up to {MAX_FREE_PDFS} files.
           </p>
         </div>
         <PdfUploader
-          currentFileUrl={pdf?.url ?? null}
-          setAction={setAction}
-          clearAction={clearAction}
+          files={pdfs.map((pdf) => ({ id: pdf.id, url: pdf.url }))}
+          maxFiles={MAX_FREE_PDFS}
+          addAction={addAction}
+          removeAction={removeAction}
         />
       </div>
     </div>

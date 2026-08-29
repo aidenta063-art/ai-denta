@@ -8,19 +8,24 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { uploadMediaFromBrowser } from "@/lib/media-upload";
 
 export function PdfUploader({
-  currentFileUrl,
-  setAction,
-  clearAction,
+  files,
+  maxFiles,
+  addAction,
+  removeAction,
 }: {
-  currentFileUrl: string | null;
-  setAction: (mediaId: string) => Promise<void>;
-  clearAction: () => Promise<void>;
+  files: { id: string; url: string }[];
+  maxFiles: number;
+  addAction: (mediaId: string) => Promise<void>;
+  removeAction: (mediaId: string) => Promise<void>;
 }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
+
+  const atLimit = files.length >= maxFiles;
 
   async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -43,7 +48,7 @@ export function PdfUploader({
       }
 
       startTransition(() => {
-        setAction(result.media.id).then(() => router.refresh());
+        addAction(result.media.id).then(() => router.refresh());
       });
     } catch (err) {
       console.error(err);
@@ -54,9 +59,12 @@ export function PdfUploader({
     }
   }
 
-  function handleRemove() {
+  function handleRemove(mediaId: string) {
+    setRemovingId(mediaId);
     startTransition(() => {
-      clearAction().then(() => router.refresh());
+      removeAction(mediaId)
+        .then(() => router.refresh())
+        .finally(() => setRemovingId(null));
     });
   }
 
@@ -70,38 +78,56 @@ export function PdfUploader({
         </Alert>
       )}
 
-      {currentFileUrl && (
-        <a
-          href={currentFileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex w-fit items-center gap-2 rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
-        >
-          <FileText className="size-4" />
-          View current PDF
-        </a>
+      {files.length > 0 && (
+        <ul className="flex flex-col gap-2">
+          {files.map((file, i) => (
+            <li
+              key={file.id}
+              className="flex items-center justify-between gap-3 rounded-xl border border-border bg-secondary/40 px-4 py-3"
+            >
+              <a
+                href={file.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground hover:underline"
+              >
+                <FileText className="size-4 shrink-0" />
+                <span className="truncate">PDF {i + 1}</span>
+              </a>
+              <Button
+                size="sm"
+                variant="destructive"
+                disabled={busy && removingId === file.id}
+                onClick={() => handleRemove(file.id)}
+              >
+                {removingId === file.id ? "Removing…" : "Remove"}
+              </Button>
+            </li>
+          ))}
+        </ul>
       )}
 
-      <div className="flex flex-wrap items-center gap-3">
-        <input
-          ref={inputRef}
-          type="file"
-          accept="application/pdf"
-          onChange={handleChange}
-          disabled={busy}
-          className="text-sm"
-        />
-        {busy && (
-          <Button size="sm" disabled>
-            {isUploading ? "Uploading…" : "Saving…"}
-          </Button>
-        )}
-        {currentFileUrl && !busy && (
-          <Button size="sm" variant="destructive" onClick={handleRemove}>
-            Remove PDF
-          </Button>
-        )}
-      </div>
+      {atLimit ? (
+        <p className="text-sm text-muted-foreground">
+          Maximum of {maxFiles} PDFs reached. Remove one to add another.
+        </p>
+      ) : (
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="application/pdf"
+            onChange={handleChange}
+            disabled={busy}
+            className="text-sm"
+          />
+          {busy && !removingId && (
+            <Button size="sm" disabled>
+              {isUploading ? "Uploading…" : "Saving…"}
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

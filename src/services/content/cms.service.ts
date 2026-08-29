@@ -375,16 +375,17 @@ export async function clearFreeBookingIntroVideo() {
 }
 
 const FREE_PDF_SLUG = "free-pdf";
+export const MAX_FREE_PDFS = 5;
 
-export const getFreePdf = nextCache(
+export const getFreePdfs = nextCache(
   async () => {
     const section = await prisma.cmsSection.findUnique({
       where: { slug: FREE_PDF_SLUG },
       include: {
-        media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+        media: { include: { media: true }, orderBy: { sortOrder: "asc" } },
       },
     });
-    return section?.media[0]?.media ?? null;
+    return section?.media.map((join) => join.media) ?? [];
   },
   ["cms-free-pdf"],
   { tags: [CMS_TAGS.freePdf], revalidate: CACHE_SECONDS },
@@ -404,18 +405,28 @@ async function ensureFreePdfSection(updatedById: string) {
   });
 }
 
-export async function setFreePdf(mediaId: string, updatedById: string) {
+export async function addFreePdf(mediaId: string, updatedById: string) {
   const section = await ensureFreePdfSection(updatedById);
-  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+  const existing = await prisma.cmsSectionMedia.findUnique({
+    where: { cmsSectionId_mediaId: { cmsSectionId: section.id, mediaId } },
+  });
+  if (existing) return;
+
+  const count = await prisma.cmsSectionMedia.count({
+    where: { cmsSectionId: section.id },
+  });
+  if (count >= MAX_FREE_PDFS) {
+    throw new Error(`You can only have up to ${MAX_FREE_PDFS} PDFs.`);
+  }
   await prisma.cmsSectionMedia.create({
-    data: { cmsSectionId: section.id, mediaId, sortOrder: 0 },
+    data: { cmsSectionId: section.id, mediaId, sortOrder: count },
   });
 }
 
-export async function clearFreePdf() {
+export async function removeFreePdf(mediaId: string) {
   const section = await prisma.cmsSection.findUnique({ where: { slug: FREE_PDF_SLUG } });
   if (!section) return;
-  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id, mediaId } });
 }
 
 export const getBookingPaidThankYouContent = nextCache(

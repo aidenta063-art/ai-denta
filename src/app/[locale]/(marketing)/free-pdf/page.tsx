@@ -4,11 +4,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Download, FileText } from "lucide-react";
 import { routing } from "@/i18n/routing";
-import { redirect } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { PurpleGlowSection } from "@/components/marketing/purple-glow-section";
 import { Eyebrow } from "@/components/marketing/eyebrow";
-import { getFreePdf } from "@/services/content/cms.service";
-import { auth } from "@/lib/auth";
+import { getFreePdfs } from "@/services/content/cms.service";
 
 export async function generateMetadata({
   params,
@@ -29,17 +28,8 @@ export default async function FreePdfPage({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  const session = await auth();
-  if (!session?.user) {
-    redirect({
-      href: { pathname: "/login", query: { next: `/${locale}/free-pdf` } },
-      locale,
-    });
-    return null;
-  }
-
   const t = await getTranslations("FreePdf");
-  const pdf = await getFreePdf();
+  const pdfs = await getFreePdfs();
 
   return (
     <PurpleGlowSection className="px-4 py-24 sm:py-28">
@@ -51,33 +41,40 @@ export default async function FreePdfPage({
           />
           <div className="flex flex-col gap-4 p-6 sm:p-10">
             <Eyebrow className="w-fit">{t("eyebrow")}</Eyebrow>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div className="flex flex-col gap-1.5">
-                <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                  {t("title")}
-                </h1>
-                <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
-              </div>
-              {pdf && (
-                <a
-                  href={pdf.url}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#7E00C9] px-5 text-base font-medium text-white transition-colors hover:bg-[#7E00C9]/90"
-                >
-                  <Download className="size-4" />
-                  {t("downloadCta")}
-                </a>
-              )}
+            <div className="flex flex-col gap-1.5">
+              <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+                {t("title")}
+              </h1>
+              <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
             </div>
 
-            {pdf ? (
-              <iframe
-                src={pdf.url}
-                title={t("title")}
-                className="mt-2 h-[70vh] w-full rounded-2xl border border-border"
-              />
+            {pdfs.length > 0 ? (
+              <div className="mt-4 flex flex-col gap-3">
+                {pdfs.map((pdf, i) => (
+                  <div
+                    key={pdf.id}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-secondary/40 px-5 py-4"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-medium text-foreground sm:text-base">
+                      <FileText className="size-4 shrink-0" />
+                      {pdfs.length > 1
+                        ? t("guideLabel", { index: i + 1 })
+                        : t("title")}
+                    </span>
+                    <Link
+                      href={`/free-pdf/download/${pdf.id}`}
+                      locale={locale}
+                      className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#7E00C9] px-4 text-sm font-medium text-white transition-colors hover:bg-[#7E00C9]/90"
+                    >
+                      <Download className="size-4" />
+                      {t("downloadCta")}
+                    </Link>
+                  </div>
+                ))}
+                <p className="text-xs text-muted-foreground">
+                  {t("loginNotice")}
+                </p>
+              </div>
             ) : (
               <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border py-16 text-center">
                 <FileText className="size-8 text-muted-foreground" />

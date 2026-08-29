@@ -4,7 +4,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { requireRole } from "@/lib/authz";
 import { Role } from "@/generated/prisma/enums";
 import type { Locale } from "@/i18n/routing";
-import { setFreePdf, clearFreePdf, CMS_TAGS } from "@/services/content/cms.service";
+import { addFreePdf, removeFreePdf, CMS_TAGS } from "@/services/content/cms.service";
 
 async function revalidateFreePdfPage(locale: Locale) {
   updateTag(CMS_TAGS.freePdf);
@@ -13,14 +13,14 @@ async function revalidateFreePdfPage(locale: Locale) {
   revalidatePath(`/${locale}/dashboard/content/free-pdf`);
 }
 
-export async function setFreePdfAction(locale: Locale, mediaId: string) {
+export async function addFreePdfAction(locale: Locale, mediaId: string) {
   const session = await requireRole([Role.ADMIN, Role.STAFF], locale);
-  await setFreePdf(mediaId, session.user.id);
+  await addFreePdf(mediaId, session.user.id);
   await revalidateFreePdfPage(locale);
 }
 
-export async function clearFreePdfAction(locale: Locale) {
+export async function removeFreePdfAction(locale: Locale, mediaId: string) {
   await requireRole([Role.ADMIN, Role.STAFF], locale);
-  await clearFreePdf();
+  await removeFreePdf(mediaId);
   await revalidateFreePdfPage(locale);
 }

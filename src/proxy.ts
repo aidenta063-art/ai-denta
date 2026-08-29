@@ -10,8 +10,10 @@ const intlMiddleware = createMiddleware(routing);
 // /booking/free, and /booking/paid (intro/slot-picker/intake form) are
 // intentionally public — the qualification form can be filled out
 // anonymously, and login is only required to actually submit it (gated
-// in the form's own submit handler + the server action).
-const PROTECTED_PREFIXES = ["/ebook/order", "/free-pdf"];
+// in the form's own submit handler + the server action). /free-pdf is
+// also public so visitors can see what's on offer — only the actual
+// file download (/free-pdf/download/...) requires login.
+const PROTECTED_PREFIXES = ["/ebook/order", "/free-pdf/download"];
 
 function isProtectedPath(pathWithoutLocale: string): boolean {
   return PROTECTED_PREFIXES.some(
