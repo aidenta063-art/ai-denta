@@ -10,25 +10,33 @@ export function IntakeAnswersDialog({
   name,
   intakeAnswers,
   steps,
+  phone,
+  appointment,
 }: {
   name: string;
   intakeAnswers: unknown;
   steps: IntakeStepConfig[];
+  phone?: string | null;
+  /** Pre-formatted booked date/time, e.g. "Sep 25, 2026, 6:00 – 6:30 PM". */
+  appointment?: string | null;
 }) {
   const answers =
     intakeAnswers && typeof intakeAnswers === "object"
       ? (intakeAnswers as Record<string, unknown>)
       : null;
 
-  if (!answers) return <span className="text-muted-foreground">—</span>;
+  if (!answers && !phone && !appointment) {
+    return <span className="text-muted-foreground">—</span>;
+  }
 
   const { fieldLabels, order, formatValue } = buildIntakeLabelLookup(steps);
   // Known questions first (in the form's current order), then any
   // historical answers whose question was since renamed or removed —
   // shown with their raw key rather than silently dropped.
-  const answerKeys = Object.keys(answers);
+  const answerMap = answers ?? {};
+  const answerKeys = Object.keys(answerMap);
   const orderedKeys = [
-    ...order.filter((key) => key in answers),
+    ...order.filter((key) => key in answerMap),
     ...answerKeys.filter((key) => !order.includes(key)),
   ];
 
@@ -44,16 +52,36 @@ export function IntakeAnswersDialog({
       />
       <DialogContent className="max-h-[85vh] overflow-y-auto p-6">
         <h2 className="pe-8 text-lg font-semibold text-popover-foreground">
-          {name}&rsquo;s intake answers
+          {name}&rsquo;s details
         </h2>
         <dl className="mt-4 flex flex-col divide-y divide-border">
+          {phone && (
+            <div className="grid gap-1 py-3 sm:grid-cols-[220px_1fr]">
+              <dt className="text-sm font-medium text-muted-foreground">
+                Phone number
+              </dt>
+              <dd className="text-sm text-popover-foreground" dir="ltr">
+                <a href={`tel:${phone}`} className="hover:underline">
+                  {phone}
+                </a>
+              </dd>
+            </div>
+          )}
+          {appointment && (
+            <div className="grid gap-1 py-3 sm:grid-cols-[220px_1fr]">
+              <dt className="text-sm font-medium text-muted-foreground">
+                Booked appointment
+              </dt>
+              <dd className="text-sm text-popover-foreground">{appointment}</dd>
+            </div>
+          )}
           {orderedKeys.map((key) => (
             <div key={key} className="grid gap-1 py-3 sm:grid-cols-[220px_1fr]">
               <dt className="text-sm font-medium text-muted-foreground">
                 {fieldLabels[key] ?? key}
               </dt>
               <dd className="text-sm text-popover-foreground">
-                {formatValue(answers[key])}
+                {formatValue(answerMap[key])}
               </dd>
             </div>
           ))}

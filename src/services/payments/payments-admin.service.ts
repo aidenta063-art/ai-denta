@@ -12,10 +12,41 @@ import {
 } from "@/lib/whatsapp";
 import { logger } from "@/lib/logger";
 import { grantFreeEbookForBooking } from "@/services/ebook/ebook.service";
+import { dateRangeToUtcBounds, isValidDateKey } from "@/lib/date-range";
 
-export async function listPayments({ status }: { status?: PaymentStatus } = {}) {
+export type PaymentFilters = {
+  status?: PaymentStatus;
+  /** Inclusive Cairo date keys ("YYYY-MM-DD") on the payment's created date. */
+  from?: string;
+  to?: string;
+};
+
+/** Reads payment filters from URL search params, dropping anything invalid
+ * so a hand-edited URL can't break the page or the export. */
+export function parsePaymentFilters(
+  params: Record<string, string | string[] | undefined>,
+): PaymentFilters {
+  const first = (v: string | string[] | undefined) =>
+    Array.isArray(v) ? v[0] : v;
+  const status = first(params.status);
+  const from = first(params.from);
+  const to = first(params.to);
+  return {
+    status: Object.values(PaymentStatus).includes(status as PaymentStatus)
+      ? (status as PaymentStatus)
+      : undefined,
+    from: isValidDateKey(from) ? from : undefined,
+    to: isValidDateKey(to) ? to : undefined,
+  };
+}
+
+export async function listPayments({ status, from, to }: PaymentFilters = {}) {
+  const createdAt = dateRangeToUtcBounds(from, to);
   return prisma.payment.findMany({
-    where: status ? { status } : undefined,
+    where: {
+      ...(status && { status }),
+      ...((createdAt.gte || createdAt.lt) && { createdAt }),
+    },
     orderBy: { createdAt: "desc" },
     include: {
       booking: {
@@ -202,8 +233,8 @@ async function sendBookingConfirmedWhatsApp(bookingId: string) {
   }
 }
 
-export async function paymentsToCsv() {
-  const payments = await listPayments();
+export async function paymentsToCsv(filters: PaymentFilters = {}) {
+  const payments = await listPayments(filters);
 
   const header = [
     "id",
@@ -214,6 +245,7 @@ export async function paymentsToCsv() {
     "consultation",
     "customer",
     "email",
+    "phone",
     "slotStartAt",
     "createdAt",
   ];
@@ -227,6 +259,7 @@ export async function paymentsToCsv() {
     p.booking.consultationType.nameEn,
     p.booking.user?.name ?? p.booking.guestName ?? "",
     p.booking.user?.email ?? p.booking.guestEmail ?? "",
+    p.booking.guestPhone ?? p.booking.user?.phone ?? "",
     p.booking.slot?.startAt.toISOString() ?? "",
     p.createdAt.toISOString(),
   ]);

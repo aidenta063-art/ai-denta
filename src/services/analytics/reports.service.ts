@@ -1,63 +1,41 @@
 import { prisma } from "@/lib/prisma";
 import { ConsultationKind, PaymentStatus } from "@/generated/prisma/enums";
-import { APP_TIME_ZONE, zonedTimeToUtc } from "@/lib/timezone";
+import { dateKeyToUtcStart, shiftDateKey, cairoDateKey, daysBetweenInclusive } from "@/lib/date-range";
 
-// Vercel's runtime is pinned to UTC, so "today" via server-local Date
-// methods silently drifts from Cairo's actual calendar day — same class
-// of bug fixed in slot-generation.ts. Bucket everything by Cairo date.
-function cairoDateKey(date: Date): string {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: APP_TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  })
-    .formatToParts(date)
-    .reduce<Record<string, string>>((acc, part) => {
-      acc[part.type] = part.value;
-      return acc;
-    }, {});
-  return `${parts.year}-${parts.month}-${parts.day}`;
+/** A report window as inclusive Cairo date keys ("YYYY-MM-DD"). */
+export type ReportRange = { from: string; to: string };
+
+export function lastNDaysRange(days: number): ReportRange {
+  const to = cairoDateKey(new Date());
+  return { from: shiftDateKey(to, -(days - 1)), to };
 }
 
-function shiftDateKey(key: string, offsetDays: number): string {
-  const [year, month, day] = key.split("-").map(Number);
-  // Noon UTC keeps this comfortably clear of any DST-transition edge case.
-  const base = new Date(Date.UTC(year, month - 1, day, 12));
-  base.setUTCDate(base.getUTCDate() + offsetDays);
-  return base.toISOString().slice(0, 10);
+function rangeBounds({ from, to }: ReportRange) {
+  return {
+    gte: dateKeyToUtcStart(from),
+    lt: dateKeyToUtcStart(shiftDateKey(to, 1)),
+  };
 }
 
-function dateKeyToUtcStart(key: string): Date {
-  const [year, month, day] = key.split("-").map(Number);
-  return zonedTimeToUtc(year, month - 1, day, 0, 0);
-}
-
-function reportWindowStart(days: number): Date {
-  const todayKey = cairoDateKey(new Date());
-  const sinceKey = shiftDateKey(todayKey, -(days - 1));
-  return dateKeyToUtcStart(sinceKey);
-}
-
-export async function getReportsSummary(days = 30) {
-  const since = reportWindowStart(days);
-  const todayKey = cairoDateKey(new Date());
-  const sinceKey = shiftDateKey(todayKey, -(days - 1));
+export async function getReportsSummary(range: ReportRange) {
+  const createdAt = rangeBounds(range);
+  const sinceKey = range.from;
+  const days = daysBetweenInclusive(range.from, range.to);
 
   const [bookings, payments, pageViews] = await Promise.all([
     prisma.booking.findMany({
-      where: { createdAt: { gte: since } },
+      where: { createdAt },
       select: { createdAt: true, consultationType: { select: { kind: true } } },
     }),
     prisma.payment.findMany({
       where: {
-        createdAt: { gte: since },
+        createdAt,
         status: { in: [PaymentStatus.PAID, PaymentStatus.MANUALLY_MARKED_PAID] },
       },
       select: { createdAt: true, amountCents: true },
     }),
     prisma.pageView.findMany({
-      where: { createdAt: { gte: since } },
+      where: { createdAt },
       select: { createdAt: true, visitorId: true, path: true },
     }),
   ]);
@@ -129,11 +107,9 @@ export async function getReportsSummary(days = 30) {
   };
 }
 
-export async function getRecentBookingsForReport(days = 30, take = 15) {
-  const since = reportWindowStart(days);
-
+export async function getRecentBookingsForReport(range: ReportRange, take = 15) {
   return prisma.booking.findMany({
-    where: { createdAt: { gte: since } },
+    where: { createdAt: rangeBounds(range) },
     orderBy: { createdAt: "desc" },
     take,
     include: { consultationType: true, slot: true },

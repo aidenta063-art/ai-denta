@@ -48,6 +48,15 @@ enum BookingStatus {
   EXPIRED
 }
 
+/// Admin follow-up state of a scheduled meeting, independent of the
+/// payment/booking lifecycle above.
+enum MeetingStatus {
+  PENDING
+  ATTENDED
+  NO_SHOW
+  CANCELLED
+}
+
 enum PaymentStatus {
   PENDING
   PAID
@@ -93,6 +102,8 @@ model User {
   passwordHash  String?
   role          Role      @default(CLIENT)
   phone         String?
+  /// Private staff note about this client, shared across all their bookings.
+  adminNote     String?   @db.Text
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -238,7 +249,10 @@ model Booking {
   guestPhone String?
 
   status BookingStatus @default(CONFIRMED)
+  /// Staff note for bookings without an account (guests); signed-in
+  /// clients use User.adminNote instead.
   notes  String?       @db.Text
+  meetingStatus MeetingStatus @default(PENDING)
   /// Answers from the 4-step qualification form (role, clinic size,
   /// budget, goals, etc.) — see src/lib/validation/intake.schema.ts.
   intakeAnswers Json?

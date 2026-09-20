@@ -11,6 +11,7 @@ import {
   BookOpen,
   MessageSquareQuote,
   Stethoscope,
+  ClipboardCheck,
 } from "lucide-react";
 import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -19,6 +20,7 @@ import type { Locale } from "@/i18n/routing";
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", Icon: LayoutDashboard },
   { href: "/dashboard/appointments", label: "Appointments", Icon: CalendarDays },
+  { href: "/dashboard/meetings", label: "Meetings", Icon: ClipboardCheck },
   { href: "/dashboard/reports", label: "Reports", Icon: BarChart3 },
   { href: "/dashboard/users", label: "Users", Icon: Users },
   { href: "/dashboard/payments", label: "Payments", Icon: CreditCard },

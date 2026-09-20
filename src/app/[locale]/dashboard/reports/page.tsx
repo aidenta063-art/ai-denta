@@ -5,26 +5,70 @@ import { Eye, Users, CalendarCheck, Wallet } from "lucide-react";
 import {
   getReportsSummary,
   getRecentBookingsForReport,
+  lastNDaysRange,
+  type ReportRange,
 } from "@/services/analytics/reports.service";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  cairoDateKey,
+  daysBetweenInclusive,
+  isValidDateKey,
+  shiftDateKey,
+} from "@/lib/date-range";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { PrintReportButton } from "@/components/dashboard/print-report-button";
 import { TrafficChart, BookingsChart } from "@/components/dashboard/reports-charts";
 import { formatSlotTimeRange } from "@/lib/timezone";
 
-const REPORT_DAYS = 30;
+const DEFAULT_REPORT_DAYS = 30;
+const MAX_REPORT_DAYS = 366;
+const PRESET_DAYS = [7, 30, 90] as const;
+
+/** Resolves the report window from the URL, tolerating a missing side, a
+ * reversed range, or a hand-edited value — always returns a valid range. */
+function resolveRange(
+  fromParam: string | undefined,
+  toParam: string | undefined,
+): ReportRange {
+  const today = cairoDateKey(new Date());
+  const hasFrom = isValidDateKey(fromParam);
+  const hasTo = isValidDateKey(toParam);
+  if (!hasFrom && !hasTo) return lastNDaysRange(DEFAULT_REPORT_DAYS);
+
+  let to = hasTo ? toParam : today;
+  let from = hasFrom ? fromParam : shiftDateKey(to, -(DEFAULT_REPORT_DAYS - 1));
+  if (from > to) [from, to] = [to, from];
+  if (daysBetweenInclusive(from, to) > MAX_REPORT_DAYS) {
+    from = shiftDateKey(to, -(MAX_REPORT_DAYS - 1));
+  }
+  return { from, to };
+}
 
 export default async function ReportsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ from?: string; to?: string }>;
 }) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
+  const sp = await searchParams;
+  const range = resolveRange(sp.from, sp.to);
+  const dayCount = daysBetweenInclusive(range.from, range.to);
+  const activePreset =
+    !sp.from && !sp.to ? DEFAULT_REPORT_DAYS : range.to === cairoDateKey(new Date())
+      ? PRESET_DAYS.find((d) => d === dayCount)
+      : undefined;
+
   const [{ series, topPages, totals }, recentBookings] = await Promise.all([
-    getReportsSummary(REPORT_DAYS),
-    getRecentBookingsForReport(REPORT_DAYS),
+    getReportsSummary(range),
+    getRecentBookingsForReport(range),
   ]);
 
   const currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -37,9 +81,50 @@ export default async function ReportsPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-foreground">Reports</h1>
-          <p className="text-sm text-muted-foreground">Last {REPORT_DAYS} days</p>
+          <p className="text-sm text-muted-foreground">
+            {range.from} → {range.to} ({dayCount} {dayCount === 1 ? "day" : "days"})
+          </p>
         </div>
         <PrintReportButton />
+      </div>
+
+      <div className="flex flex-wrap items-end gap-x-6 gap-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm print:hidden">
+        <form method="get" className="flex flex-wrap items-end gap-3">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="from">From</Label>
+            <Input id="from" name="from" type="date" defaultValue={range.from} required />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="to">To</Label>
+            <Input id="to" name="to" type="date" defaultValue={range.to} required />
+          </div>
+          <Button type="submit" size="sm">
+            Apply
+          </Button>
+        </form>
+        <div className="flex flex-wrap items-center gap-2">
+          {PRESET_DAYS.map((days) => {
+            const preset = lastNDaysRange(days);
+            return (
+              <Button
+                key={days}
+                size="sm"
+                variant={activePreset === days ? "secondary" : "outline"}
+                render={
+                  <Link
+                    href={{
+                      pathname: "/dashboard/reports",
+                      query: { from: preset.from, to: preset.to },
+                    }}
+                    locale={locale}
+                  />
+                }
+              >
+                Last {days} days
+              </Button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

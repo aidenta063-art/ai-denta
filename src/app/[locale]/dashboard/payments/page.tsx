@@ -2,26 +2,44 @@ import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import { listPayments } from "@/services/payments/payments-admin.service";
+import {
+  listPayments,
+  parsePaymentFilters,
+} from "@/services/payments/payments-admin.service";
 import { markAsPaidAction } from "@/actions/dashboard/payments/mark-as-paid";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { PaymentStatus, ConsultationKind } from "@/generated/prisma/enums";
-import { APP_TIME_ZONE } from "@/lib/timezone";
+import { APP_TIME_ZONE, formatSlotTimeRange } from "@/lib/timezone";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link } from "@/i18n/navigation";
 import { IntakeAnswersDialog } from "@/components/dashboard/intake-answers-dialog";
 import { getIntakeFormSteps } from "@/services/content/intake-form.service";
 
 export default async function PaymentsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
+  const filters = parsePaymentFilters(await searchParams);
   const [payments, steps] = await Promise.all([
-    listPayments(),
+    listPayments(filters),
     getIntakeFormSteps(ConsultationKind.PAID),
   ]);
+
+  const exportQuery = new URLSearchParams();
+  if (filters.status) exportQuery.set("status", filters.status);
+  if (filters.from) exportQuery.set("from", filters.from);
+  if (filters.to) exportQuery.set("to", filters.to);
+  const exportHref = `/api/dashboard/payments/export${
+    exportQuery.size ? `?${exportQuery}` : ""
+  }`;
+  const hasFilters = exportQuery.size > 0;
   const markPaid = markAsPaidAction.bind(null, locale);
 
   return (
@@ -31,12 +49,53 @@ export default async function PaymentsPage({
         <Button
           variant="outline"
           size="sm"
-          // eslint-disable-next-line @next/next/no-html-link-for-pages -- file download from an API route, not an app page
-          render={<a href="/api/dashboard/payments/export" />}
+          render={<a href={exportHref} />}
         >
-          Export CSV
+          {hasFilters ? "Export filtered CSV" : "Export CSV"}
         </Button>
       </div>
+
+      <form
+        method="get"
+        className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
+      >
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="status">Status</Label>
+          <select
+            id="status"
+            name="status"
+            defaultValue={filters.status ?? ""}
+            className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none"
+          >
+            <option value="">All</option>
+            {Object.values(PaymentStatus).map((status) => (
+              <option key={status} value={status}>
+                {status.replaceAll("_", " ")}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="from">From</Label>
+          <Input id="from" name="from" type="date" defaultValue={filters.from ?? ""} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="to">To</Label>
+          <Input id="to" name="to" type="date" defaultValue={filters.to ?? ""} />
+        </div>
+        <Button type="submit" size="sm">
+          Apply filters
+        </Button>
+        {hasFilters && (
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href="/dashboard/payments" locale={locale} />}
+          >
+            Reset
+          </Button>
+        )}
+      </form>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <table className="w-full text-sm">
@@ -54,7 +113,7 @@ export default async function PaymentsPage({
             {payments.length === 0 && (
               <tr>
                 <td className="px-4 py-6 text-muted-foreground" colSpan={6}>
-                  No payments yet.
+                  {hasFilters ? "No payments match these filters." : "No payments yet."}
                 </td>
               </tr>
             )}
@@ -97,6 +156,19 @@ export default async function PaymentsPage({
                       }
                       intakeAnswers={payment.booking.intakeAnswers}
                       steps={steps}
+                      phone={
+                        payment.booking.guestPhone ?? payment.booking.user?.phone
+                      }
+                      appointment={
+                        payment.booking.slot
+                          ? formatSlotTimeRange(
+                              payment.booking.slot.startAt,
+                              payment.booking.slot.endAt,
+                              "en",
+                              { dateStyle: "medium" },
+                            )
+                          : null
+                      }
                     />
                     {(payment.status === PaymentStatus.PENDING ||
                       payment.status === PaymentStatus.FAILED) && (
