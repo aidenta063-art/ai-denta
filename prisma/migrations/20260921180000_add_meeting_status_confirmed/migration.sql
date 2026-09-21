@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "MeetingStatus" ADD VALUE 'CONFIRMED' AFTER 'PENDING';

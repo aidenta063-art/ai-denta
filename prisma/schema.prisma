@@ -52,6 +52,7 @@ enum BookingStatus {
 /// payment/booking lifecycle above.
 enum MeetingStatus {
   PENDING
+  CONFIRMED
   ATTENDED
   NO_SHOW
   CANCELLED

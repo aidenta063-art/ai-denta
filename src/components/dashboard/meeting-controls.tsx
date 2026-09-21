@@ -8,6 +8,7 @@ import { MeetingStatus } from "@/generated/prisma/enums";
 
 const STATUS_OPTIONS: { value: MeetingStatus; label: string }[] = [
   { value: MeetingStatus.PENDING, label: "🟡 Pending" },
+  { value: MeetingStatus.CONFIRMED, label: "🔵 Confirmed" },
   { value: MeetingStatus.ATTENDED, label: "🟢 Attended" },
   { value: MeetingStatus.NO_SHOW, label: "🔴 No Show" },
   { value: MeetingStatus.CANCELLED, label: "⚫ Cancelled" },

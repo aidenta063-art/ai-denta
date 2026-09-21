@@ -6,6 +6,7 @@ export const MEETING_FILTERS = [
   "all",
   "upcoming",
   "pending",
+  "confirmed",
   "attended",
   "no-show",
   "cancelled",
@@ -27,15 +28,26 @@ const MEETING_BASE: Prisma.BookingWhereInput = {
 };
 
 function filterWhere(filter: MeetingFilter): Prisma.BookingWhereInput {
-  const open = {
-    status: BookingStatus.CONFIRMED,
-    meetingStatus: MeetingStatus.PENDING,
-  };
+  const active = { status: BookingStatus.CONFIRMED };
   switch (filter) {
     case "upcoming":
-      return { ...MEETING_BASE, ...open, slot: { startAt: { gte: new Date() } } };
+      // Still to happen: not yet attended/no-show/cancelled and in the future.
+      return {
+        ...MEETING_BASE,
+        ...active,
+        meetingStatus: {
+          in: [MeetingStatus.PENDING, MeetingStatus.CONFIRMED],
+        },
+        slot: { startAt: { gte: new Date() } },
+      };
     case "pending":
-      return { ...MEETING_BASE, ...open };
+      return { ...MEETING_BASE, ...active, meetingStatus: MeetingStatus.PENDING };
+    case "confirmed":
+      return {
+        ...MEETING_BASE,
+        ...active,
+        meetingStatus: MeetingStatus.CONFIRMED,
+      };
     case "attended":
       return {
         ...MEETING_BASE,
