@@ -31,6 +31,7 @@ export const CMS_TAGS = {
   freeBookingIntro: "cms:free-booking-intro",
   freePdf: "cms:free-pdf",
   bookingPaidThankYou: "cms:booking-paid-thankyou",
+  reviewImages: "cms:review-images",
 } as const;
 
 export const getHeroContent = nextCache(
@@ -485,5 +486,63 @@ export async function saveBookingPaidThankYouContent(
       contentAr,
       updatedById,
     },
+  });
+}
+
+const REVIEW_IMAGES_SLUG = "review-images";
+
+/** Admin-uploaded result screenshots (leads/bookings dashboards, WhatsApp
+ * threads, campaign creatives, ...) shown as proof on the homepage — not
+ * customer-submitted testimonials (see services/reviews for those). */
+export const getReviewImages = nextCache(
+  async () => {
+    const section = await prisma.cmsSection.findUnique({
+      where: { slug: REVIEW_IMAGES_SLUG },
+      include: {
+        media: { include: { media: true }, orderBy: { sortOrder: "asc" } },
+      },
+    });
+    return section?.media.map((join) => join.media) ?? [];
+  },
+  ["cms-review-images"],
+  { tags: [CMS_TAGS.reviewImages], revalidate: CACHE_SECONDS },
+);
+
+async function ensureReviewImagesSection(updatedById: string) {
+  return prisma.cmsSection.upsert({
+    where: { slug: REVIEW_IMAGES_SLUG },
+    update: {},
+    create: {
+      slug: REVIEW_IMAGES_SLUG,
+      type: CmsSectionType.GALLERY,
+      contentEn: {},
+      contentAr: {},
+      updatedById,
+    },
+  });
+}
+
+export async function addReviewImage(mediaId: string, updatedById: string) {
+  const section = await ensureReviewImagesSection(updatedById);
+  const existing = await prisma.cmsSectionMedia.findUnique({
+    where: { cmsSectionId_mediaId: { cmsSectionId: section.id, mediaId } },
+  });
+  if (existing) return;
+
+  const count = await prisma.cmsSectionMedia.count({
+    where: { cmsSectionId: section.id },
+  });
+  await prisma.cmsSectionMedia.create({
+    data: { cmsSectionId: section.id, mediaId, sortOrder: count },
+  });
+}
+
+export async function removeReviewImage(mediaId: string) {
+  const section = await prisma.cmsSection.findUnique({
+    where: { slug: REVIEW_IMAGES_SLUG },
+  });
+  if (!section) return;
+  await prisma.cmsSectionMedia.deleteMany({
+    where: { cmsSectionId: section.id, mediaId },
   });
 }

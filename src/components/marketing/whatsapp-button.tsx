@@ -13,7 +13,7 @@ export async function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t("label")}
-      className="fixed bottom-24 start-6 z-30 flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition-transform hover:scale-105"
+      className="fixed bottom-24 start-6 z-30 flex size-14 items-center justify-center rounded-full bg-[#7E00C9] text-white shadow-xl transition-transform hover:scale-105"
     >
       <RiWhatsappFill className="size-7" />
     </a>

@@ -2,22 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { StarRating } from "@/components/marketing/star-rating";
 
-export type ReviewCardData = {
-  id: string;
-  name: string;
-  rating: number;
-  text: string;
-  photoUrl: string | null;
-};
+export type ReviewImageData = { id: string; url: string };
 
-/** A horizontally-scrollable row of review cards: fits 3 side by side on
- * desktop, and becomes a snap-scroll carousel once there are more than
- * that (rather than wrapping to new rows). */
-export function ReviewsCarousel({ reviews }: { reviews: ReviewCardData[] }) {
+/** A horizontally-scrollable row of result screenshots: fits 3 side by
+ * side on desktop, and becomes a snap-scroll carousel once there are
+ * more than that (rather than wrapping to new rows). */
+export function ReviewImagesCarousel({ images }: { images: ReviewImageData[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
@@ -39,12 +32,12 @@ export function ReviewsCarousel({ reviews }: { reviews: ReviewCardData[] }) {
       el.removeEventListener("scroll", updateScrollState);
       window.removeEventListener("resize", updateScrollState);
     };
-  }, [reviews.length]);
+  }, [images.length]);
 
   function scrollByCard(direction: 1 | -1) {
     const el = trackRef.current;
     if (!el) return;
-    const card = el.querySelector<HTMLElement>("[data-review-card]");
+    const card = el.querySelector<HTMLElement>("[data-review-image]");
     const amount = (card?.offsetWidth ?? 320) + 24;
     el.scrollBy({ left: amount * direction, behavior: "smooth" });
   }
@@ -55,10 +48,10 @@ export function ReviewsCarousel({ reviews }: { reviews: ReviewCardData[] }) {
         ref={trackRef}
         className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-6 pb-3"
       >
-        {reviews.map((review, i) => (
+        {images.map((image, i) => (
           <motion.div
-            key={review.id}
-            data-review-card
+            key={image.id}
+            data-review-image
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -70,36 +63,18 @@ export function ReviewsCarousel({ reviews }: { reviews: ReviewCardData[] }) {
             whileHover={{ y: -6 }}
             className="w-[min(82vw,320px)] shrink-0 snap-start sm:w-[calc((100%-3rem)/3)] sm:min-w-[260px]"
           >
-            <div className="relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-[#7E00C9]/10">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-[#7E00C9]/10">
               <div
-                className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#7E00C9] via-[#9a4fd6] to-[#B98AE8]"
+                className="absolute inset-x-0 top-0 z-10 h-1.5 bg-gradient-to-r from-[#7E00C9] via-[#9a4fd6] to-[#B98AE8]"
                 aria-hidden
               />
-              <Quote className="size-7 fill-[#7E00C9]/10 text-[#7E00C9]/25" />
-              <p className="flex-1 text-sm leading-relaxed text-muted-foreground">
-                &ldquo;{review.text}&rdquo;
-              </p>
-              <div className="flex items-center gap-3 border-t border-border pt-4">
-                {review.photoUrl ? (
-                  <Image
-                    src={review.photoUrl}
-                    alt=""
-                    width={44}
-                    height={44}
-                    className="size-11 shrink-0 rounded-full border border-border object-cover"
-                  />
-                ) : (
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-secondary text-base font-semibold text-primary">
-                    {review.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div className="flex flex-col gap-0.5">
-                  <p className="text-sm font-semibold text-card-foreground">
-                    {review.name}
-                  </p>
-                  <StarRating rating={review.rating} />
-                </div>
-              </div>
+              <Image
+                src={image.url}
+                alt=""
+                fill
+                sizes="(min-width: 640px) 33vw, 82vw"
+                className="object-cover"
+              />
             </div>
           </motion.div>
         ))}
@@ -111,7 +86,7 @@ export function ReviewsCarousel({ reviews }: { reviews: ReviewCardData[] }) {
             type="button"
             onClick={() => scrollByCard(-1)}
             disabled={!canScrollPrev}
-            aria-label="Previous reviews"
+            aria-label="Previous results"
             className="flex size-9 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors hover:bg-secondary disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronLeft className="size-4 rtl:rotate-180" />
@@ -120,7 +95,7 @@ export function ReviewsCarousel({ reviews }: { reviews: ReviewCardData[] }) {
             type="button"
             onClick={() => scrollByCard(1)}
             disabled={!canScrollNext}
-            aria-label="Next reviews"
+            aria-label="Next results"
             className="flex size-9 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors hover:bg-secondary disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronRight className="size-4 rtl:rotate-180" />
