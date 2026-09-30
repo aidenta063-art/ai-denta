@@ -84,7 +84,7 @@ export function ReviewImagesCarousel({ images }: { images: ReviewImageData[] }) 
             whileHover={{ y: -6 }}
             className="w-[min(82vw,320px)] shrink-0 snap-start sm:w-[calc((100%-3rem)/3)] sm:min-w-[260px]"
           >
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-secondary shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-[#7E00C9]/10">
+            <div className="relative aspect-square overflow-hidden rounded-2xl bg-secondary shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-[#7E00C9]/10">
               <div
                 className="absolute inset-x-0 top-0 z-10 h-1.5 bg-gradient-to-r from-[#7E00C9] via-[#9a4fd6] to-[#B98AE8]"
                 aria-hidden
@@ -94,7 +94,7 @@ export function ReviewImagesCarousel({ images }: { images: ReviewImageData[] }) 
                 alt=""
                 fill
                 sizes="(min-width: 640px) 33vw, 82vw"
-                className="object-contain p-2"
+                className="object-contain"
               />
             </div>
           </motion.div>
