@@ -34,6 +34,12 @@ const SECTIONS = [
       "The rows in the homepage table comparing the free and paid consultation.",
   },
   {
+    href: "/dashboard/reviews",
+    title: "Customer Reviews",
+    description:
+      "Approve visitor reviews and upload a photo for each — shown on the homepage below the ebook section.",
+  },
+  {
     href: "/dashboard/content/booking-paid-thankyou",
     title: "Paid Booking Thank-You Page",
     description:

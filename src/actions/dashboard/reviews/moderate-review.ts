@@ -7,6 +7,8 @@ import type { Locale } from "@/i18n/routing";
 import {
   approveReview,
   rejectReview,
+  setReviewPhoto,
+  removeReviewPhoto,
   REVIEW_TAGS,
 } from "@/services/reviews/review.service";
 import { logger } from "@/lib/logger";
@@ -35,5 +37,21 @@ export async function rejectReviewAction(locale: Locale, reviewId: string) {
     { reviewId, rejectedByUserId: session.user.id },
     "Review rejected",
   );
+  revalidateReviews(locale);
+}
+
+export async function setReviewPhotoAction(
+  locale: Locale,
+  reviewId: string,
+  mediaId: string,
+) {
+  await requireRole([Role.ADMIN, Role.STAFF], locale);
+  await setReviewPhoto(reviewId, mediaId);
+  revalidateReviews(locale);
+}
+
+export async function removeReviewPhotoAction(locale: Locale, reviewId: string) {
+  await requireRole([Role.ADMIN, Role.STAFF], locale);
+  await removeReviewPhoto(reviewId);
   revalidateReviews(locale);
 }

@@ -409,6 +409,7 @@ model Media {
   cmsSections CmsSectionMedia[]
   services    Service[]
   doctorPhotoOf Doctor[] @relation("DoctorPhoto")
+  reviewPhotoOf Review[] @relation("ReviewPhoto")
 }
 
 model CmsSectionMedia {
@@ -484,6 +485,9 @@ model Review {
   rating Int
   text   String       @db.Text
   status ReviewStatus @default(PENDING)
+
+  photoMediaId String?
+  photoMedia   Media?  @relation("ReviewPhoto", fields: [photoMediaId], references: [id])
 
   reviewedAt       DateTime?
   reviewedByUserId String?

@@ -167,6 +167,9 @@
     "rights": "All rights reserved.",
     "returnPolicy": "Return & Refund Policy"
   },
+  "WhatsAppButton": {
+    "label": "Chat on WhatsApp"
+  },
   "FaqChat": {
     "bubbleLabel": "Chat with us",
     "title": "Ai Denta Assistant",

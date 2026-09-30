@@ -8,6 +8,7 @@ import { ServicesSection } from "@/components/marketing/services-section";
 import { VideoShowcase } from "@/components/marketing/video-showcase";
 import { WhyUsSection } from "@/components/marketing/why-us-section";
 import { EbookTeaser } from "@/components/marketing/ebook-teaser";
+import { ReviewsSection } from "@/components/marketing/reviews-section";
 import { ConsultationCta } from "@/components/marketing/consultation-cta";
 import { FreeVsPaidSection } from "@/components/marketing/free-vs-paid-section";
 import { ScrollToHash } from "@/components/marketing/scroll-to-hash";
@@ -121,6 +122,7 @@ export default async function HomePage({
       <VideoShowcase />
       <WhyUsSection />
       <EbookTeaser locale={locale} />
+      <ReviewsSection />
       <ConsultationCta locale={locale} />
     </>
   );

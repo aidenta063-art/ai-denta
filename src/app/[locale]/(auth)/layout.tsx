@@ -4,6 +4,7 @@ import { routing } from "@/i18n/routing";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { FaqChatWidget } from "@/components/marketing/faq-chat-widget";
+import { WhatsAppButton } from "@/components/marketing/whatsapp-button";
 import { AnalyticsBeacon } from "@/components/marketing/analytics-beacon";
 import { MetaPixel } from "@/components/marketing/meta-pixel";
 import { ScrollDepthTracker } from "@/components/marketing/scroll-depth-tracker";
@@ -47,6 +48,7 @@ export default async function AuthLayout({
       </main>
       <MarketingFooter locale={locale} />
       <FaqChatWidget questions={questions} />
+      <WhatsAppButton />
       <AnalyticsBeacon locale={locale} />
       <MetaPixel pixelId={pixelId} />
       {pixelId && <ScrollDepthTracker />}

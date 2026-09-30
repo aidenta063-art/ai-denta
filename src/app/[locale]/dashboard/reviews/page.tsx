@@ -7,7 +7,10 @@ import { listReviews } from "@/services/reviews/review.service";
 import {
   approveReviewAction,
   rejectReviewAction,
+  setReviewPhotoAction,
+  removeReviewPhotoAction,
 } from "@/actions/dashboard/reviews/moderate-review";
+import { ReviewPhotoUploader } from "@/components/dashboard/review-photo-uploader";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { ReviewStatus } from "@/generated/prisma/enums";
 import { APP_TIME_ZONE } from "@/lib/timezone";
@@ -30,10 +33,17 @@ export default async function ReviewsPage({
         <h1 className="text-lg font-semibold text-foreground">Reviews</h1>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <p className="text-sm text-muted-foreground">
+        Approve or reject reviews submitted by visitors, and attach a photo
+        to any review — approved ones with a photo show up in the
+        &quot;Customer Reviews&quot; section on the homepage.
+      </p>
+
+      <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-secondary text-secondary-foreground">
             <tr>
+              <th className="px-4 py-2 text-start">Photo</th>
               <th className="px-4 py-2 text-start">Name</th>
               <th className="px-4 py-2 text-start">Rating</th>
               <th className="px-4 py-2 text-start">Review</th>
@@ -45,7 +55,7 @@ export default async function ReviewsPage({
           <tbody>
             {reviews.length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-muted-foreground" colSpan={6}>
+                <td className="px-4 py-6 text-muted-foreground" colSpan={7}>
                   No reviews yet.
                 </td>
               </tr>
@@ -55,6 +65,18 @@ export default async function ReviewsPage({
                 key={review.id}
                 className="border-t border-border transition-colors hover:bg-muted/40"
               >
+                <td className="px-4 py-2">
+                  <ReviewPhotoUploader
+                    name={review.name}
+                    photoUrl={review.photoMedia?.url ?? null}
+                    setAction={setReviewPhotoAction.bind(null, locale, review.id)}
+                    removeAction={removeReviewPhotoAction.bind(
+                      null,
+                      locale,
+                      review.id,
+                    )}
+                  />
+                </td>
                 <td className="px-4 py-2 font-medium text-card-foreground">
                   {review.name}
                 </td>

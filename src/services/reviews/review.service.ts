@@ -20,6 +20,7 @@ export const listApprovedReviews = nextCache(
     prisma.review.findMany({
       where: { status: ReviewStatus.APPROVED },
       orderBy: { reviewedAt: "desc" },
+      include: { photoMedia: true },
     }),
   ["reviews-approved"],
   { tags: [REVIEW_TAGS.approved], revalidate: CACHE_SECONDS },
@@ -27,7 +28,24 @@ export const listApprovedReviews = nextCache(
 
 /** Oldest first — staff should work through the backlog in submission order. */
 export async function listReviews() {
-  return prisma.review.findMany({ orderBy: { createdAt: "asc" } });
+  return prisma.review.findMany({
+    orderBy: { createdAt: "asc" },
+    include: { photoMedia: true },
+  });
+}
+
+export async function setReviewPhoto(id: string, mediaId: string) {
+  await prisma.review.update({
+    where: { id },
+    data: { photoMediaId: mediaId },
+  });
+}
+
+export async function removeReviewPhoto(id: string) {
+  await prisma.review.update({
+    where: { id },
+    data: { photoMediaId: null },
+  });
 }
 
 export async function approveReview(id: string, adminUserId: string) {

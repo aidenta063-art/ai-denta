@@ -167,6 +167,9 @@
     "rights": "جميع الحقوق محفوظة.",
     "returnPolicy": "سياسة الاسترجاع والاستبدال"
   },
+  "WhatsAppButton": {
+    "label": "تواصل عبر واتساب"
+  },
   "FaqChat": {
     "bubbleLabel": "تكلم معانا",
     "title": "مساعد Ai Denta",
