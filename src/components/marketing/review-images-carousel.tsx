@@ -1,75 +1,85 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 export type ReviewImageData = { id: string; url: string };
 
+const VISIBLE_DESKTOP_CARDS = 3;
+
 /** A horizontally-scrollable row of result screenshots: fits 3 side by
- * side on desktop, and becomes a snap-scroll carousel once there are
- * more than that (rather than wrapping to new rows). Scrolling is
- * entirely visitor-driven (drag/swipe or the arrow buttons) — the only
- * automatic behavior is that the arrows wrap around at either end
- * instead of stopping dead. */
+ * side on desktop. Once there are more than that, scrolling (drag/swipe
+ * or the arrow buttons) loops endlessly — reaching the last image while
+ * still scrolling continues straight into the first one again, with no
+ * dead stop and no separate "jump back" moment. */
 export function ReviewImagesCarousel({ images }: { images: ReviewImageData[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
-
-  function updateScrollState() {
-    const el = trackRef.current;
-    if (!el) return;
-    setCanScrollPrev(el.scrollLeft > 4);
-    setCanScrollNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-  }
+  const loop = images.length > VISIBLE_DESKTOP_CARDS;
+  // When looping, render the set twice back to back. Scrolling past the
+  // end of the first (real) copy just carries on into the second
+  // (cloned) one, which is pixel-identical — see the rewind effect below.
+  const trackImages = loop
+    ? [...images, ...images.map((img) => ({ ...img, id: `${img.id}-clone` }))]
+    : images;
 
   useEffect(() => {
-    updateScrollState();
+    if (!loop) return;
     const el = trackRef.current;
     if (!el) return;
-    el.addEventListener("scroll", updateScrollState, { passive: true });
-    window.addEventListener("resize", updateScrollState);
-    return () => {
-      el.removeEventListener("scroll", updateScrollState);
-      window.removeEventListener("resize", updateScrollState);
-    };
-  }, [images.length]);
+
+    // As the scroll position crosses into the cloned half, silently
+    // rewind by exactly one set's width. Since the clone matches the
+    // original pixel for pixel, the jump is invisible — the motion just
+    // reads as an endless loop instead of a stop-then-snap-back.
+    function handleScroll() {
+      const track = trackRef.current;
+      if (!track) return;
+      const singleSetWidth = track.scrollWidth / 2;
+      if (singleSetWidth <= 0) return;
+      // A burst of coalesced scroll/wheel events can advance scrollLeft
+      // by more than one full lap before this handler gets to run —
+      // loop rather than subtracting once, so it still lands in range.
+      while (track.scrollLeft >= singleSetWidth) {
+        track.scrollLeft -= singleSetWidth;
+      }
+    }
+
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [loop, images.length]);
+
+  function cardStep(el: HTMLDivElement) {
+    const card = el.querySelector<HTMLElement>("[data-review-image]");
+    return (card?.offsetWidth ?? 320) + 24;
+  }
 
   function goPrev() {
     const el = trackRef.current;
     if (!el) return;
-    if (!canScrollPrev) {
-      el.scrollTo({ left: el.scrollWidth, behavior: "smooth" });
-      return;
+    const amount = cardStep(el);
+    if (el.scrollLeft < amount) {
+      // Near the very start — hop to the matching spot in the trailing
+      // clone first, so scrolling back still feels continuous.
+      el.scrollLeft += el.scrollWidth / 2;
     }
-    const card = el.querySelector<HTMLElement>("[data-review-image]");
-    const amount = (card?.offsetWidth ?? 320) + 24;
     el.scrollBy({ left: -amount, behavior: "smooth" });
   }
 
   function goNext() {
     const el = trackRef.current;
     if (!el) return;
-    if (!canScrollNext) {
-      el.scrollTo({ left: 0, behavior: "smooth" });
-      return;
-    }
-    const card = el.querySelector<HTMLElement>("[data-review-image]");
-    const amount = (card?.offsetWidth ?? 320) + 24;
-    el.scrollBy({ left: amount, behavior: "smooth" });
+    el.scrollBy({ left: cardStep(el), behavior: "smooth" });
   }
-
-  const showArrows = canScrollPrev || canScrollNext;
 
   return (
     <div className="relative">
       <div
         ref={trackRef}
-        className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-6 pb-3"
+        className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-6 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {images.map((image, i) => (
+        {trackImages.map((image, i) => (
           <motion.div
             key={image.id}
             data-review-image
@@ -101,7 +111,7 @@ export function ReviewImagesCarousel({ images }: { images: ReviewImageData[] }) 
         ))}
       </div>
 
-      {showArrows && (
+      {loop && (
         <>
           <button
             type="button"
