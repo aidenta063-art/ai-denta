@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import {
-  listPayments,
+  listPaymentRequestRows,
   parsePaymentFilters,
 } from "@/services/payments/payments-admin.service";
 import { markAsPaidAction } from "@/actions/dashboard/payments/mark-as-paid";
@@ -27,9 +27,10 @@ export default async function PaymentsPage({
   if (!hasLocale(routing.locales, locale)) notFound();
 
   const filters = parsePaymentFilters(await searchParams);
-  const [payments, steps] = await Promise.all([
-    listPayments(filters),
+  const [rows, paidSteps, freeSteps] = await Promise.all([
+    listPaymentRequestRows(filters),
     getIntakeFormSteps(ConsultationKind.PAID),
+    getIntakeFormSteps(ConsultationKind.FREE),
   ]);
 
   const exportQuery = new URLSearchParams();
@@ -39,7 +40,7 @@ export default async function PaymentsPage({
   const exportHref = `/api/dashboard/payments/export${
     exportQuery.size ? `?${exportQuery}` : ""
   }`;
-  const hasFilters = exportQuery.size > 0;
+  const hasFilters = Boolean(filters.status || filters.from || filters.to || filters.type);
   const markPaid = markAsPaidAction.bind(null, locale);
 
   return (
@@ -51,7 +52,9 @@ export default async function PaymentsPage({
           size="sm"
           render={<a href={exportHref} />}
         >
-          {hasFilters ? "Export filtered CSV" : "Export CSV"}
+          {filters.status || filters.from || filters.to
+            ? "Export filtered CSV"
+            : "Export CSV"}
         </Button>
       </div>
 
@@ -60,21 +63,36 @@ export default async function PaymentsPage({
         className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
       >
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="status">Status</Label>
+          <Label htmlFor="type">Type</Label>
           <select
-            id="status"
-            name="status"
-            defaultValue={filters.status ?? ""}
+            id="type"
+            name="type"
+            defaultValue={filters.type ?? ""}
             className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none"
           >
             <option value="">All</option>
-            {Object.values(PaymentStatus).map((status) => (
-              <option key={status} value={status}>
-                {status.replaceAll("_", " ")}
-              </option>
-            ))}
+            <option value="paid">Paid</option>
+            <option value="free">Free</option>
           </select>
         </div>
+        {filters.type !== "free" && (
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="status">Status</Label>
+            <select
+              id="status"
+              name="status"
+              defaultValue={filters.status ?? ""}
+              className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none"
+            >
+              <option value="">All</option>
+              {Object.values(PaymentStatus).map((status) => (
+                <option key={status} value={status}>
+                  {status.replaceAll("_", " ")}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="from">From</Label>
           <Input id="from" name="from" type="date" defaultValue={filters.from ?? ""} />
@@ -97,12 +115,13 @@ export default async function PaymentsPage({
         )}
       </form>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-secondary text-secondary-foreground">
             <tr>
               <th className="px-4 py-2 text-start">Customer</th>
               <th className="px-4 py-2 text-start">Consultation</th>
+              <th className="px-4 py-2 text-start">Type</th>
               <th className="px-4 py-2 text-start">Amount</th>
               <th className="px-4 py-2 text-start">Status</th>
               <th className="px-4 py-2 text-start">Date</th>
@@ -110,74 +129,86 @@ export default async function PaymentsPage({
             </tr>
           </thead>
           <tbody>
-            {payments.length === 0 && (
+            {rows.length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-muted-foreground" colSpan={6}>
-                  {hasFilters ? "No payments match these filters." : "No payments yet."}
+                <td className="px-4 py-6 text-muted-foreground" colSpan={7}>
+                  {hasFilters ? "No requests match these filters." : "No requests yet."}
                 </td>
               </tr>
             )}
-            {payments.map((payment) => (
+            {rows.map((row) => (
               <tr
-                key={payment.id}
+                key={row.id}
                 className="border-t border-border transition-colors hover:bg-muted/40"
               >
                 <td className="px-4 py-2 font-medium text-card-foreground">
-                  {payment.booking.user?.name ?? payment.booking.guestName}
+                  {row.customerName}
                   <div className="text-xs font-normal text-muted-foreground">
-                    {payment.booking.user?.email ?? payment.booking.guestEmail}
+                    {row.customerEmail}
                   </div>
                 </td>
                 <td className="px-4 py-2 text-muted-foreground">
-                  {payment.booking.consultationType.nameEn}
-                </td>
-                <td className="px-4 py-2 text-card-foreground">
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: payment.currency,
-                  }).format(payment.amountCents / 100)}
+                  {row.consultationName}
                 </td>
                 <td className="px-4 py-2">
-                  <StatusBadge status={payment.status} />
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      row.kind === "paid"
+                        ? "bg-secondary text-secondary-foreground"
+                        : "bg-primary/10 text-primary"
+                    }`}
+                  >
+                    {row.kind === "paid" ? "Paid" : "Free"}
+                  </span>
+                </td>
+                <td className="px-4 py-2 text-card-foreground">
+                  {row.amountCents !== null && row.currency
+                    ? new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: row.currency,
+                      }).format(row.amountCents / 100)
+                    : "—"}
+                </td>
+                <td className="px-4 py-2">
+                  {row.paymentStatus ? (
+                    <StatusBadge status={row.paymentStatus} />
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
                 </td>
                 <td className="px-4 py-2 text-muted-foreground">
                   {new Intl.DateTimeFormat("en-US", {
                     dateStyle: "medium",
                     timeZone: APP_TIME_ZONE,
-                  }).format(payment.createdAt)}
+                  }).format(row.createdAt)}
                 </td>
                 <td className="px-4 py-2 text-end">
                   <div className="flex justify-end gap-2">
                     <IntakeAnswersDialog
-                      name={
-                        payment.booking.user?.name ??
-                        payment.booking.guestName ??
-                        "Guest"
-                      }
-                      intakeAnswers={payment.booking.intakeAnswers}
-                      steps={steps}
-                      phone={
-                        payment.booking.guestPhone ?? payment.booking.user?.phone
-                      }
+                      name={row.customerName}
+                      intakeAnswers={row.intakeAnswers}
+                      steps={row.kind === "paid" ? paidSteps : freeSteps}
+                      phone={row.customerPhone}
                       appointment={
-                        payment.booking.slot
+                        row.appointment
                           ? formatSlotTimeRange(
-                              payment.booking.slot.startAt,
-                              payment.booking.slot.endAt,
+                              row.appointment.startAt,
+                              row.appointment.endAt,
                               "en",
                               { dateStyle: "medium" },
                             )
                           : null
                       }
                     />
-                    {(payment.status === PaymentStatus.PENDING ||
-                      payment.status === PaymentStatus.FAILED) && (
-                      <form action={markPaid.bind(null, payment.id)}>
-                        <Button size="sm" type="submit">
-                          Mark as Paid
-                        </Button>
-                      </form>
-                    )}
+                    {row.paymentId &&
+                      (row.paymentStatus === PaymentStatus.PENDING ||
+                        row.paymentStatus === PaymentStatus.FAILED) && (
+                        <form action={markPaid.bind(null, row.paymentId)}>
+                          <Button size="sm" type="submit">
+                            Mark as Paid
+                          </Button>
+                        </form>
+                      )}
                   </div>
                 </td>
               </tr>

@@ -4,6 +4,7 @@ import {
   BookingStatus,
   SlotStatus,
   PaymentProviderName,
+  ConsultationKind,
 } from "@/generated/prisma/enums";
 import {
   sendWhatsAppTemplateSafe,
@@ -14,11 +15,16 @@ import { logger } from "@/lib/logger";
 import { grantFreeEbookForBooking } from "@/services/ebook/ebook.service";
 import { dateRangeToUtcBounds, isValidDateKey } from "@/lib/date-range";
 
+export type RequestType = "paid" | "free";
+
 export type PaymentFilters = {
   status?: PaymentStatus;
   /** Inclusive Cairo date keys ("YYYY-MM-DD") on the payment's created date. */
   from?: string;
   to?: string;
+  /** Restricts the list to paid bookings (with a Payment row) or free
+   * consultation requests (which never have one). Omitted shows both. */
+  type?: RequestType;
 };
 
 /** Reads payment filters from URL search params, dropping anything invalid
@@ -31,12 +37,14 @@ export function parsePaymentFilters(
   const status = first(params.status);
   const from = first(params.from);
   const to = first(params.to);
+  const type = first(params.type);
   return {
     status: Object.values(PaymentStatus).includes(status as PaymentStatus)
       ? (status as PaymentStatus)
       : undefined,
     from: isValidDateKey(from) ? from : undefined,
     to: isValidDateKey(to) ? to : undefined,
+    type: type === "paid" || type === "free" ? type : undefined,
   };
 }
 
@@ -54,6 +62,96 @@ export async function listPayments({ status, from, to }: PaymentFilters = {}) {
       },
     },
   });
+}
+
+/** Free consultations are a waitlist, not a scheduled/paid slot — they
+ * never get a Payment row (see booking.service.ts), so they're invisible
+ * on this page unless fetched separately like this. */
+async function listFreeConsultationBookings({ from, to }: PaymentFilters = {}) {
+  const createdAt = dateRangeToUtcBounds(from, to);
+  return prisma.booking.findMany({
+    where: {
+      consultationType: { kind: ConsultationKind.FREE },
+      ...((createdAt.gte || createdAt.lt) && { createdAt }),
+    },
+    orderBy: { createdAt: "desc" },
+    include: { consultationType: true, user: true },
+  });
+}
+
+export type PaymentRequestRow = {
+  id: string;
+  kind: RequestType;
+  bookingId: string;
+  paymentId: string | null;
+  customerName: string;
+  customerEmail: string | null;
+  customerPhone: string | null;
+  consultationName: string;
+  amountCents: number | null;
+  currency: string | null;
+  paymentStatus: PaymentStatus | null;
+  createdAt: Date;
+  intakeAnswers: unknown;
+  appointment: { startAt: Date; endAt: Date } | null;
+};
+
+/** Unified Payments-page list: paid bookings (via Payment) and free
+ * consultation requests (via Booking directly), merged and sorted
+ * together. `status` only ever applies to paid rows — picking one
+ * implicitly hides free requests, since they have no payment status to
+ * match against; explicitly filtering to type "free" ignores it instead. */
+export async function listPaymentRequestRows(
+  filters: PaymentFilters = {},
+): Promise<PaymentRequestRow[]> {
+  const includePaid = filters.type !== "free";
+  const includeFree =
+    filters.type !== "paid" && (filters.type === "free" || !filters.status);
+
+  const [payments, freeBookings] = await Promise.all([
+    includePaid ? listPayments(filters) : Promise.resolve([]),
+    includeFree ? listFreeConsultationBookings(filters) : Promise.resolve([]),
+  ]);
+
+  const rows: PaymentRequestRow[] = [
+    ...payments.map((p) => ({
+      id: `paid-${p.id}`,
+      kind: "paid" as const,
+      bookingId: p.bookingId,
+      paymentId: p.id,
+      customerName: p.booking.user?.name ?? p.booking.guestName ?? "Guest",
+      customerEmail: p.booking.user?.email ?? p.booking.guestEmail ?? null,
+      customerPhone: p.booking.guestPhone ?? p.booking.user?.phone ?? null,
+      consultationName: p.booking.consultationType.nameEn,
+      amountCents: p.amountCents,
+      currency: p.currency,
+      paymentStatus: p.status,
+      createdAt: p.createdAt,
+      intakeAnswers: p.booking.intakeAnswers,
+      appointment: p.booking.slot
+        ? { startAt: p.booking.slot.startAt, endAt: p.booking.slot.endAt }
+        : null,
+    })),
+    ...freeBookings.map((b) => ({
+      id: `free-${b.id}`,
+      kind: "free" as const,
+      bookingId: b.id,
+      paymentId: null,
+      customerName: b.user?.name ?? b.guestName ?? "Guest",
+      customerEmail: b.user?.email ?? b.guestEmail ?? null,
+      customerPhone: b.guestPhone ?? b.user?.phone ?? null,
+      consultationName: b.consultationType.nameEn,
+      amountCents: null,
+      currency: null,
+      paymentStatus: null,
+      createdAt: b.createdAt,
+      intakeAnswers: b.intakeAnswers,
+      appointment: null,
+    })),
+  ];
+
+  rows.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  return rows;
 }
 
 /**
