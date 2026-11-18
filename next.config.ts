@@ -29,6 +29,14 @@ const nextConfig: NextConfig = {
         hostname: "**.r2.dev",
       },
     ],
+    // All uploaded photos are already hosted on R2 (free egress). Without
+    // this, Next still proxies every one of them through Vercel's
+    // /_next/image function on every page view to resize/re-encode it —
+    // that's Vercel bandwidth and Image Optimization quota being spent on
+    // bytes that didn't need to touch Vercel at all. Disabling it serves
+    // the original file straight from R2, so images behave exactly like
+    // videos already do (plain <video src> — browser fetches R2 directly).
+    unoptimized: true,
   },
   async headers() {
     return [
