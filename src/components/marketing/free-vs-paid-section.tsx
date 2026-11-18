@@ -52,6 +52,8 @@ export async function FreeVsPaidSection({ locale }: { locale: Locale }) {
       getComparisonHeaderContent(),
     ]);
 
+  if (headerSection?.isActive === false) return null;
+
   const headerParsed = headerSection
     ? comparisonHeaderContentSchema.safeParse(
         localized(locale, headerSection.contentEn, headerSection.contentAr),

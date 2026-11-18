@@ -3,7 +3,11 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { ScheduleGridBackdrop } from "@/components/marketing/schedule-grid-backdrop";
-import { listConsultationTypes } from "@/services/content/cms.service";
+import {
+  listConsultationTypes,
+  getHomeCtaContent,
+} from "@/services/content/cms.service";
+import { homeCtaContentSchema } from "@/lib/validation/cms.schema";
 import { formatDiscountedPrice } from "@/lib/pricing";
 import { ConsultationKind } from "@/generated/prisma/enums";
 import { localized } from "@/lib/i18n-content";
@@ -11,7 +15,22 @@ import type { Locale } from "@/i18n/routing";
 
 export async function ConsultationCta({ locale }: { locale: Locale }) {
   const t = await getTranslations("HomePage.cta");
-  const consultationTypes = await listConsultationTypes();
+  const [consultationTypes, ctaSection] = await Promise.all([
+    listConsultationTypes(),
+    getHomeCtaContent(),
+  ]);
+
+  if (ctaSection?.isActive === false) return null;
+
+  const ctaParsed = ctaSection
+    ? homeCtaContentSchema.safeParse(
+        localized(locale, ctaSection.contentEn, ctaSection.contentAr),
+      )
+    : null;
+  const ctaText = ctaParsed?.success
+    ? ctaParsed.data
+    : { title: t("title"), subtitle: t("subtitle") };
+
   const paidType = consultationTypes.find(
     (c) => c.kind === ConsultationKind.PAID,
   );
@@ -46,10 +65,10 @@ export async function ConsultationCta({ locale }: { locale: Locale }) {
       <ScrollReveal className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl bg-gradient-to-br from-[#7E00C9] to-[#251037] px-8 py-14 text-center sm:px-16">
         <ScheduleGridBackdrop className="pointer-events-none absolute -top-3 -right-3 hidden opacity-30 sm:grid" />
         <h2 className="relative z-10 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-          {t("title")}
+          {ctaText.title}
         </h2>
         <p className="relative z-10 mx-auto mt-3 max-w-xl text-[#EDE3F5]/80">
-          {t("subtitle")}
+          {ctaText.subtitle}
         </p>
         <div className="relative z-10 mt-8 flex flex-wrap items-start justify-center gap-4">
           <div className="flex flex-col items-center gap-1.5">

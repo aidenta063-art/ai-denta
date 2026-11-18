@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { CmsSectionType, ConsultationKind } from "@/generated/prisma/enums";
 import type {
   HeroFormInput,
+  HomeCtaFormInput,
   PricingFormInput,
   ServiceFormInput,
   ComparisonRowFormInput,
@@ -14,6 +15,9 @@ import type {
 const HERO_SLUG = "home-hero";
 const COMPARISON_HEADER_SLUG = "comparison-header";
 const BOOKING_PAID_THANKYOU_SLUG = "booking-paid-thankyou";
+const HOME_CTA_SLUG = "home-cta";
+const OUR_DOCTORS_SLUG = "our-doctors";
+const DOCTOR_TESTIMONIAL_VIDEO_SLUG = "doctor-testimonial-video";
 
 // This CMS content changes rarely (admin-edited) but is read on every
 // marketing page load. unstable_cache keeps it out of Postgres across
@@ -32,6 +36,9 @@ export const CMS_TAGS = {
   freePdf: "cms:free-pdf",
   bookingPaidThankYou: "cms:booking-paid-thankyou",
   reviewImages: "cms:review-images",
+  homeCta: "cms:home-cta",
+  ourDoctorsVisibility: "cms:our-doctors-visibility",
+  doctorTestimonialVideo: "cms:doctor-testimonial-video",
 } as const;
 
 export const getHeroContent = nextCache(
@@ -238,12 +245,13 @@ export async function saveComparisonHeaderContent(
 
   await prisma.cmsSection.upsert({
     where: { slug: COMPARISON_HEADER_SLUG },
-    update: { contentEn, contentAr, updatedById },
+    update: { contentEn, contentAr, isActive: input.isActive, updatedById },
     create: {
       slug: COMPARISON_HEADER_SLUG,
       type: CmsSectionType.CUSTOM,
       contentEn,
       contentAr,
+      isActive: input.isActive,
       updatedById,
     },
   });
@@ -545,4 +553,103 @@ export async function removeReviewImage(mediaId: string) {
   await prisma.cmsSectionMedia.deleteMany({
     where: { cmsSectionId: section.id, mediaId },
   });
+}
+
+export const getHomeCtaContent = nextCache(
+  async () => prisma.cmsSection.findUnique({ where: { slug: HOME_CTA_SLUG } }),
+  ["cms-home-cta"],
+  { tags: [CMS_TAGS.homeCta], revalidate: CACHE_SECONDS },
+);
+
+export async function saveHomeCtaContent(input: HomeCtaFormInput, updatedById: string) {
+  const contentEn = { title: input.titleEn, subtitle: input.subtitleEn };
+  const contentAr = { title: input.titleAr, subtitle: input.subtitleAr };
+
+  await prisma.cmsSection.upsert({
+    where: { slug: HOME_CTA_SLUG },
+    update: { contentEn, contentAr, isActive: input.isActive, updatedById },
+    create: {
+      slug: HOME_CTA_SLUG,
+      type: CmsSectionType.CUSTOM,
+      contentEn,
+      contentAr,
+      isActive: input.isActive,
+      updatedById,
+    },
+  });
+}
+
+/** Whole-section on/off switch for the homepage "Our Doctors" showcase —
+ * separate from each Doctor's own `isActive` (which controls whether that
+ * one doctor's card appears at all, with the section itself always shown
+ * as long as it's on here). No real content lives on this row. */
+export const isOurDoctorsSectionActive = nextCache(
+  async () => {
+    const section = await prisma.cmsSection.findUnique({
+      where: { slug: OUR_DOCTORS_SLUG },
+      select: { isActive: true },
+    });
+    return section?.isActive ?? true;
+  },
+  ["cms-our-doctors-visibility"],
+  { tags: [CMS_TAGS.ourDoctorsVisibility], revalidate: CACHE_SECONDS },
+);
+
+export async function setOurDoctorsSectionActive(isActive: boolean, updatedById: string) {
+  await prisma.cmsSection.upsert({
+    where: { slug: OUR_DOCTORS_SLUG },
+    update: { isActive, updatedById },
+    create: {
+      slug: OUR_DOCTORS_SLUG,
+      type: CmsSectionType.CUSTOM,
+      contentEn: {},
+      contentAr: {},
+      isActive,
+      updatedById,
+    },
+  });
+}
+
+export const getDoctorTestimonialVideo = nextCache(
+  async () => {
+    const section = await prisma.cmsSection.findUnique({
+      where: { slug: DOCTOR_TESTIMONIAL_VIDEO_SLUG },
+      include: {
+        media: { include: { media: true }, orderBy: { sortOrder: "asc" }, take: 1 },
+      },
+    });
+    return section?.media[0]?.media ?? null;
+  },
+  ["cms-doctor-testimonial-video"],
+  { tags: [CMS_TAGS.doctorTestimonialVideo], revalidate: CACHE_SECONDS },
+);
+
+async function ensureDoctorTestimonialVideoSection(updatedById: string) {
+  return prisma.cmsSection.upsert({
+    where: { slug: DOCTOR_TESTIMONIAL_VIDEO_SLUG },
+    update: {},
+    create: {
+      slug: DOCTOR_TESTIMONIAL_VIDEO_SLUG,
+      type: CmsSectionType.CUSTOM,
+      contentEn: {},
+      contentAr: {},
+      updatedById,
+    },
+  });
+}
+
+export async function setDoctorTestimonialVideo(mediaId: string, updatedById: string) {
+  const section = await ensureDoctorTestimonialVideoSection(updatedById);
+  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+  await prisma.cmsSectionMedia.create({
+    data: { cmsSectionId: section.id, mediaId, sortOrder: 0 },
+  });
+}
+
+export async function clearDoctorTestimonialVideo() {
+  const section = await prisma.cmsSection.findUnique({
+    where: { slug: DOCTOR_TESTIMONIAL_VIDEO_SLUG },
+  });
+  if (!section) return;
+  await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
 }

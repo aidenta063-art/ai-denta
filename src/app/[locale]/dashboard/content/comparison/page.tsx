@@ -60,6 +60,7 @@ export default async function ComparisonContentPage({
     mostPopularAr: arParsed?.success
       ? arParsed.data.mostPopular
       : tAr("mostPopular"),
+    isActive: headerSection?.isActive ?? true,
   };
 
   return (

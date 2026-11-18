@@ -16,6 +16,19 @@ export const comparisonHeaderContentSchema = z.object({
   mostPopular: z.string().trim().min(1).max(40),
 });
 
+export const homeCtaContentSchema = z.object({
+  title: z.string().trim().min(1).max(150),
+  subtitle: z.string().trim().min(1).max(300),
+});
+
+export const homeCtaFormSchema = z.object({
+  titleEn: z.string().trim().min(1).max(150),
+  subtitleEn: z.string().trim().min(1).max(300),
+  titleAr: z.string().trim().min(1).max(150),
+  subtitleAr: z.string().trim().min(1).max(300),
+  isActive: z.boolean().default(true),
+});
+
 export const heroFormSchema = z.object({
   eyebrowEn: z.string().trim().min(1).max(80),
   titleEn: z.string().trim().min(1).max(200),
@@ -91,6 +104,7 @@ export const comparisonHeaderFormSchema = z.object({
   freeNameAr: z.string().trim().min(1).max(60),
   paidNameAr: z.string().trim().min(1).max(60),
   mostPopularAr: z.string().trim().min(1).max(40),
+  isActive: z.boolean().default(true),
 });
 
 export const bookingPaidThankYouContentSchema = z.object({
@@ -141,6 +155,7 @@ export const bookingPaidThankYouFormSchema = z.object({
 });
 
 export type HeroFormInput = z.infer<typeof heroFormSchema>;
+export type HomeCtaFormInput = z.infer<typeof homeCtaFormSchema>;
 export type PricingFormInput = z.infer<typeof pricingFormSchema>;
 export type ServiceFormInput = z.infer<typeof serviceFormSchema>;
 export type ComparisonRowFormInput = z.infer<typeof comparisonRowFormSchema>;

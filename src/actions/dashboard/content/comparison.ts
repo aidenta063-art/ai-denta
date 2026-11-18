@@ -47,6 +47,7 @@ export async function saveComparisonHeaderAction(
     freeNameAr: formData.get("freeNameAr"),
     paidNameAr: formData.get("paidNameAr"),
     mostPopularAr: formData.get("mostPopularAr"),
+    isActive: formData.get("isActive") === "on",
   });
 
   if (!parsed.success) {

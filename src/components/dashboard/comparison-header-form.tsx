@@ -31,6 +31,7 @@ export function ComparisonHeaderForm({
     freeNameAr: string;
     paidNameAr: string;
     mostPopularAr: string;
+    isActive: boolean;
   };
 }) {
   const action = saveComparisonHeaderAction.bind(null, locale);
@@ -53,6 +54,16 @@ export function ComparisonHeaderForm({
           <AlertDescription>Saved.</AlertDescription>
         </Alert>
       )}
+
+      <label className="flex w-fit items-center gap-2 rounded-lg border border-border p-3 text-sm font-medium">
+        <input
+          type="checkbox"
+          name="isActive"
+          defaultChecked={defaults.isActive}
+          className="size-4"
+        />
+        Show this section on the homepage
+      </label>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <fieldset className="flex flex-col gap-4 rounded-lg border border-border p-4">

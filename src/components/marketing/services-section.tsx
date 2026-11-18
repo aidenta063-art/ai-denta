@@ -1,11 +1,11 @@
-import { Sparkles, Video, Megaphone, LineChart } from "lucide-react";
+import { Sparkles, Video, Megaphone, LineChart, Globe } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { listServices } from "@/services/content/cms.service";
 import { localized } from "@/lib/i18n-content";
 import type { Locale } from "@/i18n/routing";
 
-const FALLBACK_ICONS = [Video, Megaphone, LineChart] as const;
+const FALLBACK_ICONS = [Video, Megaphone, LineChart, Globe] as const;
 
 export async function ServicesSection({ locale }: { locale: Locale }) {
   const t = await getTranslations("HomePage.services");
@@ -38,7 +38,7 @@ export async function ServicesSection({ locale }: { locale: Locale }) {
           <p className="text-muted-foreground">{t("subtitle")}</p>
         </ScrollReveal>
 
-        <div className="grid gap-6 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {services.map((service, i) => {
             const Icon = FALLBACK_ICONS[i % FALLBACK_ICONS.length] ?? Sparkles;
             return (

@@ -4,7 +4,9 @@ import { routing } from "@/i18n/routing";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { listDoctors } from "@/services/doctors/doctor.service";
+import { isOurDoctorsSectionActive } from "@/services/content/cms.service";
 import { deleteDoctorAction } from "@/actions/dashboard/doctors/manage-doctor";
+import { setOurDoctorsSectionActiveAction } from "@/actions/dashboard/doctors/section-visibility";
 import { DoctorForm } from "@/components/dashboard/doctor-form";
 import type { DoctorServiceInput } from "@/lib/validation/doctor.schema";
 
@@ -16,8 +18,12 @@ export default async function DoctorsPage({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
-  const doctors = await listDoctors();
+  const [doctors, sectionActive] = await Promise.all([
+    listDoctors(),
+    isOurDoctorsSectionActive(),
+  ]);
   const removeAction = deleteDoctorAction.bind(null, locale);
+  const setSectionActive = setOurDoctorsSectionActiveAction.bind(null, locale);
 
   return (
     <div className="flex flex-col gap-6">
@@ -25,6 +31,24 @@ export default async function DoctorsPage({
         <h1 className="text-lg font-semibold text-foreground">
           Our Doctors
         </h1>
+      </div>
+
+      <div className="flex items-center justify-between rounded-2xl border border-border bg-card p-4 shadow-sm">
+        <div>
+          <p className="text-sm font-medium text-card-foreground">
+            Homepage &amp; &quot;Our Doctors&quot; page visibility
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {sectionActive
+              ? "This section is shown to visitors."
+              : "This section is hidden from visitors."}
+          </p>
+        </div>
+        <form action={setSectionActive.bind(null, !sectionActive)}>
+          <Button size="sm" variant={sectionActive ? "outline" : "default"} type="submit">
+            {sectionActive ? "Hide section" : "Show section"}
+          </Button>
+        </form>
       </div>
 
       {doctors.length === 0 && (

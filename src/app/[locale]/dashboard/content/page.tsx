@@ -40,6 +40,18 @@ const SECTIONS = [
       "Upload result screenshots (leads, bookings, WhatsApp threads) shown in a gallery on the homepage below the ebook section.",
   },
   {
+    href: "/dashboard/content/home-cta",
+    title: "Homepage Final CTA",
+    description:
+      "The purple \"Ready to grow your clinic?\" banner near the bottom of the homepage.",
+  },
+  {
+    href: "/dashboard/content/doctor-testimonial-video",
+    title: "Doctor Testimonials Video",
+    description:
+      "A video of doctors talking about their experience — shown on the homepage once uploaded.",
+  },
+  {
     href: "/dashboard/content/booking-paid-thankyou",
     title: "Paid Booking Thank-You Page",
     description:

@@ -90,6 +90,11 @@
       "close": "Close",
       "empty": "Doctor case studies are coming soon."
     },
+    "doctorTestimonials": {
+      "eyebrow": "In Their Own Words",
+      "title": "Doctors who trust us with their growth",
+      "subtitle": "Hear directly from dentists who grew their practice with Ai Denta."
+    },
     "cta": {
       "title": "Ready to grow your clinic?",
       "subtitle": "Book a free or paid consultation and let's talk about your growth plan."
