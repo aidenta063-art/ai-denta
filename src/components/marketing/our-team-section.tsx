@@ -38,7 +38,7 @@ export async function OurTeamSection({ locale }: { locale: Locale }) {
           <p className="max-w-2xl text-muted-foreground">{content.subtitle}</p>
         </ScrollReveal>
 
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
           {members.map((member, i) => (
             <ScrollReveal
               key={member.id}
@@ -49,12 +49,12 @@ export async function OurTeamSection({ locale }: { locale: Locale }) {
                 <Image
                   src={member.photoMedia.url}
                   alt=""
-                  width={160}
-                  height={160}
-                  className="size-28 rounded-full border border-border object-cover sm:size-32"
+                  width={220}
+                  height={220}
+                  className="size-36 rounded-full border border-border object-cover sm:size-44"
                 />
               ) : (
-                <div className="flex size-28 items-center justify-center rounded-full border border-border bg-muted text-2xl font-semibold text-muted-foreground sm:size-32">
+                <div className="flex size-36 items-center justify-center rounded-full border border-border bg-muted text-3xl font-semibold text-muted-foreground sm:size-44">
                   {localized(locale, member.nameEn, member.nameAr).charAt(0)}
                 </div>
               )}
