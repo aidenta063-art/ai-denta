@@ -10,14 +10,17 @@ import type {
   ComparisonRowFormInput,
   ComparisonHeaderFormInput,
   BookingPaidThankYouFormInput,
+  WhyUsFormInput,
+  TeamSectionFormInput,
 } from "@/lib/validation/cms.schema";
 
 const HERO_SLUG = "home-hero";
 const COMPARISON_HEADER_SLUG = "comparison-header";
 const BOOKING_PAID_THANKYOU_SLUG = "booking-paid-thankyou";
 const HOME_CTA_SLUG = "home-cta";
-const OUR_DOCTORS_SLUG = "our-doctors";
 const DOCTOR_TESTIMONIAL_VIDEO_SLUG = "doctor-testimonial-video";
+const WHY_US_SLUG = "why-us";
+const TEAM_SECTION_SLUG = "our-team";
 
 // This CMS content changes rarely (admin-edited) but is read on every
 // marketing page load. unstable_cache keeps it out of Postgres across
@@ -37,8 +40,9 @@ export const CMS_TAGS = {
   bookingPaidThankYou: "cms:booking-paid-thankyou",
   reviewImages: "cms:review-images",
   homeCta: "cms:home-cta",
-  ourDoctorsVisibility: "cms:our-doctors-visibility",
   doctorTestimonialVideo: "cms:doctor-testimonial-video",
+  whyUs: "cms:why-us",
+  teamSection: "cms:team-section",
 } as const;
 
 export const getHeroContent = nextCache(
@@ -579,32 +583,68 @@ export async function saveHomeCtaContent(input: HomeCtaFormInput, updatedById: s
   });
 }
 
-/** Whole-section on/off switch for the homepage "Our Doctors" showcase —
- * separate from each Doctor's own `isActive` (which controls whether that
- * one doctor's card appears at all, with the section itself always shown
- * as long as it's on here). No real content lives on this row. */
-export const isOurDoctorsSectionActive = nextCache(
-  async () => {
-    const section = await prisma.cmsSection.findUnique({
-      where: { slug: OUR_DOCTORS_SLUG },
-      select: { isActive: true },
-    });
-    return section?.isActive ?? true;
-  },
-  ["cms-our-doctors-visibility"],
-  { tags: [CMS_TAGS.ourDoctorsVisibility], revalidate: CACHE_SECONDS },
+export const getWhyUsContent = nextCache(
+  async () => prisma.cmsSection.findUnique({ where: { slug: WHY_US_SLUG } }),
+  ["cms-why-us"],
+  { tags: [CMS_TAGS.whyUs], revalidate: CACHE_SECONDS },
 );
 
-export async function setOurDoctorsSectionActive(isActive: boolean, updatedById: string) {
+export async function saveWhyUsContent(input: WhyUsFormInput, updatedById: string) {
+  const contentEn = {
+    eyebrow: input.eyebrowEn,
+    title: input.titleEn,
+    subtitle: input.subtitleEn,
+    items: [
+      { title: input.item1TitleEn, description: input.item1DescriptionEn },
+      { title: input.item2TitleEn, description: input.item2DescriptionEn },
+      { title: input.item3TitleEn, description: input.item3DescriptionEn },
+    ],
+  };
+  const contentAr = {
+    eyebrow: input.eyebrowAr,
+    title: input.titleAr,
+    subtitle: input.subtitleAr,
+    items: [
+      { title: input.item1TitleAr, description: input.item1DescriptionAr },
+      { title: input.item2TitleAr, description: input.item2DescriptionAr },
+      { title: input.item3TitleAr, description: input.item3DescriptionAr },
+    ],
+  };
+
   await prisma.cmsSection.upsert({
-    where: { slug: OUR_DOCTORS_SLUG },
-    update: { isActive, updatedById },
+    where: { slug: WHY_US_SLUG },
+    update: { contentEn, contentAr, updatedById },
     create: {
-      slug: OUR_DOCTORS_SLUG,
+      slug: WHY_US_SLUG,
       type: CmsSectionType.CUSTOM,
-      contentEn: {},
-      contentAr: {},
-      isActive,
+      contentEn,
+      contentAr,
+      updatedById,
+    },
+  });
+}
+
+/** Whole-section on/off + title/subtitle for the homepage "Meet the Team"
+ * showcase. Each member's own photo lives on the TeamMember model. */
+export const getTeamSectionContent = nextCache(
+  async () => prisma.cmsSection.findUnique({ where: { slug: TEAM_SECTION_SLUG } }),
+  ["cms-team-section"],
+  { tags: [CMS_TAGS.teamSection], revalidate: CACHE_SECONDS },
+);
+
+export async function saveTeamSectionContent(input: TeamSectionFormInput, updatedById: string) {
+  const contentEn = { title: input.titleEn, subtitle: input.subtitleEn };
+  const contentAr = { title: input.titleAr, subtitle: input.subtitleAr };
+
+  await prisma.cmsSection.upsert({
+    where: { slug: TEAM_SECTION_SLUG },
+    update: { contentEn, contentAr, isActive: input.isActive, updatedById },
+    create: {
+      slug: TEAM_SECTION_SLUG,
+      type: CmsSectionType.CUSTOM,
+      contentEn,
+      contentAr,
+      isActive: input.isActive,
       updatedById,
     },
   });

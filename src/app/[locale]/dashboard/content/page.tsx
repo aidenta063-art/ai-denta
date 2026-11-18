@@ -52,6 +52,12 @@ const SECTIONS = [
       "A video of doctors talking about their experience — shown on the homepage once uploaded.",
   },
   {
+    href: "/dashboard/content/why-us",
+    title: "Why Choose Us",
+    description:
+      "The \"What sets us apart\" section on the homepage — eyebrow, title, subtitle, and its 3 cards.",
+  },
+  {
     href: "/dashboard/content/booking-paid-thankyou",
     title: "Paid Booking Thank-You Page",
     description:

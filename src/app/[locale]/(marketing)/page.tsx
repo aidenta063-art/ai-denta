@@ -11,14 +11,13 @@ import { EbookTeaser } from "@/components/marketing/ebook-teaser";
 import { ReviewImagesSection } from "@/components/marketing/review-images-section";
 import { ConsultationCta } from "@/components/marketing/consultation-cta";
 import { FreeVsPaidSection } from "@/components/marketing/free-vs-paid-section";
-import { OurDoctorsSection } from "@/components/marketing/our-doctors-section";
 import { DoctorTestimonialVideoSection } from "@/components/marketing/doctor-testimonial-video-section";
+import { OurTeamSection } from "@/components/marketing/our-team-section";
 import { ScrollToHash } from "@/components/marketing/scroll-to-hash";
 import {
   getHeroContent,
   getHeroVideo,
   listConsultationTypes,
-  isOurDoctorsSectionActive,
 } from "@/services/content/cms.service";
 import { heroContentSchema } from "@/lib/validation/cms.schema";
 import { localized } from "@/lib/i18n-content";
@@ -61,13 +60,11 @@ export default async function HomePage({
   setRequestLocale(locale);
 
   const t = await getTranslations("HomePage");
-  const [heroSection, heroVideo, consultationTypes, showOurDoctors] =
-    await Promise.all([
-      getHeroContent(),
-      getHeroVideo(),
-      listConsultationTypes(),
-      isOurDoctorsSectionActive(),
-    ]);
+  const [heroSection, heroVideo, consultationTypes] = await Promise.all([
+    getHeroContent(),
+    getHeroVideo(),
+    listConsultationTypes(),
+  ]);
 
   const heroFromCms = heroSection
     ? heroContentSchema.safeParse(
@@ -126,11 +123,11 @@ export default async function HomePage({
       <ServicesSection locale={locale} />
       <VideoShowcase />
       <DoctorTestimonialVideoSection />
-      <WhyUsSection />
+      <WhyUsSection locale={locale} />
       <EbookTeaser locale={locale} />
       <ReviewImagesSection />
       <ConsultationCta locale={locale} />
-      {showOurDoctors && <OurDoctorsSection locale={locale} />}
+      <OurTeamSection locale={locale} />
     </>
   );
 }

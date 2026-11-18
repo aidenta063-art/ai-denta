@@ -29,6 +29,52 @@ export const homeCtaFormSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
+const whyUsItemSchema = z.object({
+  title: z.string().trim().min(1).max(100),
+  description: z.string().trim().min(1).max(300),
+});
+
+export const whyUsContentSchema = z.object({
+  eyebrow: z.string().trim().min(1).max(80),
+  title: z.string().trim().min(1).max(200),
+  subtitle: z.string().trim().min(1).max(400),
+  items: z.array(whyUsItemSchema).length(3),
+});
+
+export const whyUsFormSchema = z.object({
+  eyebrowEn: z.string().trim().min(1).max(80),
+  titleEn: z.string().trim().min(1).max(200),
+  subtitleEn: z.string().trim().min(1).max(400),
+  eyebrowAr: z.string().trim().min(1).max(80),
+  titleAr: z.string().trim().min(1).max(200),
+  subtitleAr: z.string().trim().min(1).max(400),
+  item1TitleEn: z.string().trim().min(1).max(100),
+  item1DescriptionEn: z.string().trim().min(1).max(300),
+  item2TitleEn: z.string().trim().min(1).max(100),
+  item2DescriptionEn: z.string().trim().min(1).max(300),
+  item3TitleEn: z.string().trim().min(1).max(100),
+  item3DescriptionEn: z.string().trim().min(1).max(300),
+  item1TitleAr: z.string().trim().min(1).max(100),
+  item1DescriptionAr: z.string().trim().min(1).max(300),
+  item2TitleAr: z.string().trim().min(1).max(100),
+  item2DescriptionAr: z.string().trim().min(1).max(300),
+  item3TitleAr: z.string().trim().min(1).max(100),
+  item3DescriptionAr: z.string().trim().min(1).max(300),
+});
+
+export const teamSectionContentSchema = z.object({
+  title: z.string().trim().min(1).max(150),
+  subtitle: z.string().trim().min(1).max(300),
+});
+
+export const teamSectionFormSchema = z.object({
+  titleEn: z.string().trim().min(1).max(150),
+  subtitleEn: z.string().trim().min(1).max(300),
+  titleAr: z.string().trim().min(1).max(150),
+  subtitleAr: z.string().trim().min(1).max(300),
+  isActive: z.boolean().default(true),
+});
+
 export const heroFormSchema = z.object({
   eyebrowEn: z.string().trim().min(1).max(80),
   titleEn: z.string().trim().min(1).max(200),
@@ -156,6 +202,8 @@ export const bookingPaidThankYouFormSchema = z.object({
 
 export type HeroFormInput = z.infer<typeof heroFormSchema>;
 export type HomeCtaFormInput = z.infer<typeof homeCtaFormSchema>;
+export type WhyUsFormInput = z.infer<typeof whyUsFormSchema>;
+export type TeamSectionFormInput = z.infer<typeof teamSectionFormSchema>;
 export type PricingFormInput = z.infer<typeof pricingFormSchema>;
 export type ServiceFormInput = z.infer<typeof serviceFormSchema>;
 export type ComparisonRowFormInput = z.infer<typeof comparisonRowFormSchema>;

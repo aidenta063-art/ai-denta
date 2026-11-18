@@ -12,6 +12,7 @@ import {
   MessageSquareQuote,
   Stethoscope,
   ClipboardCheck,
+  UsersRound,
 } from "lucide-react";
 import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/ebook-orders", label: "Ebook Orders", Icon: BookOpen },
   { href: "/dashboard/reviews", label: "Reviews", Icon: MessageSquareQuote },
   { href: "/dashboard/doctors", label: "Our Doctors", Icon: Stethoscope },
+  { href: "/dashboard/team", label: "Our Team", Icon: UsersRound },
   { href: "/dashboard/content", label: "Content", Icon: FileText },
   { href: "/dashboard/settings", label: "Settings", Icon: Settings },
 ] as const;

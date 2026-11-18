@@ -409,6 +409,7 @@ model Media {
   cmsSections CmsSectionMedia[]
   services    Service[]
   doctorPhotoOf Doctor[] @relation("DoctorPhoto")
+  teamMemberPhotoOf TeamMember[] @relation("TeamMemberPhoto")
 }
 
 model CmsSectionMedia {
@@ -516,6 +517,27 @@ model Doctor {
 
   photoMediaId String?
   photoMedia   Media?  @relation("DoctorPhoto", fields: [photoMediaId], references: [id])
+
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+/// The "Meet the Team" homepage section — independent of Doctor/Our Doctors
+/// (that's a separate, standalone-page feature). Just a name + photo per
+/// member; the section's own title/subtitle/isActive live on the
+/// "our-team" CmsSection row.
+model TeamMember {
+  id     String @id @default(cuid())
+  nameEn String
+  nameAr String
+
+  photoMediaId String?
+  photoMedia   Media?  @relation("TeamMemberPhoto", fields: [photoMediaId], references: [id])
 
   sortOrder Int     @default(0)
   isActive  Boolean @default(true)
