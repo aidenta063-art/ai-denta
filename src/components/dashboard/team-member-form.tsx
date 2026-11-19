@@ -18,6 +18,8 @@ type TeamMemberDefaults = {
   id: string;
   nameEn: string;
   nameAr: string;
+  positionEn: string | null;
+  positionAr: string | null;
   sortOrder: number;
   photoMediaId: string | null;
   photoUrl: string | null;
@@ -144,6 +146,23 @@ export function TeamMemberForm({
         <div className="flex flex-col gap-2">
           <Label>Name (Arabic)</Label>
           <Input name="nameAr" dir="rtl" defaultValue={member?.nameAr} required />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label>Position (English)</Label>
+          <Input
+            name="positionEn"
+            placeholder="e.g. Marketing Lead"
+            defaultValue={member?.positionEn ?? ""}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label>Position (Arabic)</Label>
+          <Input
+            name="positionAr"
+            dir="rtl"
+            placeholder="مثلاً: مسؤول التسويق"
+            defaultValue={member?.positionAr ?? ""}
+          />
         </div>
       </div>
 

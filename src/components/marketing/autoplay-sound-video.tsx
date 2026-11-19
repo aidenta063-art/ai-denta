@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Volume2 } from "lucide-react";
+import { Volume2, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -12,19 +12,26 @@ import { cn } from "@/lib/utils";
  * if that's blocked, fall back to muted autoplay and surface a one-tap
  * "enable sound" button instead of making people hunt for the native
  * mute control.
+ *
+ * `autoplay={false}` skips all of that and just waits for a tap — used
+ * for sections where playback shouldn't start on its own.
  */
 export function AutoplaySoundVideo({
   videoUrl,
   className,
+  autoplay = true,
 }: {
   videoUrl: string;
   className?: string;
+  autoplay?: boolean;
 }) {
   const t = useTranslations("HomePage");
   const videoRef = useRef<HTMLVideoElement>(null);
   const [needsUnmute, setNeedsUnmute] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
+    if (!autoplay) return;
     const el = videoRef.current;
     if (!el) return;
     el.muted = false;
@@ -33,13 +40,20 @@ export function AutoplaySoundVideo({
       setNeedsUnmute(true);
       el.play().catch(() => {});
     });
-  }, []);
+  }, [autoplay]);
 
   function enableSound() {
     const el = videoRef.current;
     if (!el) return;
     el.muted = false;
     setNeedsUnmute(false);
+    el.play().catch(() => {});
+  }
+
+  function startPlayback() {
+    const el = videoRef.current;
+    if (!el) return;
+    el.muted = false;
     el.play().catch(() => {});
   }
 
@@ -58,10 +72,11 @@ export function AutoplaySoundVideo({
         ref={videoRef}
         src={videoUrl}
         controls
-        autoPlay
+        autoPlay={autoplay}
         loop
         playsInline
-        preload="auto"
+        preload={autoplay ? "auto" : "metadata"}
+        onPlay={() => setHasStarted(true)}
         className="aspect-video w-full"
       />
       {needsUnmute && (
@@ -72,6 +87,17 @@ export function AutoplaySoundVideo({
         >
           <Volume2 className="size-4" />
           {t("tapForSound")}
+        </button>
+      )}
+      {!autoplay && !hasStarted && (
+        <button
+          type="button"
+          onClick={startPlayback}
+          className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors hover:bg-black/30"
+        >
+          <span className="flex size-16 items-center justify-center rounded-full bg-white/95 text-[#251037] shadow-xl transition-transform hover:scale-105">
+            <Play className="size-7 translate-x-0.5" fill="currentColor" />
+          </span>
         </button>
       )}
     </div>

@@ -84,6 +84,8 @@ export default async function TeamPage({
                 id: member.id,
                 nameEn: member.nameEn,
                 nameAr: member.nameAr,
+                positionEn: member.positionEn,
+                positionAr: member.positionAr,
                 sortOrder: member.sortOrder,
                 photoMediaId: member.photoMediaId,
                 photoUrl: member.photoMedia?.url ?? null,

@@ -532,9 +532,11 @@ model Doctor {
 /// member; the section's own title/subtitle/isActive live on the
 /// "our-team" CmsSection row.
 model TeamMember {
-  id     String @id @default(cuid())
-  nameEn String
-  nameAr String
+  id         String  @id @default(cuid())
+  nameEn     String
+  nameAr     String
+  positionEn String?
+  positionAr String?
 
   photoMediaId String?
   photoMedia   Media?  @relation("TeamMemberPhoto", fields: [photoMediaId], references: [id])

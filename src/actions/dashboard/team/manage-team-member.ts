@@ -27,6 +27,8 @@ function parseTeamMemberForm(formData: FormData) {
   return teamMemberFormSchema.safeParse({
     nameEn: formData.get("nameEn"),
     nameAr: formData.get("nameAr"),
+    positionEn: formData.get("positionEn"),
+    positionAr: formData.get("positionAr"),
     sortOrder: formData.get("sortOrder"),
     photoMediaId: formData.get("photoMediaId"),
   });

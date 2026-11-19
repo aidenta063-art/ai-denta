@@ -27,7 +27,7 @@ export async function DoctorTestimonialVideoSection() {
         </ScrollReveal>
 
         <ScrollReveal>
-          <AutoplaySoundVideo videoUrl={video.url} className="w-full" />
+          <AutoplaySoundVideo videoUrl={video.url} className="w-full" autoplay={false} />
         </ScrollReveal>
       </div>
     </section>

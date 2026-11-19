@@ -1,7 +1,10 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { ScrollReveal } from "@/components/marketing/scroll-reveal";
 import { Eyebrow } from "@/components/marketing/eyebrow";
+import {
+  TeamMembersCarousel,
+  type TeamMemberCardData,
+} from "@/components/marketing/team-members-carousel";
 import { getTeamSectionContent } from "@/services/content/cms.service";
 import { teamSectionContentSchema } from "@/lib/validation/cms.schema";
 import { localized } from "@/lib/i18n-content";
@@ -27,6 +30,13 @@ export async function OurTeamSection({ locale }: { locale: Locale }) {
     ? parsed.data
     : { title: t("title"), subtitle: t("subtitle") };
 
+  const cards: TeamMemberCardData[] = members.map((member) => ({
+    id: member.id,
+    name: localized(locale, member.nameEn, member.nameAr),
+    position: localized(locale, member.positionEn, member.positionAr),
+    photoUrl: member.photoMedia?.url ?? null,
+  }));
+
   return (
     <section className="bg-background px-6 py-20">
       <div className="mx-auto max-w-5xl">
@@ -38,32 +48,9 @@ export async function OurTeamSection({ locale }: { locale: Locale }) {
           <p className="max-w-2xl text-muted-foreground">{content.subtitle}</p>
         </ScrollReveal>
 
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
-          {members.map((member, i) => (
-            <ScrollReveal
-              key={member.id}
-              delay={i * 0.05}
-              className="flex flex-col items-center gap-3 text-center"
-            >
-              {member.photoMedia?.url ? (
-                <Image
-                  src={member.photoMedia.url}
-                  alt=""
-                  width={220}
-                  height={220}
-                  className="size-36 rounded-full border border-border object-cover sm:size-44"
-                />
-              ) : (
-                <div className="flex size-36 items-center justify-center rounded-full border border-border bg-muted text-3xl font-semibold text-muted-foreground sm:size-44">
-                  {localized(locale, member.nameEn, member.nameAr).charAt(0)}
-                </div>
-              )}
-              <p className="font-medium text-card-foreground">
-                {localized(locale, member.nameEn, member.nameAr)}
-              </p>
-            </ScrollReveal>
-          ))}
-        </div>
+        <ScrollReveal>
+          <TeamMembersCarousel members={cards} />
+        </ScrollReveal>
       </div>
     </section>
   );

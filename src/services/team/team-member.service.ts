@@ -27,17 +27,27 @@ export async function listTeamMembers() {
 }
 
 export async function createTeamMember(input: TeamMemberFormInput) {
-  const { photoMediaId, ...rest } = input;
+  const { photoMediaId, positionEn, positionAr, ...rest } = input;
   return prisma.teamMember.create({
-    data: { ...rest, photoMediaId: photoMediaId ?? null },
+    data: {
+      ...rest,
+      photoMediaId: photoMediaId ?? null,
+      positionEn: positionEn ?? null,
+      positionAr: positionAr ?? null,
+    },
   });
 }
 
 export async function updateTeamMember(id: string, input: TeamMemberFormInput) {
-  const { photoMediaId, ...rest } = input;
+  const { photoMediaId, positionEn, positionAr, ...rest } = input;
   await prisma.teamMember.update({
     where: { id },
-    data: { ...rest, photoMediaId: photoMediaId ?? null },
+    data: {
+      ...rest,
+      photoMediaId: photoMediaId ?? null,
+      positionEn: positionEn ?? null,
+      positionAr: positionAr ?? null,
+    },
   });
 }
 
