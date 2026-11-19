@@ -12,6 +12,7 @@ import type {
   BookingPaidThankYouFormInput,
   WhyUsFormInput,
   TeamSectionFormInput,
+  DoctorTestimonialsFormInput,
 } from "@/lib/validation/cms.schema";
 
 const HERO_SLUG = "home-hero";
@@ -692,4 +693,41 @@ export async function clearDoctorTestimonialVideo() {
   });
   if (!section) return;
   await prisma.cmsSectionMedia.deleteMany({ where: { cmsSectionId: section.id } });
+}
+
+/** Eyebrow/title/subtitle for the same section — lives on the same
+ * "doctor-testimonial-video" CmsSection row as the video itself, so one
+ * admin page controls everything in the section. */
+export const getDoctorTestimonialsContent = nextCache(
+  async () => prisma.cmsSection.findUnique({ where: { slug: DOCTOR_TESTIMONIAL_VIDEO_SLUG } }),
+  ["cms-doctor-testimonials-content"],
+  { tags: [CMS_TAGS.doctorTestimonialVideo], revalidate: CACHE_SECONDS },
+);
+
+export async function saveDoctorTestimonialsContent(
+  input: DoctorTestimonialsFormInput,
+  updatedById: string,
+) {
+  const contentEn = {
+    eyebrow: input.eyebrowEn,
+    title: input.titleEn,
+    subtitle: input.subtitleEn,
+  };
+  const contentAr = {
+    eyebrow: input.eyebrowAr,
+    title: input.titleAr,
+    subtitle: input.subtitleAr,
+  };
+
+  await prisma.cmsSection.upsert({
+    where: { slug: DOCTOR_TESTIMONIAL_VIDEO_SLUG },
+    update: { contentEn, contentAr, updatedById },
+    create: {
+      slug: DOCTOR_TESTIMONIAL_VIDEO_SLUG,
+      type: CmsSectionType.CUSTOM,
+      contentEn,
+      contentAr,
+      updatedById,
+    },
+  });
 }

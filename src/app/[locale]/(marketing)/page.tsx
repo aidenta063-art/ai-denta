@@ -122,7 +122,7 @@ export default async function HomePage({
       <FreeVsPaidSection locale={locale} />
       <ServicesSection locale={locale} />
       <VideoShowcase />
-      <DoctorTestimonialVideoSection />
+      <DoctorTestimonialVideoSection locale={locale} />
       <WhyUsSection locale={locale} />
       <EbookTeaser locale={locale} />
       <ReviewImagesSection />

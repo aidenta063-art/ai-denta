@@ -84,6 +84,21 @@ export const heroFormSchema = z.object({
   subtitleAr: z.string().trim().min(1).max(400),
 });
 
+export const doctorTestimonialsContentSchema = z.object({
+  eyebrow: z.string().trim().min(1).max(80),
+  title: z.string().trim().min(1).max(200),
+  subtitle: z.string().trim().min(1).max(400),
+});
+
+export const doctorTestimonialsFormSchema = z.object({
+  eyebrowEn: z.string().trim().min(1).max(80),
+  titleEn: z.string().trim().min(1).max(200),
+  subtitleEn: z.string().trim().min(1).max(400),
+  eyebrowAr: z.string().trim().min(1).max(80),
+  titleAr: z.string().trim().min(1).max(200),
+  subtitleAr: z.string().trim().min(1).max(400),
+});
+
 export const pricingFormSchema = z.object({
   nameEn: z.string().trim().min(1).max(100),
   nameAr: z.string().trim().min(1).max(100),
@@ -204,6 +219,9 @@ export type HeroFormInput = z.infer<typeof heroFormSchema>;
 export type HomeCtaFormInput = z.infer<typeof homeCtaFormSchema>;
 export type WhyUsFormInput = z.infer<typeof whyUsFormSchema>;
 export type TeamSectionFormInput = z.infer<typeof teamSectionFormSchema>;
+export type DoctorTestimonialsFormInput = z.infer<
+  typeof doctorTestimonialsFormSchema
+>;
 export type PricingFormInput = z.infer<typeof pricingFormSchema>;
 export type ServiceFormInput = z.infer<typeof serviceFormSchema>;
 export type ComparisonRowFormInput = z.infer<typeof comparisonRowFormSchema>;
